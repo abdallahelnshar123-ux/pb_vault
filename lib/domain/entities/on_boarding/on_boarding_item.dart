@@ -1,19 +1,19 @@
 class OnBoardingItem {
   OnBoardingItem({
-    this.buttonBack,
-    this.buttonNext,
     required this.image,
-    required this.subtitle,
     required this.title,
+    required this.subtitle,
+    required this.firstButton,
+    required this.secondButton,
   });
 
   String image;
 
   String title;
 
-  String? subtitle;
+  String subtitle;
 
-  String? buttonNext;
+  String firstButton;
 
-  String? buttonBack;
+  String secondButton;
 }

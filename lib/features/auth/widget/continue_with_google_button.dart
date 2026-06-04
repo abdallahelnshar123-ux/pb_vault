@@ -16,7 +16,7 @@ class ContinueWithGoogleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomElevatedButton(
       onPressed: onPressed,
-      backgroundColor: AppColors.yellowColor,
+      backgroundColor: AppColors.primary,
       child: Row(
         spacing: context.width * 0.02,
         mainAxisAlignment: MainAxisAlignment.center,

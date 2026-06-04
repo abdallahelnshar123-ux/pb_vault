@@ -55,7 +55,7 @@ class _RegisterUiState extends State<RegisterUi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.transparentColor,
+        backgroundColor: AppColors.transparent,
         title: Text(
           'Register'.tr(),
           style: AppStyles.robotoRegular16Yellow(context),
@@ -74,7 +74,7 @@ class _RegisterUiState extends State<RegisterUi> {
                 CustomTextFormField(
                   keyboardType: TextInputType.text,
                   errorStyle: TextStyle(
-                    color: AppColors.redColor,
+                    color: AppColors.primary,
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                   ),
@@ -87,12 +87,12 @@ class _RegisterUiState extends State<RegisterUi> {
                   hintText: "Name".tr(),
                   hintStyle: AppStyles.robotoRegular16White(context),
                   filled: true,
-                  fillColor: AppColors.darkGrayColor,
+                  fillColor: AppColors.primary,
                 ),
                 CustomTextFormField(
                   keyboardType: TextInputType.emailAddress,
                   errorStyle: TextStyle(
-                    color: AppColors.redColor,
+                    color: AppColors.primary,
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                   ),
@@ -105,14 +105,14 @@ class _RegisterUiState extends State<RegisterUi> {
                   hintText: "Email".tr(),
                   hintStyle: AppStyles.robotoRegular16White(context),
                   filled: true,
-                  fillColor: AppColors.darkGrayColor,
+                  fillColor: AppColors.primary,
                 ),
                 ValueListenableBuilder(
                   valueListenable: passIsObscure,
                   builder: (context, value, child) => CustomTextFormField(
                     keyboardType: TextInputType.text,
                     errorStyle: TextStyle(
-                      color: AppColors.redColor,
+                      color: AppColors.primary,
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
                     ),
@@ -126,19 +126,19 @@ class _RegisterUiState extends State<RegisterUi> {
                     ),
                     obscureText: value,
                     filled: true,
-                    fillColor: AppColors.darkGrayColor,
+                    fillColor: AppColors.primary,
                     suffixIcon: IconButton(
                       isSelected: !value,
                       selectedIcon: Icon(
                         Icons.visibility_rounded,
-                        color: AppColors.whiteColor,
+                        color: AppColors.primary,
                       ),
                       onPressed: () {
                         passIsObscure.value = !passIsObscure.value;
                       },
                       icon: Icon(
                         Icons.visibility_off_rounded,
-                        color: AppColors.whiteColor,
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
@@ -148,7 +148,7 @@ class _RegisterUiState extends State<RegisterUi> {
                   builder: (context, value, child) => CustomTextFormField(
                     keyboardType: TextInputType.text,
                     errorStyle: TextStyle(
-                      color: AppColors.redColor,
+                      color: AppColors.primary,
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
                     ),
@@ -165,19 +165,19 @@ class _RegisterUiState extends State<RegisterUi> {
                     ),
                     obscureText: value,
                     filled: true,
-                    fillColor: AppColors.darkGrayColor,
+                    fillColor: AppColors.primary,
                     suffixIcon: IconButton(
                       isSelected: !value,
                       selectedIcon: Icon(
                         Icons.visibility_rounded,
-                        color: AppColors.whiteColor,
+                        color: AppColors.primary,
                       ),
                       onPressed: () {
                         confPassIsObscure.value = !confPassIsObscure.value;
                       },
                       icon: Icon(
                         Icons.visibility_off_rounded,
-                        color: AppColors.whiteColor,
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
@@ -185,7 +185,7 @@ class _RegisterUiState extends State<RegisterUi> {
                 CustomTextFormField(
                   keyboardType: TextInputType.phone,
                   errorStyle: TextStyle(
-                    color: AppColors.redColor,
+                    color: AppColors.primary,
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                   ),
@@ -198,7 +198,7 @@ class _RegisterUiState extends State<RegisterUi> {
                   hintText: "Phone Number".tr(),
                   hintStyle: AppStyles.robotoRegular16White(context),
                   filled: true,
-                  fillColor: AppColors.darkGrayColor,
+                  fillColor: AppColors.primary,
                 ),
                 SizedBox(height: context.height * 0.01),
                 CustomElevatedButton(
@@ -215,7 +215,7 @@ class _RegisterUiState extends State<RegisterUi> {
                       );
                     }
                   },
-                  backgroundColor: AppColors.yellowColor,
+                  backgroundColor: AppColors.primary,
                   child: Text(
                     'Create Account'.tr(),
                     style: AppStyles.robotoRegular20Black(context),
@@ -253,7 +253,7 @@ class _RegisterUiState extends State<RegisterUi> {
                   children: [
                     Expanded(
                       child: Divider(
-                        color: AppColors.yellowColor,
+                        color: AppColors.primary,
                         indent: context.width * 0.09,
                         endIndent: context.width * 0.03,
                       ),
@@ -264,7 +264,7 @@ class _RegisterUiState extends State<RegisterUi> {
                     ),
                     Expanded(
                       child: Divider(
-                        color: AppColors.yellowColor,
+                        color: AppColors.primary,
                         indent: context.width * 0.03,
                         endIndent: context.width * 0.09,
                       ),

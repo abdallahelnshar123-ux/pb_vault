@@ -12,7 +12,7 @@ class SnackBarUtils {
         behavior: SnackBarBehavior.floating,
         margin: EdgeInsets.all(5),
         content: Text(message, style: AppStyles.robotoRegular14Black(context)),
-        backgroundColor: AppColors.whiteColor,
+        backgroundColor: AppColors.primary,
       ),
     );
   }

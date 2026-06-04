@@ -16,7 +16,7 @@ class DialogUtils {
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 20,
           children: [
-            CircularProgressIndicator(color: AppColors.yellowColor),
+            CircularProgressIndicator(color: AppColors.primary),
           ],
         ),
       ),
@@ -130,7 +130,7 @@ class DialogUtils {
                   hintStyle: AppStyles.robotoRegular16White(context),
                   obscureText: true,
                   filled: true,
-                  fillColor: AppColors.blackColor,
+                  fillColor: AppColors.primary,
                 ),
               ],
             ),

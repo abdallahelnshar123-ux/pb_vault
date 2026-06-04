@@ -13,7 +13,7 @@ class ChangeLanguageItem extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: AppColors.yellowColor),
+          border: Border.all(color: AppColors.primary),
         ),
         child: Row(
           spacing: 10,
@@ -72,8 +72,8 @@ class ChangeLanguageItem extends StatelessWidget {
       child: CircleAvatar(
         radius: 20,
         backgroundColor: context.locale.languageCode == languageCode
-            ? AppColors.transparentColor
-            : AppColors.yellowColor,
+            ? AppColors.primary
+            : AppColors.primary,
         child: CircleAvatar(radius: 14, backgroundImage: AssetImage(logo)),
       ),
     );

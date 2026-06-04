@@ -62,7 +62,7 @@ class CustomTextFormField extends StatelessWidget {
       obscuringCharacter: obscuringCharacter,
       keyboardType: keyboardType,
       style: AppStyles.robotoRegular16White(context),
-      cursorColor: AppColors.yellowColor,
+      cursorColor: AppColors.primary,
       cursorHeight: context.height * 0.04,
       decoration: InputDecoration(
         filled: filled,
@@ -70,14 +70,14 @@ class CustomTextFormField extends StatelessWidget {
         errorMaxLines: 2,
         errorStyle: errorStyle,
         enabledBorder: builtDecorationBorder(
-          borderColor: borderSideColor ?? AppColors.transparentColor,
+          borderColor: borderSideColor ?? AppColors.primary,
         ),
         focusedBorder: builtDecorationBorder(
-          borderColor: borderSideColor ?? AppColors.transparentColor,
+          borderColor: borderSideColor ?? AppColors.primary,
         ),
-        errorBorder: builtDecorationBorder(borderColor: AppColors.redColor),
+        errorBorder: builtDecorationBorder(borderColor: AppColors.primary),
         focusedErrorBorder: builtDecorationBorder(
-          borderColor: AppColors.redColor,
+          borderColor: AppColors.primary,
         ),
         hintText: hintText,
         hintStyle: hintStyle,

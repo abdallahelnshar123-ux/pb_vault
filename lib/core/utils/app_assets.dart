@@ -1,11 +1,11 @@
 class AppAssets {
   /// images =============================================================
-  static const String onBoardingImage1 = 'assets/images/onboarding_image1.png';
-  static const String onBoardingImage2 = 'assets/images/onboarding_image2.png';
-  static const String onBoardingImage3 = 'assets/images/onboarding_image3.png';
-  static const String onBoardingImage4 = 'assets/images/onboarding_image4.png';
-  static const String onBoardingImage5 = 'assets/images/onboarding_image5.png';
-  static const String onBoardingImage6 = 'assets/images/onboarding_image6.png';
+  static const String onBoardingImage1 = 'assets/images/onboarding1.png';
+  static const String onBoardingImage2 = 'assets/images/onboarding2.png';
+  static const String onBoardingImage3 = 'assets/images/onboarding3.png';
+  static const String appLogo = 'assets/icons/logo.svg';
+
+
   static const String forgetPasswordImage =
       'assets/images/forget_password_image.png';
   static const String avatarImage1 = 'assets/images/avatar1.png';
@@ -19,7 +19,6 @@ class AppAssets {
   static const String avatarImage9 = 'assets/images/avatar9.png';
   static const String egyptLogo = 'assets/images/egypt_logo.png';
   static const String usaLogo = 'assets/images/usa_logo.png';
-  static const String appLogo = 'assets/images/app_logo.png';
   static const String availableNowImage =
       'assets/images/available_now_image.png';
   static const String watchNowImage = 'assets/images/watch_now_image.png';

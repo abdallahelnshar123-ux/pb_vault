@@ -52,6 +52,8 @@ import '../../domain/use_cases/set_onboarding_done_use_case.dart' as _i551;
 import '../../domain/use_cases/sign_in_with_google_use_cases.dart' as _i447;
 import '../../domain/use_cases/update_account_details_use_case.dart' as _i274;
 import '../../features/auth/cubit/auth_view_model.dart' as _i260;
+import '../../features/onboarding_screen/provider/onboarding_view_model.dart'
+    as _i926;
 import '../data_bases/cache/local_storage.dart' as _i1020;
 import '../data_bases/cache/local_storage_module.dart' as _i2;
 import '../data_bases/cache/shared_prefs_utils.dart' as _i1059;
@@ -151,6 +153,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i977.OnBoardingRepository>(),
         gh<_i183.UserRepository>(),
       ),
+    );
+    gh.factory<_i926.OnboardingViewModel>(
+      () => _i926.OnboardingViewModel(gh<_i551.SetOnboardingDoneUseCase>()),
     );
     gh.lazySingleton<_i260.AuthCubit>(
       () => _i260.AuthCubit(

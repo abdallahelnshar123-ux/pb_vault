@@ -36,7 +36,7 @@ class MainErrorWidget extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-              backgroundColor: AppColors.yellowColor,
+              backgroundColor: AppColors.primary,
             ),
             onPressed: onPressed,
             child: Text(

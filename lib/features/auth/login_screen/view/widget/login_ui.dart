@@ -59,7 +59,6 @@ class _LoginUiState extends State<LoginUi> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 spacing: context.height * 0.02,
                 children: [
-                  Image.asset(AppAssets.appLogo, height: context.height * 0.3),
                   CustomTextFormField(
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) => Validators.email(value),
@@ -71,7 +70,7 @@ class _LoginUiState extends State<LoginUi> {
                     hintText: "email".tr(),
                     hintStyle: AppStyles.robotoRegular16White(context),
                     filled: true,
-                    fillColor: AppColors.darkGrayColor,
+                    fillColor: AppColors.primary,
                   ),
                   ValueListenableBuilder<bool>(
                     valueListenable: isObscure,
@@ -87,19 +86,19 @@ class _LoginUiState extends State<LoginUi> {
                       hintStyle: AppStyles.robotoRegular16White(context),
                       obscureText: value,
                       filled: true,
-                      fillColor: AppColors.darkGrayColor,
+                      fillColor: AppColors.primary,
                       suffixIcon: IconButton(
                         isSelected: !value,
                         selectedIcon: Icon(
                           Icons.visibility_rounded,
-                          color: AppColors.whiteColor,
+                          color: AppColors.primary,
                         ),
                         onPressed: () {
                           isObscure.value = !isObscure.value;
                         },
                         icon: Icon(
                           Icons.visibility_off_rounded,
-                          color: AppColors.whiteColor,
+                          color: AppColors.primary,
                         ),
                       ),
                     ),
@@ -139,7 +138,7 @@ class _LoginUiState extends State<LoginUi> {
                         );
                       }
                     },
-                    backgroundColor: AppColors.yellowColor,
+                    backgroundColor: AppColors.primary,
                     child: Text(
                       "login".tr(),
                       style: AppStyles.robotoRegular20Black(context),
@@ -179,7 +178,7 @@ class _LoginUiState extends State<LoginUi> {
                     children: [
                       Expanded(
                         child: Divider(
-                          color: AppColors.yellowColor,
+                          color: AppColors.primary,
                           indent: context.width * 0.09,
                           endIndent: context.width * 0.03,
                         ),
@@ -190,7 +189,7 @@ class _LoginUiState extends State<LoginUi> {
                       ),
                       Expanded(
                         child: Divider(
-                          color: AppColors.yellowColor,
+                          color: AppColors.primary,
                           indent: context.width * 0.03,
                           endIndent: context.width * 0.09,
                         ),

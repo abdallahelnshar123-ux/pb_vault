@@ -1,30 +1,33 @@
-import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+
 import 'core/di/di.dart';
 import 'core/utils/app_routes.dart';
 import 'core/utils/app_theme.dart';
+import 'domain/use_cases/set_onboarding_done_use_case.dart';
 import 'features/auth/cubit/auth_view_model.dart';
 import 'features/auth/login_screen/view/login_screen.dart';
 import 'features/auth/register_screen/view/register_screen.dart';
+import 'features/onboarding_screen/provider/onboarding_view_model.dart';
+import 'features/onboarding_screen/view/screens/onboarding_screen.dart';
 import 'firebase_options.dart';
-import 'package:easy_localization/easy_localization.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  EasyLocalization.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  configureDependencies();
   runApp(
     MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => getIt<AuthCubit>()),
-      ],
+      providers: [BlocProvider(create: (context) => getIt<AuthCubit>())],
       child: EasyLocalization(
         supportedLocales: const [Locale('en'), Locale('ar')],
         path: 'assets/translations',
         fallbackLocale: const Locale('en'),
+        startLocale: Locale('en'),
         child: MyApp(),
       ),
     ),
@@ -40,15 +43,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: context.read<AuthCubit>().getInitialRoute(),
       routes: {
-        // AppRoutes.onboardingRouteName: (context) => ChangeNotifierProvider(
-        //   create: (context) =>
-        //       OnboardingViewModel(getIt<SetOnboardingDoneUseCase>()),
-        //   child: OnboardingScreen(),
-        // ),
+        AppRoutes.onboardingRouteName: (context) => ChangeNotifierProvider(
+          create: (context) =>
+              OnboardingViewModel(getIt<SetOnboardingDoneUseCase>()),
+          child: OnboardingScreen(),
+        ),
         AppRoutes.loginRouteName: (context) => LoginScreen(),
         // AppRoutes.resetPasswordRouteName: (context) => ResetPasswordScreen(),
         AppRoutes.registerRouteName: (context) => RegisterScreen(),
-
       },
       themeMode: ThemeMode.dark,
       darkTheme: AppTheme.darkTheme,
@@ -58,4 +60,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
