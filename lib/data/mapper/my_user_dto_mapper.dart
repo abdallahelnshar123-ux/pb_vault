@@ -1,0 +1,15 @@
+
+import '../../domain/entities/response/user/my_user.dart';
+import '../model/response/my_user_dto.dart';
+
+extension MyUserDtoMapper on MyUser {
+  MyUserDto toMyUserDto() {
+    return MyUserDto(
+      id: id,
+      email: email,
+      name: name,
+      phone: phone,
+      provider: provider,
+    );
+  }
+}
