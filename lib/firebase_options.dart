@@ -64,7 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '590958385902',
     projectId: 'pb-vault-401b5',
     storageBucket: 'pb-vault-401b5.firebasestorage.app',
-    iosClientId: '590958385902-0alfg71ctpaeoq62vsf765cq9to6qe59.apps.googleusercontent.com',
+    iosClientId:
+        '590958385902-0alfg71ctpaeoq62vsf765cq9to6qe59.apps.googleusercontent.com',
     iosBundleId: 'com.example.pbVault',
   );
 
@@ -74,7 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '590958385902',
     projectId: 'pb-vault-401b5',
     storageBucket: 'pb-vault-401b5.firebasestorage.app',
-    iosClientId: '590958385902-0alfg71ctpaeoq62vsf765cq9to6qe59.apps.googleusercontent.com',
+    iosClientId:
+        '590958385902-0alfg71ctpaeoq62vsf765cq9to6qe59.apps.googleusercontent.com',
     iosBundleId: 'com.example.pbVault',
   );
 

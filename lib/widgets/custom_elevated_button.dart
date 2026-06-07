@@ -7,7 +7,7 @@ class CustomElevatedButton extends StatelessWidget {
   final Color backgroundColor;
   final Color? borderSideColor;
   final Widget child;
-  final void Function() onPressed;
+  final void Function()? onPressed;
 
   const CustomElevatedButton({
     super.key,

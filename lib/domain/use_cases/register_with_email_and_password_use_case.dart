@@ -15,7 +15,6 @@ class RegisterWithEmailAndPasswordUseCase {
     required String email,
     required String password,
     required String name,
-    required String phone,
     required int avatarIndex,
   }) async {
     final Either<Failure, MyUser> authResult = await _authRepository
@@ -23,7 +22,6 @@ class RegisterWithEmailAndPasswordUseCase {
           email: email,
           password: password,
           avatarIndex: avatarIndex,
-          phone: phone,
           name: name,
         );
     return authResult;

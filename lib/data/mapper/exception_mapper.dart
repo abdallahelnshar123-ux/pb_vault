@@ -13,6 +13,9 @@ extension ExceptionMapper on AppException {
       case ServerException():
         return ServerFailure(message);
 
+      case CancelledByUserException():
+        return const CancelledByUserFailure();
+
       case CacheException():
         return CacheFailure(message);
 

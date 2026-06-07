@@ -41,7 +41,6 @@ class AuthRepositoryImpl extends AuthRepository {
           provider: AuthProviders.google,
           id: authUserDto.id,
           name: authUserDto.name,
-          phone: authUserDto.phone,
           email: authUserDto.email,
         );
         await _userRemoteDataSource.createUser(newUser);
@@ -64,7 +63,6 @@ class AuthRepositoryImpl extends AuthRepository {
     required String email,
     required String password,
     required String name,
-    required String phone,
     required int avatarIndex,
   }) async {
     try {
@@ -75,7 +73,6 @@ class AuthRepositoryImpl extends AuthRepository {
         provider: AuthProviders.emailPassword,
         id: authUserDto.id,
         name: name,
-        phone: phone,
         email: authUserDto.email,
       );
       await _userRemoteDataSource.createUser(newUser.toMyUserDto());

@@ -2,15 +2,15 @@ class MyUserDto {
   final String name;
   final String email;
   final String id;
-  final String phone;
   final String provider;
+  final String? masterPassword;
 
   const MyUserDto({
     required this.id,
     required this.email,
     required this.name,
-    required this.phone,
     required this.provider,
+    this.masterPassword,
   });
 
   MyUserDto.fromFireStore(Map<String, dynamic> data)
@@ -18,8 +18,8 @@ class MyUserDto {
         id: data['id']?.toString() ?? '',
         name: data['name']?.toString() ?? '',
         email: data['email']?.toString() ?? '',
-        phone: data['phone']?.toString() ?? '',
         provider: data['provider']?.toString() ?? '',
+        masterPassword: data['master_password']?.toString() ?? '',
       );
 
   Map<String, dynamic> toFireStore() {
@@ -27,8 +27,8 @@ class MyUserDto {
       'id': id,
       'name': name,
       'email': email,
-      'phone': phone,
       'provider': provider,
+      'master_password': masterPassword,
     };
   }
 }

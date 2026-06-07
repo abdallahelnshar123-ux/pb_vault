@@ -11,12 +11,13 @@ class DialogUtils {
       barrierDismissible: false,
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: AppColors.transparent,
         contentPadding: EdgeInsets.all(20),
         content: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 20,
           children: [
-            CircularProgressIndicator(color: AppColors.primary),
+            CircularProgressIndicator(color: AppColors.backgroundDark),
           ],
         ),
       ),
@@ -46,7 +47,7 @@ class DialogUtils {
           },
           child: Text(
             context.tr(posActionText),
-            style: AppStyles.robotoRegular16Yellow(context),
+            style: AppStyles.robotoRegular16White(context),
           ),
         ),
       );
@@ -60,7 +61,7 @@ class DialogUtils {
           },
           child: Text(
             context.tr(negActionText),
-            style: AppStyles.robotoRegular16Yellow(context),
+            style: AppStyles.robotoRegular16White(context),
           ),
         ),
       );
@@ -76,7 +77,7 @@ class DialogUtils {
         ),
         title: Text(
           context.tr(title),
-          style: AppStyles.robotoRegular16Yellow(context),
+          style: AppStyles.robotoRegular14White(context),
         ),
         actions: actions,
       ),
@@ -102,7 +103,7 @@ class DialogUtils {
           contentPadding: const EdgeInsets.all(20),
           title: Text(
             context.tr(title),
-            style: AppStyles.robotoRegular16Yellow(context),
+            style: AppStyles.robotoRegular16White(context),
           ),
           content: Form(
             key: formKey,
@@ -142,7 +143,7 @@ class DialogUtils {
               },
               child: Text(
                 context.tr(cancelText),
-                style: AppStyles.robotoRegular16Yellow(context),
+                style: AppStyles.robotoRegular16White(context),
               ),
             ),
             TextButton(
@@ -153,7 +154,7 @@ class DialogUtils {
               },
               child: Text(
                 context.tr(confirmText),
-                style: AppStyles.robotoRegular16Yellow(context),
+                style: AppStyles.robotoRegular16White(context),
               ),
             ),
           ],

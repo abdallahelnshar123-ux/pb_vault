@@ -21,6 +21,9 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
       final userCredential = await _firebaseAuthService.signInWithGoogle();
       return userCredential.toAuthUserDto();
     } on FirebaseAuthException catch (e) {
+      if (e.code == 'web-user-interaction-failed' || e.code == 'cancelled') {
+        throw const CancelledByUserException();
+      }
       throw ServerException(message: e.message ?? 'server_error');
     } on SocketException {
       throw NetworkException(message: 'no_internet');
@@ -62,6 +65,9 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
           .loginWithEmailAndPassword(email: email, password: password);
       return userCredential.toAuthUserDto();
     } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-credential') {
+        throw ServerException(message: 'the_email_or_password_is_incorrect');
+      }
       throw ServerException(message: e.message ?? 'server_error');
     } on SocketException {
       throw NetworkException(message: 'no_internet');

@@ -15,4 +15,6 @@ abstract class UserRepository {
   Future<Either<Failure, Unit>> updateUser({required MyUser user});
 
   Future<Either<Failure, Unit>> deleteUser({required String uId});
+
+  Future<Either<Failure, Unit>> setMasterPassword({required MyUser user});
 }

@@ -27,3 +27,7 @@ class UnauthorizedFailure extends Failure {
 class UnexpectedFailure extends Failure {
   const UnexpectedFailure(super.message);
 }
+
+class CancelledByUserFailure extends Failure {
+  const CancelledByUserFailure() : super('Cancelled by user');
+}

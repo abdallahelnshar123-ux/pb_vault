@@ -16,15 +16,19 @@ class ContinueWithGoogleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomElevatedButton(
       onPressed: onPressed,
-      backgroundColor: AppColors.primary,
+      backgroundColor: AppColors.white,
       child: Row(
         spacing: context.width * 0.02,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset("assets/icons/google_icon.svg", fit: BoxFit.none),
+          SvgPicture.asset(
+            "assets/icons/google_icon.svg",
+            fit: BoxFit.fitWidth,
+            width: 22,
+          ),
           Text(
             "continue_with_google".tr(),
-            style: AppStyles.robotoRegular20Black(context),
+            style: AppStyles.robotoRegular16Black(context),
           ),
         ],
       ),

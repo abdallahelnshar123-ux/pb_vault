@@ -1,0 +1,56 @@
+# PB Vault AI Development Instructions
+
+This file serves as the definitive guide for any AI assistant working on the PB Vault project. Adhere to these architectural patterns, coding standards, and project-specific rules to maintain consistency.
+
+## 🏛 Architecture Overview
+The project follows **Clean Architecture** principles with a **Feature-based** UI structure.
+
+- **lib/core/**: Cross-cutting concerns (Theme, Utils, Constants, Routes).
+- **lib/domain/**: Business logic (Entities, UseCases, Repository Interfaces). **NO Dependencies on Flutter/Data layers.**
+- **lib/data/**: Implementation detail (Models, Mappers, Repository Implementations, Data Sources).
+- **lib/features/**: UI Layer. Organized by feature (e.g., `auth`, `onboarding`). Each feature contains:
+    - `view/` or `screens/`: UI widgets.
+    - `provider/` or `cubit/`: State management logic.
+
+## 🛠 Tech Stack & Libraries
+- **State Management**: Mixed usage.
+    - `Provider` (used in `onboarding_screen`).
+    - `Bloc/Cubit` (used in `auth`).
+- **Dependency Injection**: `injectable` & `get_it`.
+    - Annotate classes with `@injectable`, `@lazySingleton`, etc.
+    - Always run `flutter pub run build_runner build` after changes.
+- **Localization**: `easy_localization`. Use `.tr()` on strings.
+- **Routing**: Named routing defined in `lib/core/utils/app_routes.dart`.
+- **Icons/Images**: `flutter_svg` for SVGs.
+
+## 🎨 Coding Standards & UI Rules
+- **Colors**: Always use `AppColors` from `lib/core/utils/app_colors.dart`.
+- **Styles**: Always use `AppStyles` from `lib/core/utils/app_styles.dart`.
+- **Spacing**: Use the `spacing` property in `Column`/`Row` (Flutter 3.x) or `SizedBox`.
+- **Responsiveness**: Use `context.width` or `context.height` extensions from `lib/core/utils/screen_size.dart`.
+- **Widgets**: Prefer creating small, reusable widgets in the feature's `widgets/` folder or `lib/widgets/` for global ones.
+
+## 📝 Naming Conventions
+- **Files**: `snake_case.dart`.
+- **Classes**: `PascalCase`.
+- **Variables/Functions**: `camelCase`.
+- **View Models**: Suffix with `ViewModel` (if using Provider) or `Cubit`/`Bloc`.
+- **Entities**: Domain entities should be clean (e.g., `User`). Data models should suffix with `Model` (e.g., `UserModel`).
+
+## 🚀 Workflows
+1. **Adding a Feature**:
+    - Create folder in `lib/features/`.
+    - Define Domain Entities/UseCases first.
+    - Implement Data layer (Repository/Models).
+    - Build UI and State Management.
+2. **Assets**: Add new images to `assets/images/` and register them in `pubspec.yaml` and `lib/core/utils/app_assets.dart`.
+3. **DI**: If adding a new injectable class, ensure it's registered in the DI container by running build_runner.
+
+## ⚠️ Critical Constraints
+- **Do NOT** hardcode strings; use `translations` assets and `.tr()`.
+- **Do NOT** hardcode colors; use `AppColors`.
+- **Do NOT** put business logic in UI files.
+- **Avoid** using `sed` or direct shell edits on files; use the provided file editing tools.
+
+---
+*End of Instructions*

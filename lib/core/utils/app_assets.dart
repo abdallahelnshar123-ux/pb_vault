@@ -5,7 +5,6 @@ class AppAssets {
   static const String onBoardingImage3 = 'assets/images/onboarding3.png';
   static const String appLogo = 'assets/icons/logo.svg';
 
-
   static const String forgetPasswordImage =
       'assets/images/forget_password_image.png';
   static const String avatarImage1 = 'assets/images/avatar1.png';

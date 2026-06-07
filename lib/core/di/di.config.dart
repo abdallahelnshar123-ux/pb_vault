@@ -48,10 +48,13 @@ import '../../domain/use_cases/logout_use_case.dart' as _i250;
 import '../../domain/use_cases/register_with_email_and_password_use_case.dart'
     as _i904;
 import '../../domain/use_cases/reset_password_use_case.dart' as _i638;
+import '../../domain/use_cases/set_master_password_use_case.dart' as _i756;
 import '../../domain/use_cases/set_onboarding_done_use_case.dart' as _i551;
 import '../../domain/use_cases/sign_in_with_google_use_cases.dart' as _i447;
 import '../../domain/use_cases/update_account_details_use_case.dart' as _i274;
 import '../../features/auth/cubit/auth_view_model.dart' as _i260;
+import '../../features/master_password_screen/cubit/master_password_view_model.dart'
+    as _i884;
 import '../../features/onboarding_screen/provider/onboarding_view_model.dart'
     as _i926;
 import '../data_bases/cache/local_storage.dart' as _i1020;
@@ -142,6 +145,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i447.SignInWithGoogleUseCases>(
       () => _i447.SignInWithGoogleUseCases(gh<_i912.AuthRepository>()),
     );
+    gh.factory<_i756.SetMasterPasswordUseCase>(
+      () => _i756.SetMasterPasswordUseCase(gh<_i183.UserRepository>()),
+    );
     gh.factory<_i274.UpdateAccountDetailsUseCase>(
       () => _i274.UpdateAccountDetailsUseCase(gh<_i183.UserRepository>()),
     );
@@ -153,6 +159,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i977.OnBoardingRepository>(),
         gh<_i183.UserRepository>(),
       ),
+    );
+    gh.factory<_i884.MasterPasswordCubit>(
+      () => _i884.MasterPasswordCubit(gh<_i756.SetMasterPasswordUseCase>()),
     );
     gh.factory<_i926.OnboardingViewModel>(
       () => _i926.OnboardingViewModel(gh<_i551.SetOnboardingDoneUseCase>()),

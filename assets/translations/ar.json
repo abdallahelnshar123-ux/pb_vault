@@ -3,7 +3,7 @@
   "onboarding_description1": "قم بتخزين جميع كلمات المرور الخاصة بك في خزنة واحدة آمنة وقم بالوصول إليها في أي وقت بثقة تامة.",
   "onboarding_title2": "حماية أكثر من مجرد كلمات المرور",
   "onboarding_description2": "حفظ الملاحظات وتفاصيل الحساب والمعلومات المهمة في مساحة خاصة مشفرة.",
-  "onboarding_title3": "سريع وآمن ومتاح دائمًا" ,
+  "onboarding_title3": "سريع وآمن ومتاح دائمًا",
   "onboarding_description3": "يمكنك الوصول إلى خزنتك وقتما تحتاج إليها مع الحفاظ على بياناتك محمية بأمان متقدم.",
   "onboarding_title6": "ابدأ المشاهدة الآن",
   "explore_now": "استكشف الآن",
@@ -118,6 +118,28 @@
   "cancel": "إلغاء",
   "enter_your_name": "ادخل اسمك",
   "enter_your_phone_number": "ادخل رقم الهاتف",
-  "yes" : "نعم",
-  "skip"  : "تخطي"
+  "yes": "نعم",
+  "skip": "تخطي",
+  "login_or_sign_up_to_unlock_your_personal_vault": "قم بالتسجيل او تسجيل الدخول لفتح خزنتك الخاصة",
+  "welcome_to_pb_vault": "مرحبا بك في  PB Vault",
+  "login": "تسجيل الدخول",
+  "or_continue_with_email": "أو استمر من خلال الايميل",
+  "at_least_8_characters": "علي الأقل 8 احرف",
+  "at_least_1_number": "علي الأقل رقم ",
+  "both_upper_and_lower_case_letters": "تحتوي علي حروف كبيره وصغيره",
+  "i_agree_to_terms_and_conditions": "أوافق علي الشروط والأحكام",
+  "the_email_or_password_is_incorrect": "البريد الالكتروني او كلمه السر غير صحيح",
+  "unlock_vault" : "افتح القبو",
+  "enter_your_master_password" : "أدخل كلمة المرور الرئيسية لفتح خزنتك",
+  "setup_your_master_password" : "قم بإعداد كلمة المرور الرئيسية الخاصة بك",
+  "create_master_password": "أنشئ كلمة مرور رئيسية لحسابك",
+  "you_will_be_asked_to_enter_this_password" : " سيطلب منك في كل مره تفتح التطبيق ادخال كلمه السر هذه لذلك تذكرها جيدا",
+  "unlock" : "إلغاء القفل",
+  "invalid_master_password" : "كلمة السر غير صحيحة",
+  "locked" : "تم الفتح",
+  "done" : "تم",
+  "create" : "أنشئ"
+
+
+
 }

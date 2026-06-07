@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+
 import '../../../core/utils/app_routes.dart';
 import '../../../domain/entities/response/user/my_user.dart';
 import '../../../domain/entities/startup_result/startup_result.dart';
@@ -13,7 +14,7 @@ import '../../../domain/use_cases/register_with_email_and_password_use_case.dart
 import '../../../domain/use_cases/reset_password_use_case.dart';
 import '../../../domain/use_cases/sign_in_with_google_use_cases.dart';
 import '../../../domain/use_cases/update_account_details_use_case.dart';
-import '../auth_state.dart';
+import 'auth_state.dart';
 
 @lazySingleton
 class AuthCubit extends Cubit<AuthState> {
@@ -91,19 +92,18 @@ class AuthCubit extends Cubit<AuthState> {
 
   ///   auth with google
   Future<void> continueWithGoogle() async {
-    try {
-      emit(AuthContinueWithGoogleLoading());
-      final result = await _signInWithGoogleUseCases.invoke();
+    emit(AuthContinueWithGoogleLoading());
+    final result = await _signInWithGoogleUseCases.invoke();
 
-      result.fold((failure) => emit(AuthLoginError(failure.message.tr())), (
-        user,
-      ) {
+    result.fold(
+      (failure) {
+        emit(AuthContinueWithGoogleError(failure.message.tr()));
+      },
+      (user) {
         currentUser = user;
         emit(AuthAuthenticated(user));
-      });
-    } catch (e) {
-      emit(AuthContinueWithGoogleError('Unexpected Error'));
-    }
+      },
+    );
   }
 
   Future<void> loginWithEmailAndPassword(String email, String password) async {
@@ -128,14 +128,12 @@ class AuthCubit extends Cubit<AuthState> {
     required String email,
     required String password,
     required String name,
-    required String phone,
     required int avatarIndex,
   }) async {
     try {
       emit(AuthRegisterLoading());
       final result = await _registerWithEmailAndPasswordUseCases.invoke(
         name: name,
-        phone: phone,
         avatarIndex: avatarIndex,
         password: password,
         email: email,
@@ -173,10 +171,10 @@ class AuthCubit extends Cubit<AuthState> {
       case StartupStatus.onboarding:
         return AppRoutes.onboardingRouteName;
       case StartupStatus.unauthenticated:
-        return AppRoutes.loginRouteName;
+        return AppRoutes.authScreen;
       case StartupStatus.authenticated:
         currentUser = result.user;
-        return AppRoutes.homeRouteName;
+        return AppRoutes.masterPasswordScreen;
     }
   }
 }

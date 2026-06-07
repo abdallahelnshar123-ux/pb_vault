@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/utils/app_colors.dart';
-import '../core/utils/app_styles.dart';
 import '../core/utils/screen_size.dart';
 
 typedef OnChanged = void Function(String)?;
@@ -16,6 +15,7 @@ class CustomTextFormField extends StatelessWidget {
   final TextStyle? hintStyle;
   final String? labelText;
   final TextStyle? labelStyle;
+  final TextStyle? style;
   final TextStyle? errorStyle;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
@@ -30,6 +30,7 @@ class CustomTextFormField extends StatelessWidget {
 
   const CustomTextFormField({
     super.key,
+    this.style,
     this.hintText,
     this.hintStyle,
     this.labelText,
@@ -61,10 +62,12 @@ class CustomTextFormField extends StatelessWidget {
       obscureText: obscureText,
       obscuringCharacter: obscuringCharacter,
       keyboardType: keyboardType,
-      style: AppStyles.robotoRegular16White(context),
+      style: style,
       cursorColor: AppColors.primary,
       cursorHeight: context.height * 0.04,
       decoration: InputDecoration(
+        contentPadding: EdgeInsets.all(15),
+
         filled: filled,
         fillColor: fillColor,
         errorMaxLines: 2,

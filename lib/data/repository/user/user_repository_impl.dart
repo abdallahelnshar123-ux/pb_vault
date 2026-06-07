@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
-
 import '../../../domain/entities/response/user/my_user.dart';
 import '../../../domain/failure/failure.dart';
 import '../../../domain/repository/user/user_repository.dart';
@@ -77,6 +76,22 @@ class UserRepositoryImpl extends UserRepository {
     try {
       final MyUserDto? userDto = _userLocalDataSource.getUserFromCache();
       return userDto != null ? Right(Some(userDto.toUser())) : Right(None());
+    } on AppException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnexpectedFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> setMasterPassword({
+    required MyUser user,
+  }) async {
+    try {
+      await _userRemoteDataSource.updateUser(user.toMyUserDto());
+      await _userLocalDataSource.saveUser(user: user.toMyUserDto());
+
+      return Right(unit);
     } on AppException catch (e) {
       return Left(e.toFailure());
     } catch (e) {

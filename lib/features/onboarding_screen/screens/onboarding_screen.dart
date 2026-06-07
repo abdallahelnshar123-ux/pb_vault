@@ -1,17 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:pb_vault/core/utils/app_assets.dart';
 import 'package:pb_vault/core/utils/screen_size.dart';
 import 'package:pb_vault/domain/entities/on_boarding/on_boarding_item.dart';
-import 'package:pb_vault/features/onboarding_screen/view/widget/dots_widget.dart';
+import 'package:pb_vault/widgets/custom_app_bar.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_styles.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../widgets/custom_elevated_button.dart';
-import '../../provider/onboarding_view_model.dart';
+import '../provider/onboarding_view_model.dart';
+import '../widget/dots_widget.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -27,14 +26,7 @@ class OnboardingScreen extends StatelessWidget {
       top: false,
       bottom: true,
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: context.height *0.125,
-          centerTitle: true,
-          title: SvgPicture.asset(
-            AppAssets.appLogo,
-            alignment: Alignment.center,
-          ),
-        ),
+        appBar: CustomAppBar(),
         body: Padding(
           padding: EdgeInsetsGeometry.fromLTRB(
             context.width * 0.04,
@@ -101,32 +93,4 @@ class OnboardingScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Widget builtBottomSheet(BuildContext context) {
-  //
-  //   return BottomSheet(
-  //     backgroundColor: provider.currentIndex == 0
-  //         ? AppColors.primary
-  //         : AppColors.primary,
-  //     showDragHandle: false,
-  //     onClosing: () {},
-  //     builder: (context) {
-  //       return Padding(
-  //         padding: EdgeInsetsGeometry.fromLTRB(
-  //           context.width * 0.04,
-  //           context.height * 0.04,
-  //           context.width * 0.04,
-  //           context.width * 0.02,
-  //         ),
-  //         child: Column(
-  //           spacing: context.width * 0.03,
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 }

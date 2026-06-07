@@ -26,17 +26,9 @@ class FirebaseAuthService {
   }
 
   Future<UserCredential> signInWithGoogle() async {
-    try {
-      final credential = await _getGoogleCredential();
+    final credential = await _getGoogleCredential();
 
-      return await _firebaseAuth.signInWithCredential(credential);
-    } on GoogleSignInException catch (e) {
-      if (e.code == GoogleSignInExceptionCode.canceled) {
-        throw CancelledByUserException();
-      }
-
-      throw UnexpectedException(message: 'UnExpected Error');
-    }
+    return await _firebaseAuth.signInWithCredential(credential);
   }
 
   Future<UserCredential> loginWithEmailAndPassword({
@@ -79,23 +71,15 @@ class FirebaseAuthService {
   }
 
   Future<UserCredential> reAuthenticateWithGoogle() async {
-    try {
-      final user = _firebaseAuth.currentUser;
+    final user = _firebaseAuth.currentUser;
 
-      if (user == null) {
-        throw UnauthorizedException(message: 'User not authenticated');
-      }
-
-      final credential = await _getGoogleCredential();
-
-      return await user.reauthenticateWithCredential(credential);
-    } on GoogleSignInException catch (e) {
-      if (e.code == GoogleSignInExceptionCode.canceled) {
-        throw CancelledByUserException();
-      }
-
-      throw UnexpectedException(message: 'Unexpected Error');
+    if (user == null) {
+      throw UnauthorizedException(message: 'User not authenticated');
     }
+
+    final credential = await _getGoogleCredential();
+
+    return await user.reauthenticateWithCredential(credential);
   }
 
   Future<void> sendPasswordResetEmail({required String email}) async {

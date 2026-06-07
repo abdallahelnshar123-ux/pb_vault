@@ -27,16 +27,12 @@ class OnboardingViewModel extends ChangeNotifier {
       notifyListeners();
     } else {
       _setOnboardingDoneUseCase.setOnboardingDone();
-      Navigator.pushReplacementNamed(context, AppRoutes.loginRouteName);
+      Navigator.pushReplacementNamed(context, AppRoutes.authScreen);
     }
   }
 
   void onSecondButtonClick(BuildContext context) {
-    if (currentIndex > 0 && currentIndex < onboardingPagesNumber - 1) {
-      Navigator.pushReplacementNamed(context, AppRoutes.loginRouteName);
-    } else {
-      Navigator.pushReplacementNamed(context, AppRoutes.registerRouteName);
-    }
+    Navigator.pushReplacementNamed(context, AppRoutes.authScreen);
     _setOnboardingDoneUseCase.setOnboardingDone();
   }
 }

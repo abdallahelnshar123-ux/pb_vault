@@ -24,24 +24,11 @@ class AppStyles {
     fontWeight: FontWeight.w500,
   );
 
-
-
-
-
-
-
-
-
-
-
   static TextStyle interMedium36White = GoogleFonts.inter(
     color: AppColors.white,
     fontSize: 36,
     fontWeight: FontWeight.w500,
   );
-
-
-
 
   static TextStyle interSBold20Primary = GoogleFonts.inter(
     color: AppColors.primary,
@@ -56,19 +43,64 @@ class AppStyles {
 
   /// ===========================  roboto font  ===========================
 
-  static TextStyle robotoRegular16White(BuildContext context) {
+  static TextStyle robotoRegular16Black(BuildContext context) {
     return Theme.of(context).textTheme.bodyMedium!.copyWith(
+      color: AppColors.black,
       fontSize: 16,
       fontWeight: FontWeight.w400,
-      color: AppColors.white,
       fontFamily: GoogleFonts.roboto().fontFamily,
     );
   }
 
-  static TextStyle robotoRegular14Yellow(BuildContext context) {
+  static TextStyle robotoRegular15White(BuildContext context) {
     return Theme.of(context).textTheme.bodyMedium!.copyWith(
+      color: AppColors.white,
+      fontSize: 15,
+      fontWeight: FontWeight.w400,
+      fontFamily: GoogleFonts.roboto().fontFamily,
+    );
+  }
+
+  static TextStyle robotoRegular16Primary(BuildContext context) {
+    return Theme.of(context).textTheme.bodyMedium!.copyWith(
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
       color: AppColors.primary,
+      fontFamily: GoogleFonts.roboto().fontFamily,
+    );
+  }
+
+  static TextStyle robotoRegular16White(BuildContext context) {
+    return Theme.of(context).textTheme.bodyMedium!.copyWith(
+      color: AppColors.white,
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      fontFamily: GoogleFonts.roboto().fontFamily,
+    );
+  }
+
+  static TextStyle robotoRegular14White(BuildContext context) {
+    return Theme.of(context).textTheme.bodyMedium!.copyWith(
+      color: AppColors.white,
       fontSize: 14,
+      fontWeight: FontWeight.w400,
+      fontFamily: GoogleFonts.roboto().fontFamily,
+    );
+  }
+
+  static TextStyle robotoRegular14Green(BuildContext context) {
+    return Theme.of(context).textTheme.bodyMedium!.copyWith(
+      color: AppColors.success,
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      fontFamily: GoogleFonts.roboto().fontFamily,
+    );
+  }
+
+  static TextStyle robotoRegular10White(BuildContext context) {
+    return Theme.of(context).textTheme.bodyMedium!.copyWith(
+      color: AppColors.white,
+      fontSize: 10,
       fontWeight: FontWeight.w400,
       fontFamily: GoogleFonts.roboto().fontFamily,
     );
@@ -92,24 +124,6 @@ class AppStyles {
     );
   }
 
-  static TextStyle robotoRegular14White(BuildContext context) {
-    return Theme.of(context).textTheme.bodyMedium!.copyWith(
-      color: AppColors.white,
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-      fontFamily: GoogleFonts.roboto().fontFamily,
-    );
-  }
-
-  static TextStyle robotoRegular10White(BuildContext context) {
-    return Theme.of(context).textTheme.bodyMedium!.copyWith(
-      color: AppColors.white,
-      fontSize: 10,
-      fontWeight: FontWeight.w400,
-      fontFamily: GoogleFonts.roboto().fontFamily,
-    );
-  }
-
   static TextStyle robotoBlack14Yellow(BuildContext context) {
     return Theme.of(context).textTheme.bodyMedium!.copyWith(
       color: AppColors.primary,
@@ -119,28 +133,10 @@ class AppStyles {
     );
   }
 
-  static TextStyle robotoRegular15Yellow(BuildContext context) {
-    return Theme.of(context).textTheme.bodyMedium!.copyWith(
-      color: AppColors.primary,
-      fontSize: 15,
-      fontWeight: FontWeight.w400,
-      fontFamily: GoogleFonts.roboto().fontFamily,
-    );
-  }
-
   static TextStyle robotoRegular16DarkGray(BuildContext context) {
     return Theme.of(context).textTheme.bodyMedium!.copyWith(
       color: AppColors.black,
       fontSize: 16,
-      fontWeight: FontWeight.w400,
-      fontFamily: GoogleFonts.roboto().fontFamily,
-    );
-  }
-
-  static TextStyle robotoRegular20Black(BuildContext context) {
-    return Theme.of(context).textTheme.bodyMedium!.copyWith(
-      color: AppColors.black,
-      fontSize: 20,
       fontWeight: FontWeight.w400,
       fontFamily: GoogleFonts.roboto().fontFamily,
     );

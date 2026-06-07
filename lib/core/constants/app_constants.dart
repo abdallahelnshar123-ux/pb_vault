@@ -10,7 +10,7 @@ class AppConstants {
       subtitle: "onboarding_description1",
       title: "onboarding_title1",
       firstButton: "next",
-      secondButton: 'skip'
+      secondButton: 'skip',
     ),
 
     OnBoardingItem(
