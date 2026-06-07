@@ -1,0 +1,19 @@
+import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
+
+import '../entities/response/user/my_user.dart';
+import '../failure/failure.dart';
+import '../repository/user/user_repository.dart';
+
+@injectable
+class UpdateAccountDetailsUseCase {
+  final UserRepository _userRepository;
+
+  UpdateAccountDetailsUseCase(this._userRepository);
+
+  Future<Either<Failure, Unit>> updateAccountDetails({
+    required MyUser user,
+  }) async {
+    return await _userRepository.updateUser(user: user);
+  }
+}
