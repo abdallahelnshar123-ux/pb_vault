@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pb_vault/features/add_account/screens/add_account_screen.dart';
 import 'package:pb_vault/features/auth/screens/auth_screen.dart';
 import 'package:pb_vault/features/home_screen/screens/home_screen.dart';
 import 'package:pb_vault/features/master_password_screen/screens/master_password_screen.dart';
@@ -29,7 +30,7 @@ void main() async {
         path: 'assets/translations',
         fallbackLocale: const Locale('en'),
         startLocale: Locale('en'),
-        child: MyApp(),
+        child: const MyApp(),
       ),
     ),
   );
@@ -47,11 +48,13 @@ class MyApp extends StatelessWidget {
         AppRoutes.onboardingRouteName: (context) => ChangeNotifierProvider(
           create: (context) =>
               OnboardingViewModel(getIt<SetOnboardingDoneUseCase>()),
-          child: OnboardingScreen(),
+          child: const OnboardingScreen(),
         ),
-        AppRoutes.authScreen: (context) => AuthScreen(),
-        AppRoutes.homeRouteName: (context) => HomeScreen(),
-        AppRoutes.masterPasswordScreen: (context) => MasterPasswordScreen(),
+        AppRoutes.authScreen: (context) => const AuthScreen(),
+        AppRoutes.homeRouteName: (context) => const HomeScreen(),
+        AppRoutes.masterPasswordScreen: (context) =>
+            const MasterPasswordScreen(),
+        AppRoutes.addAccountScreen: (context) => const AddAccountScreen(),
       },
       themeMode: ThemeMode.dark,
       darkTheme: AppTheme.darkTheme,

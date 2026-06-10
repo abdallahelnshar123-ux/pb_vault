@@ -8,7 +8,8 @@ extension UserMapper on MyUserDto {
       email: email,
       name: name,
       provider: provider,
-      masterPassword: masterPassword,
+      salt: salt,
+      passwordVerifier: passwordVerifier,
     );
   }
 }

@@ -3,23 +3,26 @@ class MyUser {
   final String email;
   final String id;
   final String provider;
-  final String? masterPassword;
+  final List<int>? salt;
+  final String? passwordVerifier;
 
   const MyUser({
     required this.id,
     required this.email,
     required this.name,
     required this.provider,
-    this.masterPassword,
+    this.salt,
+    this.passwordVerifier,
   });
 
-  MyUser copyWith({String? name, String? masterPassword}) {
+  MyUser copyWith({String? name, List<int>? salt, String? passwordVerifier}) {
     return MyUser(
       id: id,
       name: name ?? this.name,
       email: email,
       provider: provider,
-      masterPassword: masterPassword ?? this.masterPassword,
+      salt: salt ?? this.salt,
+      passwordVerifier: passwordVerifier ?? this.passwordVerifier,
     );
   }
 }

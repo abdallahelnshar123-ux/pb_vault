@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
+import 'package:cryptography/cryptography.dart' as _i95;
 import 'package:firebase_auth/firebase_auth.dart' as _i59;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:google_sign_in/google_sign_in.dart' as _i116;
@@ -32,16 +33,20 @@ import '../../data/data_sources/remote/user/impl/user_remote_data_source_impl.da
     as _i22;
 import '../../data/data_sources/remote/user/user_remote_data_source.dart'
     as _i632;
+import '../../data/repository/account/account_repository_impl.dart' as _i381;
 import '../../data/repository/auth/auth_repository_impl.dart' as _i392;
 import '../../data/repository/on_boarding/on_boarding_repository_impl.dart'
     as _i14;
 import '../../data/repository/user/user_repository_impl.dart' as _i1053;
+import '../../domain/repository/account/account_repository.dart' as _i406;
 import '../../domain/repository/auth/auth_repository.dart' as _i912;
 import '../../domain/repository/on_boarding/on_boarding_repository.dart'
     as _i977;
 import '../../domain/repository/user/user_repository.dart' as _i183;
+import '../../domain/use_cases/add_account_use_case.dart' as _i327;
 import '../../domain/use_cases/check_app_startup_use_case.dart' as _i543;
 import '../../domain/use_cases/delete_account_use_case.dart' as _i1008;
+import '../../domain/use_cases/get_accounts_use_case.dart' as _i941;
 import '../../domain/use_cases/login_with_email_and_password_use_case.dart'
     as _i1065;
 import '../../domain/use_cases/logout_use_case.dart' as _i250;
@@ -52,7 +57,9 @@ import '../../domain/use_cases/set_master_password_use_case.dart' as _i756;
 import '../../domain/use_cases/set_onboarding_done_use_case.dart' as _i551;
 import '../../domain/use_cases/sign_in_with_google_use_cases.dart' as _i447;
 import '../../domain/use_cases/update_account_details_use_case.dart' as _i274;
+import '../../features/add_account/cubit/add_account_view_model.dart' as _i57;
 import '../../features/auth/cubit/auth_view_model.dart' as _i260;
+import '../../features/home_screen/cubit/home_view_model.dart' as _i941;
 import '../../features/master_password_screen/cubit/master_password_view_model.dart'
     as _i884;
 import '../../features/onboarding_screen/provider/onboarding_view_model.dart'
@@ -63,6 +70,8 @@ import '../data_bases/cache/shared_prefs_utils.dart' as _i1059;
 import '../services/firebase_services/firebase_auth_service.dart' as _i286;
 import '../services/firebase_services/firebase_module.dart' as _i971;
 import '../services/firebase_services/firestore_service.dart' as _i75;
+import '../services/vault_crypto_service/cryptography_module.dart' as _i128;
+import '../services/vault_crypto_service/vault_crypto_service.dart' as _i515;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -73,6 +82,7 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final localStorageModule = _$LocalStorageModule();
     final firebaseModule = _$FirebaseModule();
+    final cryptographyModule = _$CryptographyModule();
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => localStorageModule.sharedPreferences,
       preResolve: true,
@@ -80,14 +90,41 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i59.FirebaseAuth>(() => firebaseModule.firebaseAuth);
     gh.singleton<_i974.FirebaseFirestore>(() => firebaseModule.firestore);
     gh.singleton<_i116.GoogleSignIn>(() => firebaseModule.googleSignIn);
+    gh.singleton<_i95.Cryptography>(() => cryptographyModule.cryptography);
+    gh.singleton<_i95.Pbkdf2>(() => cryptographyModule.pbkf2);
     gh.lazySingleton<_i75.FirestoreService>(
       () => _i75.FirestoreService(gh<_i974.FirebaseFirestore>()),
+    );
+    gh.factory<_i406.AccountRepository>(
+      () => _i381.AccountRepositoryImpl(gh<_i75.FirestoreService>()),
     );
     gh.factory<_i632.UserRemoteDataSource>(
       () => _i22.UserRemoteDataSourceImpl(gh<_i75.FirestoreService>()),
     );
+    gh.factory<_i327.AddAccountUseCase>(
+      () => _i327.AddAccountUseCase(gh<_i406.AccountRepository>()),
+    );
+    gh.factory<_i941.GetAccountsUseCase>(
+      () => _i941.GetAccountsUseCase(gh<_i406.AccountRepository>()),
+    );
+    gh.lazySingleton<_i515.VaultCryptoService>(
+      () =>
+          _i515.VaultCryptoService(gh<_i95.Cryptography>(), gh<_i95.Pbkdf2>()),
+    );
     gh.lazySingleton<_i1059.SharedPrefsUtils>(
       () => _i1059.SharedPrefsUtils(gh<_i460.SharedPreferences>()),
+    );
+    gh.factory<_i57.AddAccountCubit>(
+      () => _i57.AddAccountCubit(
+        gh<_i327.AddAccountUseCase>(),
+        gh<_i515.VaultCryptoService>(),
+      ),
+    );
+    gh.factory<_i941.HomeCubit>(
+      () => _i941.HomeCubit(
+        gh<_i941.GetAccountsUseCase>(),
+        gh<_i515.VaultCryptoService>(),
+      ),
     );
     gh.lazySingleton<_i286.FirebaseAuthService>(
       () => _i286.FirebaseAuthService(
@@ -151,6 +188,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i274.UpdateAccountDetailsUseCase>(
       () => _i274.UpdateAccountDetailsUseCase(gh<_i183.UserRepository>()),
     );
+    gh.factory<_i884.MasterPasswordCubit>(
+      () => _i884.MasterPasswordCubit(
+        gh<_i756.SetMasterPasswordUseCase>(),
+        gh<_i515.VaultCryptoService>(),
+      ),
+    );
     gh.factory<_i551.SetOnboardingDoneUseCase>(
       () => _i551.SetOnboardingDoneUseCase(gh<_i977.OnBoardingRepository>()),
     );
@@ -159,9 +202,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i977.OnBoardingRepository>(),
         gh<_i183.UserRepository>(),
       ),
-    );
-    gh.factory<_i884.MasterPasswordCubit>(
-      () => _i884.MasterPasswordCubit(gh<_i756.SetMasterPasswordUseCase>()),
     );
     gh.factory<_i926.OnboardingViewModel>(
       () => _i926.OnboardingViewModel(gh<_i551.SetOnboardingDoneUseCase>()),
@@ -185,3 +225,5 @@ extension GetItInjectableX on _i174.GetIt {
 class _$LocalStorageModule extends _i2.LocalStorageModule {}
 
 class _$FirebaseModule extends _i971.FirebaseModule {}
+
+class _$CryptographyModule extends _i128.CryptographyModule {}

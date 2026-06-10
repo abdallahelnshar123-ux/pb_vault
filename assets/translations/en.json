@@ -61,7 +61,6 @@
   "genres": "Genres",
   "sorry_we_were_unable_to_upload_similar_movies": "Sorry, we were unable to upload similar movies.",
   "no_summary_found": "Sorry, no summary found !",
-  "search": "Search",
   "this_field_is_required": "This field is required",
   "email_is_required": "Email is required",
   "invalid_email_format": "Invalid email Format",
@@ -136,5 +135,25 @@
   "invalid_master_password" : "Invalid master password",
   "locked" : "Locked",
   "done" : "Done",
-  "create" : "Create"
+  "create" : "Create",
+  "save_your_password_easily_and_securely" : "Save your password easily and securely",
+  "welcome" : "Welcome, ",
+  "add_new" : "Add new",
+  "new_password" : "New Password",
+  "save_your_new_password_easily" : "Save your new password easily",
+  "saved_passwords" : "Saved Passwords",
+  "no_accounts_found" : "No accounts yet",
+  "account_added_successfully" : "Account Added successfully",
+  "notes" : "notes",
+  "add_new_account" : "Add new account",
+  "choose_platform" : "Choose platform",
+  "generate_strong_password" : "Generate strong password",
+  "add": "Add",
+  "password_copied_to_clipboard" : "Password copied to clipboard",
+  "link_copied_to_clipboard" : "Link copied to clipboard",
+  "please_select_platform" : "Please select platform",
+  "search" : "Search"
+
+
+
 }

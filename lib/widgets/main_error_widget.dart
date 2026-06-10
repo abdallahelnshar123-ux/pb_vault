@@ -41,7 +41,7 @@ class MainErrorWidget extends StatelessWidget {
             onPressed: onPressed,
             child: Text(
               'try again',
-              style: AppStyles.robotoRegular16Black(context),
+              style: AppStyles.robotoBold16SurfaceDark(context),
             ),
           ),
         ],
