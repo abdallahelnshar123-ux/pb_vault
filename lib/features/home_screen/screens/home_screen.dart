@@ -96,13 +96,16 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+      actionsPadding: EdgeInsets.only(left: context.width*0.04),
       actions: [
         IconButton(
           padding: EdgeInsets.only(right: 15),
           style: IconButton.styleFrom(
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, AppRoutes.profileScreen);
+          },
           icon: Icon(
             Icons.account_circle_outlined,
             size: context.width * 0.1,

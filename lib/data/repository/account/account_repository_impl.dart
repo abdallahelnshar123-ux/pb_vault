@@ -30,13 +30,15 @@ class AccountRepositoryImpl implements AccountRepository {
   Stream<Either<Failure, List<Account>>> getAccounts(String userId) {
     return _firestoreService
         .getAccountsStream(uId: userId)
-        .map((accountDto) {
+        .map<Either<Failure, List<Account>>>((accountDto) {
       try {
         final accounts = accountDto.map((dto) => dto.toAccount()).toList();
         return Right(accounts);
       } catch (e) {
         return Left(ServerFailure(e.toString()));
       }
+    }).handleError((error) {
+      return Left(ServerFailure(error.toString()));
     });
   }
 }

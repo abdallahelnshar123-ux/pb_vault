@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pb_vault/features/add_account/screens/add_account_screen.dart';
 import 'package:pb_vault/features/auth/screens/auth_screen.dart';
+import 'package:pb_vault/features/edit_profile/screens/edit_profile_screen.dart';
 import 'package:pb_vault/features/home_screen/screens/home_screen.dart';
 import 'package:pb_vault/features/master_password_screen/screens/master_password_screen.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,7 @@ import 'domain/use_cases/set_onboarding_done_use_case.dart';
 import 'features/auth/cubit/auth_view_model.dart';
 import 'features/onboarding_screen/provider/onboarding_view_model.dart';
 import 'features/onboarding_screen/screens/onboarding_screen.dart';
+import 'features/profile_screen/screens/profile_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -55,6 +57,8 @@ class MyApp extends StatelessWidget {
         AppRoutes.masterPasswordScreen: (context) =>
             const MasterPasswordScreen(),
         AppRoutes.addAccountScreen: (context) => const AddAccountScreen(),
+        AppRoutes.profileScreen: (context) => const ProfileScreen(),
+        AppRoutes.editProfileScreen: (context) => const EditProfileScreen(),
       },
       themeMode: ThemeMode.dark,
       darkTheme: AppTheme.darkTheme,

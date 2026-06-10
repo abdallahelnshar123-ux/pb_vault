@@ -152,7 +152,19 @@
   "password_copied_to_clipboard" : "Password copied to clipboard",
   "link_copied_to_clipboard" : "Link copied to clipboard",
   "please_select_platform" : "Please select platform",
-  "search" : "Search"
+  "search" : "Search",
+  "language" : "Language",
+  "profile" : "Profile",
+  "dark_mode" : "Dark Mode",
+  "settings" : "Settings",
+  "english" : "English",
+  "arabic" : "Arabic",
+  "The supplied auth credential is incorrect, malformed or has expired." : "The password is incorrect",
+  "no" : "No",
+  "account_deleted_successfully" : "Account Deleted Successfully"
+
+
+
 
 
 

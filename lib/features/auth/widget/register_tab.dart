@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pb_vault/widgets/conf_password_text_field_widget.dart';
+import 'package:pb_vault/widgets/email_text_field_widget.dart';
 import 'package:pb_vault/widgets/password_text_field_widget.dart';
 
 import '../../../../core/utils/app_routes.dart';
@@ -105,8 +106,20 @@ class _RegisterTabState extends State<RegisterTab> {
                 spacing: context.height * 0.015,
                 children: [
                   _builtNameTextField(),
-                  _builtEmailTextField(),
+                  EmailTextFieldWidget(
+                    fillColor: AppColors.white,
+                    controller: emailController,
+                  ),
                   PasswordTextFieldWidget(
+                    onChanged: (value) {
+                      isPassword8Char.value = value.length >= 8;
+                      passwordContains1number.value = value.contains(
+                        RegExp(r'[0-9]'),
+                      );
+                      isPasswordUpperAndLower.value =
+                          value.contains(RegExp(r'[a-z]')) &&
+                          value.contains(RegExp(r'[A-Z]'));
+                    },
                     fillColor: AppColors.white,
                     controller: passwordController,
                   ),
@@ -145,25 +158,6 @@ class _RegisterTabState extends State<RegisterTab> {
       fillColor: AppColors.white,
     );
   }
-
-  Widget _builtEmailTextField() {
-    return CustomTextFormField(
-      style: AppStyles.robotoBold16SurfaceDark(context),
-      keyboardType: TextInputType.emailAddress,
-      validator: (value) => Validators.email(value),
-      controller: emailController,
-      prefixIcon: SvgPicture.asset(
-        "assets/icons/email-icon.svg",
-        fit: BoxFit.none,
-        colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-      ),
-      hintText: "email".tr(),
-      hintStyle: AppStyles.robotoBold16SurfaceDark(context),
-      filled: true,
-      fillColor: AppColors.white,
-    );
-  }
-
 
   Widget _builtPassCheckerItem({
     required ValueNotifier<bool> notifier,

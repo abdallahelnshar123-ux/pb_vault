@@ -141,7 +141,7 @@
   "save_your_password_easily_and_securely": "إحفظ كلمة مرورك بسهولة وامان",
   "welcome": "مرحبا, ",
   "add_new": "إضافة جديد",
-  "new_password": "كبمة سر جديدة",
+  "new_password": "كلمة سر جديدة",
   "save_your_new_password_easily": "أحفظ كلمة السر الجديدة بسهولة",
   "saved_passwords": "كلمات السر المحفوظة",
   "no_accounts_found": "لا يوجد حسابات بعد",
@@ -149,14 +149,21 @@
   "notes": "ملاحظات",
   "add_new_account": "إضافة حساب جديد",
   "choose_platform": "إختر المنصة",
-  "generate_strong_password" : "قم بتوليد كلمة سر قوية",
+  "generate_strong_password": "قم بتوليد كلمة سر قوية",
   "add": "إضافة",
-  "password_copied_to_clipboard" : "تم نسخ كلمة السر الي الحافظة",
-  "link_copied_to_clipboard" : "تم نسخ الرابط الي الحافظة",
-  "please_select_platform" : "من فضلك اختار المنصة",
-  "search" : "إبحث"
-
-
+  "password_copied_to_clipboard": "تم نسخ كلمة السر الي الحافظة",
+  "link_copied_to_clipboard": "تم نسخ الرابط الي الحافظة",
+  "please_select_platform": "من فضلك اختار المنصة",
+  "search": "إبحث",
+  "language": "اللغة",
+  "profile": "البروفايل",
+  "dark_mode": "الوضع الليلي",
+  "settings": "الأعدادات",
+  "english": "الانجليزية",
+  "arabic": "العربية",
+  "The supplied auth credential is incorrect, malformed or has expired.": "كلمة السر غير صحيحة",
+  "no" : "لا",
+  "account_deleted_successfully" : "تم حذف الحساب بنجاح"
 
 
 }

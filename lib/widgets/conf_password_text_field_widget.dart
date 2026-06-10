@@ -46,14 +46,14 @@ class _ConfPasswordTextFieldWidgetState
         controller: widget.confController,
         prefixIcon: SvgPicture.asset(
           "assets/icons/password_icon.svg",
-          fit: BoxFit.none,
+          fit: BoxFit.scaleDown,
           colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
         ),
         hintText: "confirm_password".tr(),
         hintStyle: AppStyles.robotoBold14gray(context),
         filled: true,
         obscureText: value,
-        fillColor: AppColors.white,
+        fillColor: widget.fillColor,
         suffixIcon: IconButton(
           isSelected: !value,
           selectedIcon: Icon(Icons.visibility_rounded, color: AppColors.black),
