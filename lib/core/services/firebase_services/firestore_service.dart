@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../data/model/response/account/account_dto.dart';
 import '../../../data/model/response/my_user_dto.dart';
 import '../../constants/app_constants.dart';
 
@@ -38,44 +39,36 @@ class FirestoreService {
     await getUsersCollection().doc(uId).delete();
   }
 
-  /// ===============================   watchlist   =============================
-  // CollectionReference<MovieDto> getWatchListCollection(String uId) {
-  //   return getUsersCollection()
-  //       .doc(uId)
-  //       .collection(AppConstants.watchListCollectionName)
-  //       .withConverter<MovieDto>(
-  //         fromFirestore: (snapshot, options) =>
-  //             MovieDto.fromJson(snapshot.data()),
-  //         toFirestore: (movieDto, options) => movieDto.toJson(),
-  //       );
-  // }
-  //
-  // Future<void> addMovieToWatchList({
-  //   required MovieDto movie,
-  //   required String uId,
-  // }) {
-  //   return getWatchListCollection(uId).doc(movie.id.toString()).set(movie);
-  // }
-  //
-  // Future<void> deleteMovieFromWatchList({
-  //   required MovieDto movie,
-  //   required String uId,
-  // }) {
-  //   return getWatchListCollection(uId).doc(movie.id.toString()).delete();
-  // }
-  //
-  // Stream<DocumentSnapshot<MovieDto>> watchMovieInWatchList({
-  //   required String uId,
-  //   required MovieDto movie,
-  // }) {
-  //   return getWatchListCollection(uId).doc(movie.id.toString()).snapshots();
-  // }
-  //
-  // Stream<List<MovieDto>> getWatchListMovies({required String uId}) {
-  //   return getWatchListCollection(uId).snapshots().map(
-  //     (snapshot) => snapshot.docs.map((doc) => doc.data()).toList(),
-  //   );
-  // }
+  /// ===============================   Accounts   =============================
+  CollectionReference<AccountDto> getAccountsCollection(String uId) {
+    return getUsersCollection()
+        .doc(uId)
+        .collection(AppConstants.accountsCollectionName)
+        .withConverter<AccountDto>(
+          fromFirestore: (snapshot, options) =>
+              AccountDto.fromFireStore(snapshot.data()!),
+          toFirestore: (accountDto, options) => accountDto.toFireStore(),
+        );
+  }
+
+  Future<void> addAccount({
+    required AccountDto account,
+    required String uId,
+  }) {
+    var collection = getAccountsCollection(uId);
+    var document = collection.doc();
+    account.id = document.id;
+    return document.set(account);
+  }
+
+  Stream<List<AccountDto>> getAccountsStream({required String uId}) {
+    return getAccountsCollection(uId)
+        .orderBy('created_at', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs.map((doc) => doc.data()).toList(),
+        );
+  }
 
   /// ========================== history ====================================
 

@@ -18,7 +18,8 @@ class AppColors {
   // Brand / Primary Accents
   // ----------------------
   static const Color primary = Color(0xff697CE7);
-  static const Color secondary = Color(0xffBF5AF2);
+  static const Color secondary = Color(0xffdcdbff);
+  static const Color accent = Color(0xffBF5AF2);
   static const Color tertiaryAccent = Color(0xffEB56F6);
 
   // ----------------------
@@ -31,4 +32,5 @@ class AppColors {
   // Optional: Surface / Dark UI element
   // ----------------------
   static const Color surfaceDark = Color(0xff161C32);
+  static const Color gray = Color(0x84202020);
 }

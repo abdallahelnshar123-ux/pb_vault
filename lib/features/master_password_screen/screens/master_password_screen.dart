@@ -38,8 +38,8 @@ class _MasterPasswordScreenState extends State<MasterPasswordScreen> {
   Widget build(BuildContext context) {
     final authCubit = context.read<AuthCubit>();
     final isSetupMode =
-        authCubit.currentUser?.masterPassword == null ||
-        authCubit.currentUser!.masterPassword!.isEmpty;
+        authCubit.currentUser?.passwordVerifier == null ||
+        authCubit.currentUser!.passwordVerifier!.isEmpty;
 
     return BlocProvider(
       create: (context) => getIt<MasterPasswordCubit>(),

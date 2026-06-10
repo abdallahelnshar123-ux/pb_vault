@@ -66,6 +66,7 @@ class OnboardingScreen extends StatelessWidget {
               ),
 
               CustomElevatedButton(
+                buttonWidth: double.infinity,
                 onPressed: () {
                   provider.onFirstButtonClick(context);
                 },
@@ -77,6 +78,7 @@ class OnboardingScreen extends StatelessWidget {
               ),
 
               CustomElevatedButton(
+                buttonWidth: double.infinity,
                 onPressed: () {
                   provider.onSecondButtonClick(context);
                 },

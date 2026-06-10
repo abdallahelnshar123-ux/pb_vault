@@ -1,16 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:pb_vault/widgets/email_text_field_widget.dart';
+import 'package:pb_vault/widgets/password_text_field_widget.dart';
 
 import '../../../../core/utils/app_routes.dart';
 import '../../../../core/utils/dialog_utils.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
-import '../../../core/utils/validators.dart';
 import '../../../widgets/custom_elevated_button.dart';
-import '../../../widgets/custom_text_form_field.dart';
 import '../cubit/auth_state.dart';
 import '../cubit/auth_view_model.dart';
 import 'continue_with_google_button.dart';
@@ -27,13 +26,13 @@ class _LoginTanState extends State<LoginTan> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  final ValueNotifier<bool> isObscure = ValueNotifier(true);
+  // final ValueNotifier<bool> isObscure = ValueNotifier(true);
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    isObscure.dispose();
+    // isObscure.dispose();
     super.dispose();
   }
 
@@ -106,8 +105,14 @@ class _LoginTanState extends State<LoginTan> {
                     },
                   ),
                   _builtDivider(),
-                  _builtEmailTextField(),
-                  _builtPasswordTextField(),
+                  EmailTextFieldWidget(
+                    controller: emailController,
+                    fillColor: AppColors.white,
+                  ),
+                  PasswordTextFieldWidget(
+                    fillColor: AppColors.white,
+                    controller: passwordController,
+                  ),
                   _builtForgetPassword(),
                   _builtLoginButton(),
                 ],
@@ -148,53 +153,53 @@ class _LoginTanState extends State<LoginTan> {
     );
   }
 
-  Widget _builtEmailTextField() {
-    return CustomTextFormField(
-      style: AppStyles.robotoRegular16Black(context),
-      keyboardType: TextInputType.emailAddress,
-      validator: (value) => Validators.email(value),
-      controller: emailController,
-      prefixIcon: SvgPicture.asset(
-        "assets/icons/email-icon.svg",
-        fit: BoxFit.none,
-        colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-      ),
-      hintText: "email".tr(),
-      hintStyle: AppStyles.robotoRegular16Black(context),
-      filled: true,
-      fillColor: AppColors.white,
-    );
-  }
+  // Widget _builtEmailTextField() {
+  //   return CustomTextFormField(
+  //     style: AppStyles.robotoBold16SurfaceDark(context),
+  //     keyboardType: TextInputType.emailAddress,
+  //     validator: (value) => Validators.email(value),
+  //     controller: emailController,
+  //     prefixIcon: SvgPicture.asset(
+  //       "assets/icons/email-icon.svg",
+  //       fit: BoxFit.none,
+  //       colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
+  //     ),
+  //     hintText: "email".tr(),
+  //     hintStyle: AppStyles.robotoBold16SurfaceDark(context),
+  //     filled: true,
+  //     fillColor: AppColors.white,
+  //   );
+  // }
 
-  Widget _builtPasswordTextField() {
-    return ValueListenableBuilder<bool>(
-      valueListenable: isObscure,
-      builder: (context, value, child) => CustomTextFormField(
-        style: AppStyles.robotoRegular16Black(context),
-        keyboardType: TextInputType.visiblePassword,
-        validator: (value) => Validators.password(value),
-        controller: passwordController,
-        prefixIcon: SvgPicture.asset(
-          "assets/icons/password_icon.svg",
-          fit: BoxFit.none,
-          colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-        ),
-        hintText: "password".tr(),
-        hintStyle: AppStyles.robotoRegular16Black(context),
-        filled: true,
-        obscureText: value,
-        fillColor: AppColors.white,
-        suffixIcon: IconButton(
-          isSelected: !value,
-          selectedIcon: Icon(Icons.visibility_rounded, color: AppColors.black),
-          onPressed: () {
-            isObscure.value = !isObscure.value;
-          },
-          icon: Icon(Icons.visibility_off_rounded, color: AppColors.black),
-        ),
-      ),
-    );
-  }
+  // Widget _builtPasswordTextField() {
+  //   return ValueListenableBuilder<bool>(
+  //     valueListenable: isObscure,
+  //     builder: (context, value, child) => CustomTextFormField(
+  //       style: AppStyles.robotoBold16SurfaceDark(context),
+  //       keyboardType: TextInputType.visiblePassword,
+  //       validator: (value) => Validators.password(value),
+  //       controller: passwordController,
+  //       prefixIcon: SvgPicture.asset(
+  //         "assets/icons/password_icon.svg",
+  //         fit: BoxFit.none,
+  //         colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
+  //       ),
+  //       hintText: "password".tr(),
+  //       hintStyle: AppStyles.robotoBold16SurfaceDark(context),
+  //       filled: true,
+  //       obscureText: value,
+  //       fillColor: AppColors.white,
+  //       suffixIcon: IconButton(
+  //         isSelected: !value,
+  //         selectedIcon: Icon(Icons.visibility_rounded, color: AppColors.black),
+  //         onPressed: () {
+  //           isObscure.value = !isObscure.value;
+  //         },
+  //         icon: Icon(Icons.visibility_off_rounded, color: AppColors.black),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _builtForgetPassword() {
     return Row(

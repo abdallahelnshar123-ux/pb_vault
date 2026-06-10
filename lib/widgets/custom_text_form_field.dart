@@ -73,21 +73,22 @@ class CustomTextFormField extends StatelessWidget {
         errorMaxLines: 2,
         errorStyle: errorStyle,
         enabledBorder: builtDecorationBorder(
-          borderColor: borderSideColor ?? AppColors.primary,
+          borderColor: borderSideColor ?? AppColors.transparent,
         ),
         focusedBorder: builtDecorationBorder(
           borderColor: borderSideColor ?? AppColors.primary,
         ),
-        errorBorder: builtDecorationBorder(borderColor: AppColors.primary),
-        focusedErrorBorder: builtDecorationBorder(
-          borderColor: AppColors.primary,
-        ),
+        errorBorder: builtDecorationBorder(borderColor: AppColors.error),
+        focusedErrorBorder: builtDecorationBorder(borderColor: AppColors.error),
         hintText: hintText,
         hintStyle: hintStyle,
         labelText: labelText,
         labelStyle: labelStyle,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
+        prefixIconConstraints: BoxConstraints.tight(
+          Size(context.width * 0.1, context.width * 0.06),
+        ),
       ),
     );
   }

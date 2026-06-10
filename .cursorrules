@@ -5,52 +5,60 @@ This file serves as the definitive guide for any AI assistant working on the PB 
 ## 🏛 Architecture Overview
 The project follows **Clean Architecture** principles with a **Feature-based** UI structure.
 
-- **lib/core/**: Cross-cutting concerns (Theme, Utils, Constants, Routes).
-- **lib/domain/**: Business logic (Entities, UseCases, Repository Interfaces). **NO Dependencies on Flutter/Data layers.**
-- **lib/data/**: Implementation detail (Models, Mappers, Repository Implementations, Data Sources).
-- **lib/features/**: UI Layer. Organized by feature (e.g., `auth`, `onboarding`). Each feature contains:
-    - `view/` or `screens/`: UI widgets.
-    - `provider/` or `cubit/`: State management logic.
+- **lib/core/**: Cross-cutting concerns (Theme, Utils, Constants, Routes, Services).
+- **lib/domain/**: Business logic.
+    - `entities/response/`: Domain entities (e.g., `MyUser`, `Account`). **NO Dependencies on Flutter/Data layers.**
+    - `repository/`: Abstract repository interfaces.
+    - `use_cases/`: Single-responsibility business logic classes.
+- **lib/data/**: Implementation details.
+    - `model/response/`: Data models suffix with `Dto` (e.g., `MyUserDto`, `AccountDto`).
+    - `mapper/`: Extension-based mappers.
+        - `_mapper.dart`: Dto to Entity (e.g., `toUser()`).
+        - `_dto_mapper.dart`: Entity to Dto (e.g., `toMyUserDto()`).
+    - `repository/`: Concrete repository implementations using Services/DataSources.
+- **lib/features/**: UI Layer. Organized by feature (e.g., `auth`, `add_account`, `home_screen`, `master_password_screen`). Each feature contains:
+    - `screens/`: UI pages.
+    - `widgets/`: Feature-specific widgets.
+    - `cubit/`: State management logic (`_state.dart` and `_view_model.dart`).
 
 ## 🛠 Tech Stack & Libraries
-- **State Management**: Mixed usage.
-    - `Provider` (used in `onboarding_screen`).
-    - `Bloc/Cubit` (used in `auth`).
+- **State Management**: `Bloc/Cubit` (Preferred).
+    - Always use separate files for `State` and `ViewModel`.
+    - Features like `home_screen` and `add_account` should have distinct Cubits.
 - **Dependency Injection**: `injectable` & `get_it`.
-    - Annotate classes with `@injectable`, `@lazySingleton`, etc.
-    - Always run `flutter pub run build_runner build` after changes.
+    - Annotate with `@injectable`, `@lazySingleton`.
+    - Always run `flutter pub run build_runner build --delete-conflicting-outputs` after DI changes.
 - **Localization**: `easy_localization`. Use `.tr()` on strings.
-- **Routing**: Named routing defined in `lib/core/utils/app_routes.dart`.
-- **Icons/Images**: `flutter_svg` for SVGs.
+- **Data Persistence**: `FirebaseFirestore` (via `FirestoreService`) and `SharedPreferences` (via `LocalStorage`).
+- **Icons/Images**: `flutter_svg` for local SVGs, `Image.network` for platform icons.
 
 ## 🎨 Coding Standards & UI Rules
-- **Colors**: Always use `AppColors` from `lib/core/utils/app_colors.dart`.
-- **Styles**: Always use `AppStyles` from `lib/core/utils/app_styles.dart`.
-- **Spacing**: Use the `spacing` property in `Column`/`Row` (Flutter 3.x) or `SizedBox`.
-- **Responsiveness**: Use `context.width` or `context.height` extensions from `lib/core/utils/screen_size.dart`.
-- **Widgets**: Prefer creating small, reusable widgets in the feature's `widgets/` folder or `lib/widgets/` for global ones.
+- **Design System**: Use `AppColors`, `AppStyles`, and `AppAssets`.
+- **Responsive UI**: Use `context.width`, `context.height` from `screen_size.dart`.
+- **Spacing**: Use `spacing` property in `Column`/`Row` or `SizedBox`.
+- **Forms**: Use `CustomTextFormField` and `GlobalKey<FormState>` for validation.
+- **Feedback**: Use `DialogUtils` for loading/errors and `ScaffoldMessenger` for success snackbars.
 
-## 📝 Naming Conventions
+## 📝 Naming & Mapping Rules
 - **Files**: `snake_case.dart`.
-- **Classes**: `PascalCase`.
-- **Variables/Functions**: `camelCase`.
-- **View Models**: Suffix with `ViewModel` (if using Provider) or `Cubit`/`Bloc`.
-- **Entities**: Domain entities should be clean (e.g., `User`). Data models should suffix with `Model` (e.g., `UserModel`).
+- **Mappers**: ALWAYS create two-way mappers in `lib/data/mapper/`.
+    - Correct: `account_mapper.dart` (Dto -> Entity) AND `account_dto_mapper.dart` (Entity -> Dto).
+- **Entities**: Place in `lib/domain/entities/response/`.
+- **Dtos**: Place in `lib/data/model/response/`.
 
 ## 🚀 Workflows
 1. **Adding a Feature**:
-    - Create folder in `lib/features/`.
-    - Define Domain Entities/UseCases first.
-    - Implement Data layer (Repository/Models).
-    - Build UI and State Management.
-2. **Assets**: Add new images to `assets/images/` and register them in `pubspec.yaml` and `lib/core/utils/app_assets.dart`.
-3. **DI**: If adding a new injectable class, ensure it's registered in the DI container by running build_runner.
+    - Define Domain Entity -> UseCase -> Repository Interface.
+    - Create Data Model (Dto) -> Mappers (Two-way) -> Repository Impl.
+    - Build UI (Screens/Widgets) -> Cubit (ViewModel/State).
+2. **Encryption**: All passwords (Master or Account) must be encrypted (SHA-256) in the Cubit before sending to the Repository.
+3. **Firestore**: Nest user data under `users/{uId}/accounts/`. Use `FirestoreService` for all DB calls.
 
 ## ⚠️ Critical Constraints
-- **Do NOT** hardcode strings; use `translations` assets and `.tr()`.
-- **Do NOT** hardcode colors; use `AppColors`.
+- **Do NOT** bypass Mappers; Repositories must return Entities, not Dtos.
+- **Do NOT** hardcode colors/styles; use the core utils.
 - **Do NOT** put business logic in UI files.
-- **Avoid** using `sed` or direct shell edits on files; use the provided file editing tools.
+- **Do NOT** forget to update `AppRoutes` and `main.dart` when adding new screens.
 
 ---
 *End of Instructions*

@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pb_vault/widgets/conf_password_text_field_widget.dart';
+import 'package:pb_vault/widgets/password_text_field_widget.dart';
 
 import '../../../../core/utils/app_routes.dart';
 import '../../../../core/utils/dialog_utils.dart';
@@ -32,9 +34,6 @@ class _RegisterTabState extends State<RegisterTab> {
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  final ValueNotifier<bool> passIsObscure = ValueNotifier(true);
-
-  final ValueNotifier<bool> confPassIsObscure = ValueNotifier(true);
   final ValueNotifier<bool> isPassword8Char = ValueNotifier(false);
   final ValueNotifier<bool> passwordContains1number = ValueNotifier(false);
   final ValueNotifier<bool> isPasswordUpperAndLower = ValueNotifier(false);
@@ -48,8 +47,6 @@ class _RegisterTabState extends State<RegisterTab> {
     emailController.dispose();
     passwordController.dispose();
     confPasswordController.dispose();
-    passIsObscure.dispose();
-    confPassIsObscure.dispose();
     checkBoxError.dispose();
     checkBoxValue.dispose();
     isPassword8Char.dispose();
@@ -109,8 +106,15 @@ class _RegisterTabState extends State<RegisterTab> {
                 children: [
                   _builtNameTextField(),
                   _builtEmailTextField(),
-                  _builtPasswordTextField(),
-                  _builtConfPasswordTextField(),
+                  PasswordTextFieldWidget(
+                    fillColor: AppColors.white,
+                    controller: passwordController,
+                  ),
+                  ConfPasswordTextFieldWidget(
+                    fillColor: AppColors.white,
+                    confController: confPasswordController,
+                    passwordController: passwordController,
+                  ),
                   _builtPasswordChecker(),
                   SizedBox(height: context.height * 0.04),
                   _builtCheckBox(),
@@ -126,7 +130,7 @@ class _RegisterTabState extends State<RegisterTab> {
 
   Widget _builtNameTextField() {
     return CustomTextFormField(
-      style: AppStyles.robotoRegular16Black(context),
+      style: AppStyles.robotoBold16SurfaceDark(context),
       keyboardType: TextInputType.name,
       validator: (value) => Validators.required(value),
       controller: nameController,
@@ -136,7 +140,7 @@ class _RegisterTabState extends State<RegisterTab> {
         colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
       ),
       hintText: "name".tr(),
-      hintStyle: AppStyles.robotoRegular16Black(context),
+      hintStyle: AppStyles.robotoBold16SurfaceDark(context),
       filled: true,
       fillColor: AppColors.white,
     );
@@ -144,7 +148,7 @@ class _RegisterTabState extends State<RegisterTab> {
 
   Widget _builtEmailTextField() {
     return CustomTextFormField(
-      style: AppStyles.robotoRegular16Black(context),
+      style: AppStyles.robotoBold16SurfaceDark(context),
       keyboardType: TextInputType.emailAddress,
       validator: (value) => Validators.email(value),
       controller: emailController,
@@ -154,90 +158,12 @@ class _RegisterTabState extends State<RegisterTab> {
         colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
       ),
       hintText: "email".tr(),
-      hintStyle: AppStyles.robotoRegular16Black(context),
+      hintStyle: AppStyles.robotoBold16SurfaceDark(context),
       filled: true,
       fillColor: AppColors.white,
     );
   }
 
-  Widget _builtPasswordTextField() {
-    return ValueListenableBuilder<bool>(
-      valueListenable: passIsObscure,
-      builder: (context, value, child) => CustomTextFormField(
-        onChanged: (value) {
-          if (value.length >= 8) {
-            isPassword8Char.value = true;
-          } else {
-            isPassword8Char.value = false;
-          }
-          if (RegExp(r'\d').hasMatch(value)) {
-            passwordContains1number.value = true;
-          } else {
-            passwordContains1number.value = false;
-          }
-          if (RegExp(r'[A-Z]').hasMatch(value) &&
-              RegExp(r'[a-z]').hasMatch(value)) {
-            isPasswordUpperAndLower.value = true;
-          } else {
-            isPasswordUpperAndLower.value = false;
-          }
-        },
-        style: AppStyles.robotoRegular16Black(context),
-        keyboardType: TextInputType.visiblePassword,
-        validator: (value) => Validators.password(value),
-        controller: passwordController,
-        prefixIcon: SvgPicture.asset(
-          "assets/icons/password_icon.svg",
-          fit: BoxFit.none,
-          colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-        ),
-        hintText: "password".tr(),
-        hintStyle: AppStyles.robotoRegular16Black(context),
-        filled: true,
-        obscureText: value,
-        fillColor: AppColors.white,
-        suffixIcon: IconButton(
-          isSelected: !value,
-          selectedIcon: Icon(Icons.visibility_rounded, color: AppColors.black),
-          onPressed: () {
-            passIsObscure.value = !passIsObscure.value;
-          },
-          icon: Icon(Icons.visibility_off_rounded, color: AppColors.black),
-        ),
-      ),
-    );
-  }
-
-  Widget _builtConfPasswordTextField() {
-    return ValueListenableBuilder<bool>(
-      valueListenable: confPassIsObscure,
-      builder: (context, value, child) => CustomTextFormField(
-        style: AppStyles.robotoRegular16Black(context),
-        keyboardType: TextInputType.visiblePassword,
-        validator: (value) =>
-            Validators.confirmPassword(value, passwordController.text),
-        controller: confPasswordController,
-        prefixIcon: SvgPicture.asset(
-          "assets/icons/password_icon.svg",
-          fit: BoxFit.none,
-          colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-        ),
-        hintText: "confirm_password".tr(),
-        hintStyle: AppStyles.robotoRegular16Black(context),
-        filled: true,
-        obscureText: value,
-        fillColor: AppColors.white,
-        suffixIcon: IconButton(
-          isSelected: !value,
-          selectedIcon: Icon(Icons.visibility_rounded, color: AppColors.black),
-          onPressed: () {
-            confPassIsObscure.value = !confPassIsObscure.value;
-          },
-          icon: Icon(Icons.visibility_off_rounded, color: AppColors.black),
-        ),
-      ),
-    );
-  }
 
   Widget _builtPassCheckerItem({
     required ValueNotifier<bool> notifier,

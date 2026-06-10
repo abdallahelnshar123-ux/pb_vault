@@ -28,7 +28,7 @@ class ContinueWithGoogleButton extends StatelessWidget {
           ),
           Text(
             "continue_with_google".tr(),
-            style: AppStyles.robotoRegular16Black(context),
+            style: AppStyles.robotoBold16SurfaceDark(context),
           ),
         ],
       ),

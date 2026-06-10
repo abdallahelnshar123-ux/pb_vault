@@ -4,15 +4,17 @@ import 'package:flutter_svg/svg.dart';
 import '../core/utils/app_assets.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key});
+  final bool? centerTitle;
+  const CustomAppBar({super.key , this.centerTitle});
 
   static const double _toolbarHeight = 110;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      titleSpacing: 0,
       toolbarHeight: _toolbarHeight,
-      centerTitle: true,
+      centerTitle: centerTitle ?? true,
       title: SvgPicture.asset(AppAssets.appLogo, alignment: Alignment.center),
     );
   }

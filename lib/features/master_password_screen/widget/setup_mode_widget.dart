@@ -58,7 +58,7 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
               _builtPasswordTextField(),
               _builtConfPasswordTextField(),
               SizedBox(height: context.height * 0.008),
-              _builtUnlockButton(),
+              _builtSetButton(),
             ],
           ),
         ),
@@ -103,7 +103,7 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
     return ValueListenableBuilder<bool>(
       valueListenable: passIsObscure,
       builder: (context, value, child) => CustomTextFormField(
-        style: AppStyles.robotoRegular16Black(context),
+        style: AppStyles.robotoBold16SurfaceDark(context),
         keyboardType: TextInputType.visiblePassword,
         validator: (value) => Validators.password(value),
         controller: passwordController,
@@ -113,7 +113,7 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
           colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
         ),
         hintText: "password".tr(),
-        hintStyle: AppStyles.robotoRegular16Black(context),
+        hintStyle: AppStyles.robotoBold16SurfaceDark(context),
         filled: true,
         obscureText: value,
         fillColor: AppColors.white,
@@ -133,7 +133,7 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
     return ValueListenableBuilder<bool>(
       valueListenable: confPassIsObscure,
       builder: (context, value, child) => CustomTextFormField(
-        style: AppStyles.robotoRegular16Black(context),
+        style: AppStyles.robotoBold16SurfaceDark(context),
         keyboardType: TextInputType.visiblePassword,
         validator: (value) =>
             Validators.confirmPassword(value, passwordController.text),
@@ -144,7 +144,7 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
           colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
         ),
         hintText: "confirm_password".tr(),
-        hintStyle: AppStyles.robotoRegular16Black(context),
+        hintStyle: AppStyles.robotoBold16SurfaceDark(context),
         filled: true,
         obscureText: value,
         fillColor: AppColors.white,
@@ -160,7 +160,7 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
     );
   }
 
-  Widget _builtUnlockButton() {
+  Widget _builtSetButton() {
     final masterCubit = context.read<MasterPasswordCubit>();
     final authCubit = context.read<AuthCubit>();
     return BlocBuilder<MasterPasswordCubit, MasterPasswordState>(

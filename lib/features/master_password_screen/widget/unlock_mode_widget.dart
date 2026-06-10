@@ -1,17 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:pb_vault/features/auth/cubit/auth_view_model.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_state.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
+import 'package:pb_vault/widgets/password_text_field_widget.dart';
 
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
-import '../../../core/utils/validators.dart';
 import '../../../widgets/custom_elevated_button.dart';
-import '../../../widgets/custom_text_form_field.dart';
 
 class UnlockModeWidget extends StatefulWidget {
   const UnlockModeWidget({super.key});
@@ -22,13 +20,13 @@ class UnlockModeWidget extends StatefulWidget {
 
 class _UnlockModeWidgetState extends State<UnlockModeWidget> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final TextEditingController passwordController = TextEditingController();
-  final ValueNotifier<bool> isObscure = ValueNotifier(true);
+  final TextEditingController passwordController = TextEditingController(
+    text: 'abcdefg123',
+  );
 
   @override
   void dispose() {
     passwordController.dispose();
-    isObscure.dispose();
     super.dispose();
   }
 
@@ -48,7 +46,10 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
               SizedBox(height: context.height * 0.05),
               _builtLockIcon(context),
               SizedBox(height: context.height * 0.05),
-              _builtPasswordTextField(),
+              PasswordTextFieldWidget(
+                controller: passwordController,
+                fillColor: AppColors.secondary,
+              ),
               SizedBox(height: context.height * 0.008),
               _builtUnlockButton(),
             ],
@@ -93,35 +94,6 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
     );
   }
 
-  Widget _builtPasswordTextField() {
-    return ValueListenableBuilder<bool>(
-      valueListenable: isObscure,
-      builder: (context, value, child) => CustomTextFormField(
-        style: AppStyles.robotoRegular16Black(context),
-        keyboardType: TextInputType.visiblePassword,
-        validator: (value) => Validators.password(value),
-        controller: passwordController,
-        prefixIcon: SvgPicture.asset(
-          "assets/icons/password_icon.svg",
-          fit: BoxFit.none,
-          colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-        ),
-        hintText: "password".tr(),
-        hintStyle: AppStyles.robotoRegular16Black(context),
-        filled: true,
-        obscureText: value,
-        fillColor: AppColors.white,
-        suffixIcon: IconButton(
-          isSelected: !value,
-          selectedIcon: Icon(Icons.visibility_rounded, color: AppColors.black),
-          onPressed: () {
-            isObscure.value = !isObscure.value;
-          },
-          icon: Icon(Icons.visibility_off_rounded, color: AppColors.black),
-        ),
-      ),
-    );
-  }
 
   Widget _builtUnlockButton() {
     final masterCubit = context.read<MasterPasswordCubit>();
@@ -135,8 +107,10 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
                   if (formKey.currentState!.validate()) {
                     {
                       masterCubit.verifyMasterPassword(
-                        input: passwordController.text,
-                        savedPassword: authCubit.currentUser?.masterPassword,
+                        masterPassword: passwordController.text,
+                        salt: authCubit.currentUser!.salt!,
+                        passwordVerifier:
+                            authCubit.currentUser!.passwordVerifier!,
                       );
                     }
                   }
