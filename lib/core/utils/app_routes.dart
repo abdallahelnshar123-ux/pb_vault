@@ -4,5 +4,6 @@ class AppRoutes {
   static const String authScreen = 'auth_screen';
   static const String masterPasswordScreen = 'master_password_screen';
   static const String addAccountScreen = 'add_account_screen';
-
+  static const String profileScreen = 'profile_screen';
+  static const String editProfileScreen = 'edit_profile_screen';
 }

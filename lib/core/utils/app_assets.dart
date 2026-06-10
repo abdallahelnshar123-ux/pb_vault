@@ -54,4 +54,6 @@ class AppAssets {
   static const String clockIcon = 'assets/icons/clock_icon.svg';
   static const String historyIcon = 'assets/icons/history_icon.svg';
   static const String wishlistIcon = 'assets/icons/wishlist_icon.svg';
+  static const String logoutIcon = 'assets/icons/logout.svg';
+  static const String editIcon = 'assets/icons/edit.svg';
 }

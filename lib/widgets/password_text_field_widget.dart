@@ -10,8 +10,10 @@ import 'custom_text_form_field.dart';
 class PasswordTextFieldWidget extends StatefulWidget {
   final Color? fillColor;
   final TextEditingController? controller;
+  final  void Function(String)? onChanged ;
 
-  const PasswordTextFieldWidget({super.key, this.fillColor ,this.controller });
+
+  const PasswordTextFieldWidget({super.key, this.fillColor,this.onChanged ,this.controller });
 
   @override
   State<PasswordTextFieldWidget> createState() =>
@@ -34,6 +36,7 @@ class _PasswordTextFieldWidgetState extends State<PasswordTextFieldWidget> {
       valueListenable: isObscure,
       builder: (context, value, child) => CustomTextFormField(
         style: AppStyles.robotoBold16SurfaceDark(context),
+        onChanged: widget.onChanged,
         keyboardType: TextInputType.visiblePassword,
         validator: (value) => Validators.password(value),
         controller: widget.controller,

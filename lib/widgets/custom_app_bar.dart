@@ -5,7 +5,8 @@ import '../core/utils/app_assets.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool? centerTitle;
-  const CustomAppBar({super.key , this.centerTitle});
+
+  const CustomAppBar({super.key, this.centerTitle});
 
   static const double _toolbarHeight = 110;
 
@@ -15,7 +16,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       titleSpacing: 0,
       toolbarHeight: _toolbarHeight,
       centerTitle: centerTitle ?? true,
-      title: SvgPicture.asset(AppAssets.appLogo, alignment: Alignment.center),
+      title: SvgPicture.asset(
+        AppAssets.appLogo,
+        alignment: Alignment.center,
+        fit: .cover,
+        height: 90,
+      ),
     );
   }
 

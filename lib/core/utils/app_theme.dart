@@ -5,6 +5,9 @@ import 'app_colors.dart';
 
 class AppTheme {
   static ThemeData darkTheme = ThemeData(
+    popupMenuTheme: PopupMenuThemeData(
+      color: AppColors.backgroundDark
+    ),
     dialogTheme: DialogThemeData(backgroundColor: AppColors.backgroundDark),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       type: BottomNavigationBarType.fixed,

@@ -25,12 +25,20 @@ class HomeCubit extends Cubit<HomeState> {
   void getAccounts(String userId) {
     emit(HomeLoading());
     _subscription?.cancel();
-    _subscription = _getAccountsUseCase.invoke(userId).listen((result) {
-      result.fold(
-        (failure) => emit(HomeError(failure.message)),
-        (accounts) => emit(HomeSuccess(accounts)),
-      );
-    });
+    _subscription = _getAccountsUseCase.invoke(userId).listen(
+      (result) {
+        result.fold(
+          (failure) => emit(HomeError(failure.message)),
+          (accounts) => emit(HomeSuccess(accounts)),
+        );
+      },
+      onError: (error) {
+        // Silently handle permission denied errors during account deletion/logout
+        if (!error.toString().contains('permission-denied')) {
+          emit(HomeError(error.toString()));
+        }
+      },
+    );
   }
 
   Future<void> copyAccountPassword({

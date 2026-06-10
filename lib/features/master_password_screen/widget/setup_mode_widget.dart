@@ -1,14 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:pb_vault/widgets/conf_password_text_field_widget.dart';
+import 'package:pb_vault/widgets/password_text_field_widget.dart';
 
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
-import '../../../core/utils/validators.dart';
 import '../../../widgets/custom_elevated_button.dart';
-import '../../../widgets/custom_text_form_field.dart';
 import '../../auth/cubit/auth_view_model.dart';
 import '../cubit/master_password_state.dart';
 import '../cubit/master_password_view_model.dart';
@@ -55,8 +54,15 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
               SizedBox(height: context.height * 0.05),
               _builtLockIcon(context),
               SizedBox(height: context.height * 0.05),
-              _builtPasswordTextField(),
-              _builtConfPasswordTextField(),
+              PasswordTextFieldWidget(
+                fillColor: AppColors.secondary,
+                controller: passwordController,
+              ),
+              ConfPasswordTextFieldWidget(
+                fillColor: AppColors.secondary,
+                passwordController: passwordController,
+                confController: confPasswordController,
+              ),
               SizedBox(height: context.height * 0.008),
               _builtSetButton(),
             ],
@@ -96,67 +102,6 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
               : AppColors.primary,
         );
       },
-    );
-  }
-
-  Widget _builtPasswordTextField() {
-    return ValueListenableBuilder<bool>(
-      valueListenable: passIsObscure,
-      builder: (context, value, child) => CustomTextFormField(
-        style: AppStyles.robotoBold16SurfaceDark(context),
-        keyboardType: TextInputType.visiblePassword,
-        validator: (value) => Validators.password(value),
-        controller: passwordController,
-        prefixIcon: SvgPicture.asset(
-          "assets/icons/password_icon.svg",
-          fit: BoxFit.none,
-          colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-        ),
-        hintText: "password".tr(),
-        hintStyle: AppStyles.robotoBold16SurfaceDark(context),
-        filled: true,
-        obscureText: value,
-        fillColor: AppColors.white,
-        suffixIcon: IconButton(
-          isSelected: !value,
-          selectedIcon: Icon(Icons.visibility_rounded, color: AppColors.black),
-          onPressed: () {
-            passIsObscure.value = !passIsObscure.value;
-          },
-          icon: Icon(Icons.visibility_off_rounded, color: AppColors.black),
-        ),
-      ),
-    );
-  }
-
-  Widget _builtConfPasswordTextField() {
-    return ValueListenableBuilder<bool>(
-      valueListenable: confPassIsObscure,
-      builder: (context, value, child) => CustomTextFormField(
-        style: AppStyles.robotoBold16SurfaceDark(context),
-        keyboardType: TextInputType.visiblePassword,
-        validator: (value) =>
-            Validators.confirmPassword(value, passwordController.text),
-        controller: confPasswordController,
-        prefixIcon: SvgPicture.asset(
-          "assets/icons/password_icon.svg",
-          fit: BoxFit.none,
-          colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-        ),
-        hintText: "confirm_password".tr(),
-        hintStyle: AppStyles.robotoBold16SurfaceDark(context),
-        filled: true,
-        obscureText: value,
-        fillColor: AppColors.white,
-        suffixIcon: IconButton(
-          isSelected: !value,
-          selectedIcon: Icon(Icons.visibility_rounded, color: AppColors.black),
-          onPressed: () {
-            confPassIsObscure.value = !confPassIsObscure.value;
-          },
-          icon: Icon(Icons.visibility_off_rounded, color: AppColors.black),
-        ),
-      ),
     );
   }
 

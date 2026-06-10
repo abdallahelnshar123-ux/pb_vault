@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:pb_vault/widgets/password_text_field_widget.dart';
 
-import '../../widgets/custom_text_form_field.dart';
 import 'app_colors.dart';
 import 'app_styles.dart';
 
@@ -108,30 +108,16 @@ class DialogUtils {
           content: Form(
             key: formKey,
             child: Column(
+              spacing: 15,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   context.tr(message),
                   style: AppStyles.robotoRegular14White(context),
                 ),
-                const SizedBox(height: 15),
-                CustomTextFormField(
-                  keyboardType: TextInputType.visiblePassword,
-                  validator: (text) {
-                    if (text?.trim().isEmpty ?? true) {
-                      return context.tr('please_enter_password');
-                    }
-                    if (text!.length < 6) {
-                      return context.tr('password_must_be_at_least');
-                    }
-                    return null;
-                  },
+                PasswordTextFieldWidget(
                   controller: passwordController,
-                  hintText: "password".tr(),
-                  hintStyle: AppStyles.robotoRegular16White(context),
-                  obscureText: true,
-                  filled: true,
-                  fillColor: AppColors.primary,
+                  fillColor: AppColors.secondary,
                 ),
               ],
             ),
