@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pb_vault/features/home_screen/cubit/home_view_model.dart';
+import 'package:pb_vault/features/platform_account/screens/platform_account_details_screen.dart';
+import 'package:pb_vault/widgets/copy_account_password_button_widget.dart';
 
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
@@ -27,8 +27,16 @@ class PasswordCardItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: ListTile(
-            onTap: () async {
-              // todo : open password
+            onTap: () {
+              {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        PlatformAccountDetailsScreen(account: account),
+                  ),
+                );
+              }
             },
             leading: CircleAvatar(
               backgroundColor: AppColors.backgroundDark,
@@ -58,18 +66,9 @@ class PasswordCardItem extends StatelessWidget {
               account.emailOrUsername,
               style: AppStyles.robotoELight12SurfaceDark(context),
             ),
-            trailing: IconButton(
-              onPressed: () {
-                context.read<HomeCubit>().copyAccountPassword(
-                  account: account,
-                  context: context,
-                );
-              },
-              icon: const Icon(
-                Icons.copy_all_outlined,
-                color: AppColors.surfaceDark,
-                size: 30,
-              ),
+            trailing: CopyAccountPasswordButtonWidget(
+              account: account,
+              iconColor: AppColors.surfaceDark,
             ),
           ),
         );

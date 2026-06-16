@@ -1,5 +1,5 @@
 import '../../domain/entities/on_boarding/on_boarding_item.dart';
-import '../../domain/entities/response/account/platform_data.dart';
+import '../../domain/entities/response/platform_account/platform_data.dart';
 import '../utils/app_assets.dart';
 
 class AppConstants {

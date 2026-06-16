@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pb_vault/data/model/response/account/platform_data_dto.dart';
+import 'package:pb_vault/data/model/response/platform_account_dto/platform_data_dto.dart';
 
-class AccountDto {
+class PlatformAccountDto {
   String? id;
   final PlatformDataDto platform;
   final String emailOrUsername;
@@ -11,7 +11,7 @@ class AccountDto {
   final String? notes;
   final DateTime createdAt;
 
-  AccountDto({
+  PlatformAccountDto({
     this.id,
     required this.platform,
     required this.emailOrUsername,
@@ -22,8 +22,8 @@ class AccountDto {
     required this.mac,
   });
 
-  factory AccountDto.fromFireStore(Map<String, dynamic> data) {
-    return AccountDto(
+  factory PlatformAccountDto.fromFireStore(Map<String, dynamic> data) {
+    return PlatformAccountDto(
       id: data['id'],
       platform: PlatformDataDto.fromMap(data['platform'] ?? {}),
       emailOrUsername: data['email_or_username'] ?? '',

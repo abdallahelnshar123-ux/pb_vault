@@ -6,10 +6,10 @@ import '../failure/failure.dart';
 import '../repository/auth/auth_repository.dart';
 
 @injectable
-class SignInWithGoogleUseCases {
+class ContinueWithGoogleUseCases {
   final AuthRepository _authRepository;
 
-  SignInWithGoogleUseCases(this._authRepository);
+  ContinueWithGoogleUseCases(this._authRepository);
 
   Future<Either<Failure, MyUser>> invoke() {
     return _authRepository.continueWithGoogle();

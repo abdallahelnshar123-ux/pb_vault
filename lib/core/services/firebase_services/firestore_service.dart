@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../data/model/response/account/account_dto.dart';
 import '../../../data/model/response/my_user_dto.dart';
+import '../../../data/model/response/platform_account_dto/platform_account_dto.dart';
 import '../../constants/app_constants.dart';
 
 @lazySingleton
@@ -40,19 +40,19 @@ class FirestoreService {
   }
 
   /// ===============================   Accounts   =============================
-  CollectionReference<AccountDto> getAccountsCollection(String uId) {
+  CollectionReference<PlatformAccountDto> getAccountsCollection(String uId) {
     return getUsersCollection()
         .doc(uId)
         .collection(AppConstants.accountsCollectionName)
-        .withConverter<AccountDto>(
+        .withConverter<PlatformAccountDto>(
           fromFirestore: (snapshot, options) =>
-              AccountDto.fromFireStore(snapshot.data()!),
+              PlatformAccountDto.fromFireStore(snapshot.data()!),
           toFirestore: (accountDto, options) => accountDto.toFireStore(),
         );
   }
 
   Future<void> addAccount({
-    required AccountDto account,
+    required PlatformAccountDto account,
     required String uId,
   }) {
     var collection = getAccountsCollection(uId);
@@ -60,8 +60,15 @@ class FirestoreService {
     account.id = document.id;
     return document.set(account);
   }
+  Future<void> updateAccount({
+    required PlatformAccountDto account,
+    required String uId,
+  }) {
+    return getAccountsCollection(uId).doc(account.id).set(account);
 
-  Stream<List<AccountDto>> getAccountsStream({required String uId}) {
+  }
+
+  Stream<List<PlatformAccountDto>> getAccountsStream({required String uId}) {
     return getAccountsCollection(uId)
         .orderBy('created_at', descending: true)
         .snapshots()
@@ -70,29 +77,11 @@ class FirestoreService {
         );
   }
 
-  /// ========================== history ====================================
+  Future<void> deleteAccount({required String uId, required String accountId}) {
+    return getAccountsCollection(uId).doc(accountId).delete();
+  }
 
-  // CollectionReference<MovieDto> getHistoryCollection(String uId) {
-  //   return getUsersCollection()
-  //       .doc(uId)
-  //       .collection(AppConstants.historyCollectionName)
-  //       .withConverter<MovieDto>(
-  //         fromFirestore: (snapshot, options) =>
-  //             MovieDto.fromJson(snapshot.data()),
-  //         toFirestore: (movieDto, options) => movieDto.toJson(),
-  //       );
-  // }
-  //
-  // Future<void> addMovieToHistory({
-  //   required MovieDto movie,
-  //   required String uId,
-  // }) async {
-  //   return await getHistoryCollection(uId).doc(movie.id.toString()).set(movie);
-  // }
-  //
-  // Stream<List<MovieDto>> getHistoryMovies({required String uId}) {
-  //   return getHistoryCollection(uId).snapshots().map(
-  //     (snapshot) => snapshot.docs.map((doc) => doc.data()).toList(),
-  //   );
+  // Future<void> updateAccount({required String uId, required AccountDto platform_account}) {
+  //   return getAccountsCollection(uId).doc(platform_account.id).update(platform_account.toFireStore());
   // }
 }

@@ -6,14 +6,14 @@ import '../failure/failure.dart';
 import '../repository/user/user_repository.dart';
 
 @injectable
-class UpdateAccountDetailsUseCase {
+class UpdateUserDetailsUseCase {
   final UserRepository _userRepository;
 
-  UpdateAccountDetailsUseCase(this._userRepository);
+  UpdateUserDetailsUseCase(this._userRepository);
 
   Future<Either<Failure, Unit>> updateAccountDetails({
     required MyUser user,
   }) async {
-    return await _userRepository.updateUser(user: user);
+    return await _userRepository.updateDatabaseUser(user: user);
   }
 }

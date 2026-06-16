@@ -11,7 +11,7 @@ import '../../../../core/di/di.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_styles.dart';
 import '../../../../core/utils/screen_size.dart';
-import '../../auth/cubit/auth_view_model.dart';
+import '../../auth/cubit/user_view_model.dart';
 import '../cubit/home_state.dart';
 import '../cubit/home_view_model.dart';
 
@@ -20,12 +20,13 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var currentUser = context.read<AuthCubit>().currentUser;
-    final authCubit = context.read<AuthCubit>();
+    var currentUser = context.read<UserCubit>().currentUser;
+    final authCubit = context.read<UserCubit>();
     final userId = authCubit.currentUser?.id ?? '';
 
     return BlocProvider(
       create: (context) => getIt<HomeCubit>()..getAccounts(userId),
+
       child: SafeArea(
         top: false,
         bottom: true,
@@ -96,7 +97,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      actionsPadding: EdgeInsets.only(left: context.width*0.04),
+      actionsPadding: EdgeInsets.only(left: context.width * 0.04),
       actions: [
         IconButton(
           padding: EdgeInsets.only(right: 15),

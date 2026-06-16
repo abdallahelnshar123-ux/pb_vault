@@ -1,6 +1,6 @@
 import 'platform_data.dart';
 
-class Account {
+class PlatformAccount {
   final String? id;
   final PlatformData platform;
   final String emailOrUsername;
@@ -10,7 +10,7 @@ class Account {
   final String? notes;
   final DateTime createdAt;
 
-  Account({
+  PlatformAccount({
     this.id,
     required this.platform,
     required this.emailOrUsername,

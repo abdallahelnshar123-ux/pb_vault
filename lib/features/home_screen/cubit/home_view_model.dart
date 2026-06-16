@@ -6,10 +6,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pb_vault/domain/entities/response/account/account.dart';
 
 import '../../../core/services/vault_crypto_service/vault_crypto_service.dart';
 import '../../../core/utils/snack_bar_utils.dart';
+import '../../../domain/entities/response/platform_account/platform_account.dart';
 import '../../../domain/use_cases/get_accounts_use_case.dart';
 import 'home_state.dart';
 
@@ -33,7 +33,7 @@ class HomeCubit extends Cubit<HomeState> {
         );
       },
       onError: (error) {
-        // Silently handle permission denied errors during account deletion/logout
+        // Silently handle permission denied errors during platform_account deletion/logout
         if (!error.toString().contains('permission-denied')) {
           emit(HomeError(error.toString()));
         }
@@ -42,7 +42,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> copyAccountPassword({
-    required Account account,
+    required PlatformAccount account,
     required BuildContext context,
   }) async {
     var password = await _vaultCryptoService.decryptPassword(

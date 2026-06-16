@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../domain/entities/response/auth/auth_providers.dart';
+import '../../../domain/entities/response/user/auth_providers.dart';
 import '../../../domain/entities/response/user/my_user.dart';
 import '../../../domain/failure/failure.dart';
 import '../../../domain/repository/auth/auth_repository.dart';
@@ -127,9 +127,9 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> deleteAccount() async {
+  Future<Either<Failure, Unit>> deleteAuthUser() async {
     try {
-      await _authRemoteDataSource.deleteAccount();
+      await _authRemoteDataSource.deleteAuthUser();
 
       return Right(unit);
     } on AppException catch (e) {

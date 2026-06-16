@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pb_vault/features/auth/cubit/auth_view_model.dart';
+import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_state.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
 import 'package:pb_vault/widgets/password_text_field_widget.dart';
@@ -97,7 +97,7 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
 
   Widget _builtUnlockButton() {
     final masterCubit = context.read<MasterPasswordCubit>();
-    final authCubit = context.read<AuthCubit>();
+    final authCubit = context.read<UserCubit>();
     return BlocBuilder<MasterPasswordCubit, MasterPasswordState>(
       builder: (context, state) {
         return CustomElevatedButton(

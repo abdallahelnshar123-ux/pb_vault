@@ -7,7 +7,7 @@ import 'package:pb_vault/widgets/custom_app_bar.dart';
 import '../../../../core/di/di.dart';
 import '../../../../core/utils/app_routes.dart';
 import '../../../../core/utils/dialog_utils.dart';
-import '../../auth/cubit/auth_view_model.dart';
+import '../../auth/cubit/user_view_model.dart';
 import '../cubit/master_password_state.dart';
 import '../cubit/master_password_view_model.dart';
 import '../widget/unlock_mode_widget.dart';
@@ -36,7 +36,7 @@ class _MasterPasswordScreenState extends State<MasterPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authCubit = context.read<AuthCubit>();
+    final authCubit = context.read<UserCubit>();
     final isSetupMode =
         authCubit.currentUser?.passwordVerifier == null ||
         authCubit.currentUser!.passwordVerifier!.isEmpty;
@@ -47,7 +47,7 @@ class _MasterPasswordScreenState extends State<MasterPasswordScreen> {
         listener: (context, state) {
           if (state is MasterPasswordSetupSuccess) {
             DialogUtils.hideLoading(context: context);
-            context.read<AuthCubit>().currentUser = state.user;
+            context.read<UserCubit>().currentUser = state.user;
             Future.delayed(Duration(seconds: 2), () {
               if (context.mounted) {
                 Navigator.pushNamedAndRemoveUntil(

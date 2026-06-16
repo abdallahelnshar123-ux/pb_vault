@@ -90,7 +90,7 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   }
 
   @override
-  Future<void> deleteAccount() async {
+  Future<void> deleteAuthUser() async {
     try {
       await _firebaseAuthService.deleteAccount();
     } on FirebaseAuthException catch (e) {
