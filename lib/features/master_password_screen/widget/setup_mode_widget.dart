@@ -8,7 +8,7 @@ import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
 import '../../../widgets/custom_elevated_button.dart';
-import '../../auth/cubit/auth_view_model.dart';
+import '../../auth/cubit/user_view_model.dart';
 import '../cubit/master_password_state.dart';
 import '../cubit/master_password_view_model.dart';
 
@@ -107,7 +107,7 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
 
   Widget _builtSetButton() {
     final masterCubit = context.read<MasterPasswordCubit>();
-    final authCubit = context.read<AuthCubit>();
+    final authCubit = context.read<UserCubit>();
     return BlocBuilder<MasterPasswordCubit, MasterPasswordState>(
       builder: (context, state) {
         return CustomElevatedButton(

@@ -14,8 +14,8 @@ import '../../../core/utils/screen_size.dart';
 import '../../../core/utils/validators.dart';
 import '../../../widgets/custom_elevated_button.dart';
 import '../../../widgets/custom_text_form_field.dart';
-import '../cubit/auth_state.dart';
-import '../cubit/auth_view_model.dart';
+import '../cubit/User_state.dart';
+import '../cubit/user_view_model.dart';
 
 class RegisterTab extends StatefulWidget {
   const RegisterTab({super.key});
@@ -57,9 +57,9 @@ class _RegisterTabState extends State<RegisterTab> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthCubit, AuthState>(
+    return BlocListener<UserCubit, UserState>(
       listener: (context, state) {
-        if (state is AuthAuthenticated) {
+        if (state is UserAuthenticatedState) {
           DialogUtils.hideLoading(context: context);
           DialogUtils.showMessage(
             title: 'success',
@@ -77,7 +77,7 @@ class _RegisterTabState extends State<RegisterTab> {
           });
         }
 
-        if (state is AuthRegisterError) {
+        if (state is RegisterWithEmailPasswordErrorState) {
           DialogUtils.hideLoading(context: context);
           DialogUtils.showMessage(
             posActionText: 'ok',
@@ -86,8 +86,8 @@ class _RegisterTabState extends State<RegisterTab> {
             message: state.message,
           );
         }
-        if (state is AuthRegisterLoading ||
-            state is AuthContinueWithGoogleLoading) {
+        if (state is RegisterWithEmailPasswordLoadingState ||
+            state is ContinueWithGoogleLoadingState) {
           DialogUtils.showLoading(context: context);
         }
       },
@@ -246,7 +246,7 @@ class _RegisterTabState extends State<RegisterTab> {
       onPressed: () {
         if (checkBoxValue.value) {
           if (formKey.currentState!.validate()) {
-            context.read<AuthCubit>().registerWithEmailAndPassword(
+            context.read<UserCubit>().registerWithEmailAndPassword(
               email: emailController.text,
               password: passwordController.text,
               name: nameController.text,

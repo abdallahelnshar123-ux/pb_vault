@@ -1,11 +1,12 @@
 import 'package:pb_vault/data/mapper/platform_data_dto_mapper.dart';
 
-import '../../domain/entities/response/account/account.dart';
-import '../model/response/account/account_dto.dart';
+import '../../domain/entities/response/platform_account/platform_account.dart';
+import '../model/response/platform_account_dto/platform_account_dto.dart';
 
-extension AccountDtoMapper on Account {
-  AccountDto toAccountDto() {
-    return AccountDto(
+
+extension AccountDtoMapper on PlatformAccount {
+  PlatformAccountDto toAccountDto() {
+    return PlatformAccountDto(
       id: id,
       platform: platform.toPlatformDataDto(),
       encryptedPassword: encryptedPassword,

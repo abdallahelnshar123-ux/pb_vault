@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:pb_vault/domain/entities/response/account/platform_data.dart';
 import 'package:pb_vault/widgets/search_text_field_widget.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
+import '../../../domain/entities/response/platform_account/platform_data.dart';
 
 class PlatformsBottomSheet extends StatefulWidget {
   final ValueChanged<PlatformData> newPlatform;

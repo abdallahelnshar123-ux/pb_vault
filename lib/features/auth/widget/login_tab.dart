@@ -10,8 +10,8 @@ import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
 import '../../../widgets/custom_elevated_button.dart';
-import '../cubit/auth_state.dart';
-import '../cubit/auth_view_model.dart';
+import '../cubit/User_state.dart';
+import '../cubit/user_view_model.dart';
 import 'continue_with_google_button.dart';
 
 class LoginTan extends StatefulWidget {
@@ -38,9 +38,9 @@ class _LoginTanState extends State<LoginTan> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthCubit, AuthState>(
+    return BlocListener<UserCubit, UserState>(
       listener: (context, state) {
-        if (state is AuthAuthenticated) {
+        if (state is UserAuthenticatedState) {
           DialogUtils.hideLoading(context: context);
           DialogUtils.showMessage(
             title: 'success',
@@ -59,7 +59,7 @@ class _LoginTanState extends State<LoginTan> {
           });
         }
 
-        if (state is AuthLoginError) {
+        if (state is LoginWithEmailPasswordErrorState) {
           debugPrint(state.message);
           DialogUtils.hideLoading(context: context);
           DialogUtils.showMessage(
@@ -69,7 +69,7 @@ class _LoginTanState extends State<LoginTan> {
             message: state.message,
           );
         }
-        if (state is AuthContinueWithGoogleError) {
+        if (state is ContinueWithGoogleErrorState) {
           DialogUtils.hideLoading(context: context);
           if (state.message != 'Cancelled by user') {
             DialogUtils.showMessage(
@@ -80,8 +80,8 @@ class _LoginTanState extends State<LoginTan> {
             );
           }
         }
-        if (state is AuthLoginLoading ||
-            state is AuthContinueWithGoogleLoading) {
+        if (state is LoginWithEmailPasswordLoadingState ||
+            state is ContinueWithGoogleLoadingState) {
           DialogUtils.showLoading(context: context);
         }
       },
@@ -101,7 +101,7 @@ class _LoginTanState extends State<LoginTan> {
                 children: [
                   ContinueWithGoogleButton(
                     onPressed: () {
-                      context.read<AuthCubit>().continueWithGoogle();
+                      context.read<UserCubit>().continueWithGoogle();
                     },
                   ),
                   _builtDivider(),
@@ -227,7 +227,7 @@ class _LoginTanState extends State<LoginTan> {
     return CustomElevatedButton(
       onPressed: () {
         if (formKey.currentState!.validate()) {
-          context.read<AuthCubit>().loginWithEmailAndPassword(
+          context.read<UserCubit>().loginWithEmailAndPassword(
             emailController.text,
             passwordController.text,
           );

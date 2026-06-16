@@ -163,7 +163,23 @@
   "arabic": "العربية",
   "The supplied auth credential is incorrect, malformed or has expired.": "كلمة السر غير صحيحة",
   "no" : "لا",
-  "account_deleted_successfully" : "تم حذف الحساب بنجاح"
+  "account_deleted_successfully" : "تم حذف الحساب بنجاح",
+  "account_details" : "تفاصيل الحساب",
+  "are_you_sure_you_want_to_delete_account" : "هل انت متأكد انك تريدحذف الحساب؟",
+  "no_notes" : "لم يتم إضافة ملاحظات",
+  "user_name-email_address": "اسم المستخدم - البريد الالكتروني",
+  "website_address" : "لينك الموقع",
+  "save_changes" : "حفظ التغييرات",
+  "details" : "التفاصيل",
+  "edite_account" : "تعديل الحساب"
+
+
+
+
+
+
+
+
 
 
 }

@@ -14,30 +14,30 @@ import '../../../domain/use_cases/register_with_email_and_password_use_case.dart
 import '../../../domain/use_cases/reset_password_use_case.dart';
 import '../../../domain/use_cases/sign_in_with_google_use_cases.dart';
 import '../../../domain/use_cases/update_account_details_use_case.dart';
-import 'auth_state.dart';
+import 'User_state.dart';
 
 @lazySingleton
-class AuthCubit extends Cubit<AuthState> {
-  final SignInWithGoogleUseCases _signInWithGoogleUseCases;
+class UserCubit extends Cubit<UserState> {
+  final ContinueWithGoogleUseCases _signInWithGoogleUseCases;
   final RegisterWithEmailAndPasswordUseCase
   _registerWithEmailAndPasswordUseCases;
   final LoginWithEmailAndPasswordUseCase _loginWithEmailAndPasswordUseCase;
   final LogoutUseCase _logoutUseCase;
-  final DeleteAccountUseCase _deleteAccountUseCase;
-  final UpdateAccountDetailsUseCase _updateAccountDetailsUseCase;
+  final DeleteUserUseCase _deleteAccountUseCase;
+  final UpdateUserDetailsUseCase _updateUserDetailsUseCase;
   final ResetPasswordUseCase _resetPasswordUseCase;
   final CheckAppStartupUseCase _checkAppStartupUseCase;
 
-  AuthCubit(
+  UserCubit(
     this._signInWithGoogleUseCases,
     this._registerWithEmailAndPasswordUseCases,
     this._loginWithEmailAndPasswordUseCase,
     this._logoutUseCase,
     this._deleteAccountUseCase,
-    this._updateAccountDetailsUseCase,
+    this._updateUserDetailsUseCase,
     this._resetPasswordUseCase,
     this._checkAppStartupUseCase,
-  ) : super(AuthInitial());
+  ) : super(UserInitial());
 
   MyUser? currentUser;
   int _selectedAvatarIndex = 0;
@@ -51,76 +51,76 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   void logout(BuildContext context) async {
-    emit(AuthLogoutLoading());
+    emit(LogoutLoadingState());
     if (!context.mounted) return;
     var result = await _logoutUseCase.invoke();
-    result.fold((failure) => emit(AuthLogoutError(failure.message.tr())), (_) {
-      emit(AuthUnauthenticated());
+    result.fold((failure) => emit(LogoutErrorState(failure.message.tr())), (_) {
+      emit(UserUnauthenticatedState());
     });
   }
 
-  Future<void> deleteAccount({
+  Future<void> deleteUser({
     required BuildContext context,
     required String password,
   }) async {
-    emit(AccountDeleteLoading());
+    emit(UserDeleteLoadingState());
 
-    var result = await _deleteAccountUseCase.deleteAccount(
+    var result = await _deleteAccountUseCase.invoke(
       password: password,
       provider: currentUser?.provider ?? '',
     );
-    result.fold((failure) => emit(AccountDeleteError(failure.message.tr())), (
+    result.fold((failure) => emit(UserDeleteErrorState(failure.message.tr())), (
       unit,
     ) {
-      emit(AccountDeleteSuccess());
+      emit(UserDeleteSuccessState());
       logout(context);
     });
   }
 
-  Future<void> updateAccountDetails({required MyUser user}) async {
-    emit(AccountDetailsUpdateLoading());
-    var result = await _updateAccountDetailsUseCase.updateAccountDetails(
+  Future<void> updateUSerDetails({required MyUser user}) async {
+    emit(UserDetailsUpdateLoadingState());
+    var result = await _updateUserDetailsUseCase.updateAccountDetails(
       user: user,
     );
-    result.fold((failure) => emit(AccountDetailsUpdateError(failure.message)), (
+    result.fold((failure) => emit(USerDetailsUpdateErrorState(failure.message)), (
       unit,
     ) {
       currentUser = user;
-      emit(AccountDetailsUpdateSuccess());
+      emit(UserDetailsUpdateSuccessState());
     });
   }
 
   ///   auth with google
   Future<void> continueWithGoogle() async {
-    emit(AuthContinueWithGoogleLoading());
+    emit(ContinueWithGoogleLoadingState());
     final result = await _signInWithGoogleUseCases.invoke();
 
     result.fold(
       (failure) {
-        emit(AuthContinueWithGoogleError(failure.message.tr()));
+        emit(ContinueWithGoogleErrorState(failure.message.tr()));
       },
       (user) {
         currentUser = user;
-        emit(AuthAuthenticated(user));
+        emit(UserAuthenticatedState(user));
       },
     );
   }
 
   Future<void> loginWithEmailAndPassword(String email, String password) async {
     try {
-      emit(AuthLoginLoading());
+      emit(LoginWithEmailPasswordLoadingState());
       final result = await _loginWithEmailAndPasswordUseCase.invoke(
         email: email,
         password: password,
       );
-      result.fold((failure) => emit(AuthLoginError(failure.message.tr())), (
+      result.fold((failure) => emit(LoginWithEmailPasswordErrorState(failure.message.tr())), (
         user,
       ) {
         currentUser = user;
-        emit(AuthAuthenticated(user));
+        emit(UserAuthenticatedState(user));
       });
     } catch (e) {
-      emit(AuthLoginError('Unexpected Error'));
+      emit(LoginWithEmailPasswordErrorState('Unexpected Error'));
     }
   }
 
@@ -131,7 +131,7 @@ class AuthCubit extends Cubit<AuthState> {
     required int avatarIndex,
   }) async {
     try {
-      emit(AuthRegisterLoading());
+      emit(RegisterWithEmailPasswordLoadingState());
       final result = await _registerWithEmailAndPasswordUseCases.invoke(
         name: name,
         avatarIndex: avatarIndex,
@@ -139,28 +139,28 @@ class AuthCubit extends Cubit<AuthState> {
         email: email,
       );
 
-      result.fold((failure) => emit(AuthRegisterError(failure.message.tr())), (
+      result.fold((failure) => emit(RegisterWithEmailPasswordErrorState(failure.message.tr())), (
         user,
       ) {
         currentUser = user;
-        emit(AuthAuthenticated(user));
+        emit(UserAuthenticatedState(user));
       });
     } catch (e) {
-      emit(AuthRegisterError('Unexpected Error'));
+      emit(RegisterWithEmailPasswordErrorState('Unexpected Error'));
     }
   }
 
   Future<void> resetPassword({required String email}) async {
-    emit(ResetPasswordLoading());
+    emit(ResetUSerPasswordLoadingState());
 
     final result = await _resetPasswordUseCase.invoke(email: email);
 
     result.fold(
       (failure) {
-        emit(ResetPasswordError(failure.message.tr()));
+        emit(ResetUSerPasswordErrorState(failure.message.tr()));
       },
       (_) {
-        emit(ResetPasswordSuccess());
+        emit(ResetUserPasswordSuccessState());
       },
     );
   }

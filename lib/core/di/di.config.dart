@@ -45,6 +45,8 @@ import '../../domain/repository/on_boarding/on_boarding_repository.dart'
 import '../../domain/repository/user/user_repository.dart' as _i183;
 import '../../domain/use_cases/add_account_use_case.dart' as _i327;
 import '../../domain/use_cases/check_app_startup_use_case.dart' as _i543;
+import '../../domain/use_cases/delete_account_from_vault_use_case.dart'
+    as _i202;
 import '../../domain/use_cases/delete_account_use_case.dart' as _i1008;
 import '../../domain/use_cases/get_accounts_use_case.dart' as _i941;
 import '../../domain/use_cases/login_with_email_and_password_use_case.dart'
@@ -57,13 +59,15 @@ import '../../domain/use_cases/set_master_password_use_case.dart' as _i756;
 import '../../domain/use_cases/set_onboarding_done_use_case.dart' as _i551;
 import '../../domain/use_cases/sign_in_with_google_use_cases.dart' as _i447;
 import '../../domain/use_cases/update_account_details_use_case.dart' as _i274;
-import '../../features/add_account/cubit/add_account_view_model.dart' as _i57;
-import '../../features/auth/cubit/auth_view_model.dart' as _i260;
+import '../../domain/use_cases/update_account_use_case.dart' as _i432;
+import '../../features/auth/cubit/user_view_model.dart' as _i8;
 import '../../features/home_screen/cubit/home_view_model.dart' as _i941;
 import '../../features/master_password_screen/cubit/master_password_view_model.dart'
     as _i884;
 import '../../features/onboarding_screen/provider/onboarding_view_model.dart'
     as _i926;
+import '../../features/platform_account/cubit/platform_account_view_model.dart'
+    as _i458;
 import '../data_bases/cache/local_storage.dart' as _i1020;
 import '../data_bases/cache/local_storage_module.dart' as _i2;
 import '../data_bases/cache/shared_prefs_utils.dart' as _i1059;
@@ -101,11 +105,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i632.UserRemoteDataSource>(
       () => _i22.UserRemoteDataSourceImpl(gh<_i75.FirestoreService>()),
     );
-    gh.factory<_i327.AddAccountUseCase>(
-      () => _i327.AddAccountUseCase(gh<_i406.AccountRepository>()),
+    gh.factory<_i327.AddPlatformAccountUseCase>(
+      () => _i327.AddPlatformAccountUseCase(gh<_i406.AccountRepository>()),
+    );
+    gh.factory<_i202.DeletePlatformAccountUseCase>(
+      () => _i202.DeletePlatformAccountUseCase(gh<_i406.AccountRepository>()),
     );
     gh.factory<_i941.GetAccountsUseCase>(
       () => _i941.GetAccountsUseCase(gh<_i406.AccountRepository>()),
+    );
+    gh.factory<_i432.UpdatePlatformAccountUseCase>(
+      () => _i432.UpdatePlatformAccountUseCase(gh<_i406.AccountRepository>()),
     );
     gh.lazySingleton<_i515.VaultCryptoService>(
       () =>
@@ -113,12 +123,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1059.SharedPrefsUtils>(
       () => _i1059.SharedPrefsUtils(gh<_i460.SharedPreferences>()),
-    );
-    gh.factory<_i57.AddAccountCubit>(
-      () => _i57.AddAccountCubit(
-        gh<_i327.AddAccountUseCase>(),
-        gh<_i515.VaultCryptoService>(),
-      ),
     );
     gh.factory<_i941.HomeCubit>(
       () => _i941.HomeCubit(
@@ -130,6 +134,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i286.FirebaseAuthService(
         gh<_i59.FirebaseAuth>(),
         gh<_i116.GoogleSignIn>(),
+      ),
+    );
+    gh.factory<_i458.PlatformAccountCubit>(
+      () => _i458.PlatformAccountCubit(
+        gh<_i432.UpdatePlatformAccountUseCase>(),
+        gh<_i202.DeletePlatformAccountUseCase>(),
+        gh<_i327.AddPlatformAccountUseCase>(),
+        gh<_i515.VaultCryptoService>(),
       ),
     );
     gh.lazySingleton<_i1020.LocalStorage>(
@@ -163,8 +175,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i54.OnBoardingLocalDataSource>(
       () => _i434.OnBoardingLocalDataSourceImpl(gh<_i1020.LocalStorage>()),
     );
-    gh.factory<_i1008.DeleteAccountUseCase>(
-      () => _i1008.DeleteAccountUseCase(
+    gh.factory<_i1008.DeleteUserUseCase>(
+      () => _i1008.DeleteUserUseCase(
         gh<_i183.UserRepository>(),
         gh<_i912.AuthRepository>(),
       ),
@@ -179,14 +191,14 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i904.RegisterWithEmailAndPasswordUseCase(gh<_i912.AuthRepository>()),
     );
-    gh.factory<_i447.SignInWithGoogleUseCases>(
-      () => _i447.SignInWithGoogleUseCases(gh<_i912.AuthRepository>()),
+    gh.factory<_i447.ContinueWithGoogleUseCases>(
+      () => _i447.ContinueWithGoogleUseCases(gh<_i912.AuthRepository>()),
     );
     gh.factory<_i756.SetMasterPasswordUseCase>(
       () => _i756.SetMasterPasswordUseCase(gh<_i183.UserRepository>()),
     );
-    gh.factory<_i274.UpdateAccountDetailsUseCase>(
-      () => _i274.UpdateAccountDetailsUseCase(gh<_i183.UserRepository>()),
+    gh.factory<_i274.UpdateUserDetailsUseCase>(
+      () => _i274.UpdateUserDetailsUseCase(gh<_i183.UserRepository>()),
     );
     gh.factory<_i884.MasterPasswordCubit>(
       () => _i884.MasterPasswordCubit(
@@ -206,14 +218,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i926.OnboardingViewModel>(
       () => _i926.OnboardingViewModel(gh<_i551.SetOnboardingDoneUseCase>()),
     );
-    gh.lazySingleton<_i260.AuthCubit>(
-      () => _i260.AuthCubit(
-        gh<_i447.SignInWithGoogleUseCases>(),
+    gh.lazySingleton<_i8.UserCubit>(
+      () => _i8.UserCubit(
+        gh<_i447.ContinueWithGoogleUseCases>(),
         gh<_i904.RegisterWithEmailAndPasswordUseCase>(),
         gh<_i1065.LoginWithEmailAndPasswordUseCase>(),
         gh<_i250.LogoutUseCase>(),
-        gh<_i1008.DeleteAccountUseCase>(),
-        gh<_i274.UpdateAccountDetailsUseCase>(),
+        gh<_i1008.DeleteUserUseCase>(),
+        gh<_i274.UpdateUserDetailsUseCase>(),
         gh<_i638.ResetPasswordUseCase>(),
         gh<_i543.CheckAppStartupUseCase>(),
       ),

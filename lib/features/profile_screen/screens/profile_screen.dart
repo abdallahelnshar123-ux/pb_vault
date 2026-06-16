@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pb_vault/core/utils/app_assets.dart';
-import 'package:pb_vault/features/auth/cubit/auth_state.dart';
+import 'package:pb_vault/features/auth/cubit/User_state.dart';
 import 'package:pb_vault/widgets/custom_elevated_button.dart';
 
 import '../../../../core/utils/app_colors.dart';
@@ -12,8 +12,8 @@ import '../../../../core/utils/app_styles.dart';
 import '../../../../core/utils/screen_size.dart';
 import '../../../core/utils/dialog_utils.dart';
 import '../../../core/utils/snack_bar_utils.dart';
-import '../../../domain/entities/response/auth/auth_providers.dart';
-import '../../auth/cubit/auth_view_model.dart';
+import '../../../domain/entities/response/user/auth_providers.dart';
+import '../../auth/cubit/user_view_model.dart';
 import '../widgets/language_widget.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -21,20 +21,20 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.read<AuthCubit>().currentUser;
+    final user = context.read<UserCubit>().currentUser;
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
       appBar: _builtAppBar(context: context),
-      body: BlocListener<AuthCubit, AuthState>(
+      body: BlocListener<UserCubit, UserState>(
         listenWhen: (previous, current) =>
-            current is AccountDeleteSuccess ||
-            current is AccountDeleteError ||
-            current is AccountDeleteLoading,
+            current is UserDeleteSuccessState ||
+            current is UserDeleteErrorState ||
+            current is UserDeleteLoadingState,
         listener: (context, state) {
-          if (state is AccountDeleteLoading) {
+          if (state is UserDeleteLoadingState) {
             DialogUtils.showLoading(context: context);
-          } else if (state is AccountDeleteSuccess) {
+          } else if (state is UserDeleteSuccessState) {
             DialogUtils.hideLoading(context: context);
             SnackBarUtils.showSuccessSnackBar(
               context: context,
@@ -45,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
               AppRoutes.authScreen,
               (route) => false,
             );
-          } else if (state is AccountDeleteError) {
+          } else if (state is UserDeleteErrorState) {
             DialogUtils.hideLoading(context: context);
 
             SnackBarUtils.showErrorSnackBar(
@@ -103,7 +103,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              _builtLogoutButton(context: context),
+              _builtDeleteAccountButton(context: context),
             ],
           ),
         ),
@@ -206,7 +206,7 @@ class ProfileScreen extends StatelessWidget {
             height: 25,
           ),
           onPressed: () {
-            context.read<AuthCubit>().logout(context);
+            context.read<UserCubit>().logout(context);
             Navigator.pushNamedAndRemoveUntil(
               context,
               AppRoutes.authScreen,
@@ -218,8 +218,8 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _builtLogoutButton({required BuildContext context}) {
-    var currentUser = context.read<AuthCubit>().currentUser;
+  Widget _builtDeleteAccountButton({required BuildContext context}) {
+    var currentUser = context.read<UserCubit>().currentUser;
     return CustomElevatedButton(
       backgroundColor: AppColors.primary,
       onPressed: () async {
@@ -232,7 +232,7 @@ class ProfileScreen extends StatelessWidget {
 
           if (password != null && password.isNotEmpty) {
             if (!context.mounted) return;
-            context.read<AuthCubit>().deleteAccount(
+            context.read<UserCubit>().deleteUser(
               context: context,
               password: password,
             );
@@ -243,7 +243,7 @@ class ProfileScreen extends StatelessWidget {
             message: 'are_you_sure_you_want_to_delete_the_account',
             title: 'confirmation',
             posAction: () {
-              context.read<AuthCubit>().deleteAccount(
+              context.read<UserCubit>().deleteUser(
                 context: context,
                 password: "",
               );

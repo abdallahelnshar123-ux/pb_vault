@@ -3,30 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pb_vault/core/utils/snack_bar_utils.dart';
-import 'package:pb_vault/features/add_account/widget/platforms_bottom_sheet.dart';
+import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
 import 'package:pb_vault/widgets/email_text_field_widget.dart';
 import 'package:pb_vault/widgets/password_text_field_widget.dart';
 
-import '../../../../core/di/di.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_styles.dart';
 import '../../../../core/utils/dialog_utils.dart';
 import '../../../../core/utils/screen_size.dart';
 import '../../../../widgets/custom_elevated_button.dart';
 import '../../../../widgets/custom_text_form_field.dart';
-import '../../../domain/entities/response/account/platform_data.dart';
-import '../../auth/cubit/auth_view_model.dart';
-import '../cubit/add_account_state.dart';
-import '../cubit/add_account_view_model.dart';
+import '../../../domain/entities/response/platform_account/platform_data.dart';
+import '../../auth/cubit/user_view_model.dart';
+import '../cubit/platform_account_state.dart';
+import '../widget/platforms_bottom_sheet.dart';
 
-class AddAccountScreen extends StatefulWidget {
-  const AddAccountScreen({super.key});
+class AddPlatformAccountScreen extends StatefulWidget {
+  const AddPlatformAccountScreen({super.key});
 
   @override
-  State<AddAccountScreen> createState() => _AddAccountScreenState();
+  State<AddPlatformAccountScreen> createState() => _AddPlatformAccountScreenState();
 }
 
-class _AddAccountScreenState extends State<AddAccountScreen> {
+class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
@@ -44,68 +43,65 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<AddAccountCubit>(),
-      child: BlocListener<AddAccountCubit, AddAccountState>(
-        listener: (context, state) {
-          if (state is AddAccountLoading) {
-            DialogUtils.showLoading(context: context);
-          } else if (state is AddAccountSuccess) {
-            DialogUtils.hideLoading(context: context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('account_added_successfully'.tr()),
-                backgroundColor: AppColors.success,
-              ),
-            );
-            Navigator.pop(context);
-          } else if (state is AddAccountError) {
-            DialogUtils.hideLoading(context: context);
-            DialogUtils.showMessage(
-              context: context,
-              message: state.message,
-              title: 'error'.tr(),
-              posActionText: 'ok'.tr(),
-            );
-          }
-        },
-        child: SafeArea(
-          bottom: true,
-          top: false,
-          child: GestureDetector(
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-            child: Scaffold(
-              backgroundColor: AppColors.backgroundDark,
-              appBar: _builtAppBar(),
-              body: SingleChildScrollView(
-                padding: EdgeInsets.all(context.width * 0.05),
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: context.height * 0.02,
-                    children: [
-                      _builtChoosePlatform(),
-                      SizedBox(height: context.height * 0.03),
-                      EmailTextFieldWidget(
-                        fillColor: AppColors.secondary,
-                        controller: emailController,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          PasswordTextFieldWidget(
-                            fillColor: AppColors.secondary,
-                            controller: passwordController,
-                          ),
-                          _builtGeneratePassword(),
-                        ],
-                      ),
-                      _builtNotesTextField(),
-                      const SizedBox(height: 20),
-                      _builtAddButton(),
-                    ],
-                  ),
+    return BlocListener<PlatformAccountCubit, PlatformAccountState>(
+      listener: (context, state) {
+        if (state is AddPlatformAccountLoadingState) {
+          DialogUtils.showLoading(context: context);
+        } else if (state is AddPlatformAccountSuccessState) {
+          DialogUtils.hideLoading(context: context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('account_added_successfully'.tr()),
+              backgroundColor: AppColors.success,
+            ),
+          );
+          Navigator.pop(context);
+        } else if (state is AddPlatformAccountErrorState) {
+          DialogUtils.hideLoading(context: context);
+          DialogUtils.showMessage(
+            context: context,
+            message: state.message,
+            title: 'error'.tr(),
+            posActionText: 'ok'.tr(),
+          );
+        }
+      },
+      child: SafeArea(
+        bottom: true,
+        top: false,
+        child: GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: Scaffold(
+            backgroundColor: AppColors.backgroundDark,
+            appBar: _builtAppBar(),
+            body: SingleChildScrollView(
+              padding: EdgeInsets.all(context.width * 0.05),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: context.height * 0.02,
+                  children: [
+                    _builtChoosePlatform(),
+                    SizedBox(height: context.height * 0.03),
+                    EmailTextFieldWidget(
+                      fillColor: AppColors.secondary,
+                      controller: emailController,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        PasswordTextFieldWidget(
+                          fillColor: AppColors.secondary,
+                          controller: passwordController,
+                        ),
+                        _builtGeneratePassword(),
+                      ],
+                    ),
+                    _builtNotesTextField(),
+                    const SizedBox(height: 20),
+                    _builtAddButton(),
+                  ],
                 ),
               ),
             ),
@@ -117,6 +113,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
 
   PreferredSizeWidget _builtAppBar() {
     return AppBar(
+      centerTitle: false,
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
         icon: Icon(Icons.arrow_back_ios_new_rounded),
@@ -219,7 +216,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
         return TextButton.icon(
           onPressed: () {
             final pass = context
-                .read<AddAccountCubit>()
+                .read<PlatformAccountCubit>()
                 .generateStrongPassword();
             passwordController.text = pass;
           },
@@ -253,8 +250,8 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
           onPressed: () {
             if (formKey.currentState!.validate() &&
                 currentPlatform.value != null) {
-              final userId = context.read<AuthCubit>().currentUser?.id ?? '';
-              context.read<AddAccountCubit>().addAccount(
+              final userId = context.read<UserCubit>().currentUser?.id ?? '';
+              context.read<PlatformAccountCubit>().addPlatformAccount(
                 userId: userId,
                 platform: currentPlatform.value!,
                 emailOrUsername: emailController.text,

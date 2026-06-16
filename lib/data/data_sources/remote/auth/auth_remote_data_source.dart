@@ -21,5 +21,5 @@ abstract class AuthRemoteDataSource {
 
   Future<void> resetPassword({required String email});
 
-  Future<void> deleteAccount();
+  Future<void> deleteAuthUser();
 }

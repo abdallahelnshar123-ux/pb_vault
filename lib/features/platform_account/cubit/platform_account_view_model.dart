@@ -1,0 +1,123 @@
+import 'dart:math';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+import 'package:pb_vault/core/services/vault_crypto_service/vault_crypto_service.dart';
+
+import '../../../domain/entities/response/platform_account/platform_account.dart';
+import '../../../domain/entities/response/platform_account/platform_data.dart';
+import '../../../domain/use_cases/add_account_use_case.dart';
+import '../../../domain/use_cases/delete_account_from_vault_use_case.dart';
+import '../../../domain/use_cases/update_account_use_case.dart';
+import 'platform_account_state.dart';
+
+@injectable
+class PlatformAccountCubit extends Cubit<PlatformAccountState> {
+  final AddPlatformAccountUseCase _addPlatformAccountUseCase;
+  final VaultCryptoService _vaultCryptoService;
+  final UpdatePlatformAccountUseCase _updatePlatformAccountUseCase;
+  final DeletePlatformAccountUseCase _deletePlatformAccountUseCase;
+
+  PlatformAccountCubit(
+    this._updatePlatformAccountUseCase,
+    this._deletePlatformAccountUseCase,
+    this._addPlatformAccountUseCase,
+    this._vaultCryptoService,
+  ) : super(AddPlatformAccountInitialState());
+
+  String generateStrongPassword() {
+    const length = 16;
+    const letterLowerCase = "abcdefghijklmnopqrstuvwxyz";
+    const letterUpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const number = "0123456789";
+    const special = "@#%^&*_-+()[]{}";
+
+    String chars = "";
+    chars += letterLowerCase;
+    chars += letterUpperCase;
+    chars += number;
+    chars += special;
+
+    return List.generate(length, (index) {
+      final indexRandom = Random.secure().nextInt(chars.length);
+      return chars[indexRandom];
+    }).join('');
+  }
+
+  Future<void> addPlatformAccount({
+    required String userId,
+    required PlatformData platform,
+    required String emailOrUsername,
+    required String password,
+    String? notes,
+  }) async {
+    emit(AddPlatformAccountLoadingState());
+
+    final secretBox = await _vaultCryptoService.encryptPassword(
+      password: password,
+    );
+    final account = PlatformAccount(
+      platform: platform,
+      emailOrUsername: emailOrUsername,
+      encryptedPassword: secretBox.cipherText,
+      mac: secretBox.mac.bytes,
+      nonce: secretBox.nonce,
+      notes: notes,
+      createdAt: DateTime.now(),
+    );
+
+    final result = await _addPlatformAccountUseCase.invoke(userId, account);
+    result.fold(
+      (failure) => emit(AddPlatformAccountErrorState(failure.message)),
+      (_) => emit(AddPlatformAccountSuccessState()),
+    );
+  }
+
+  Future<void> updatePlatformAccount({
+    required String userId,
+    required PlatformAccount originalAccount,
+    required String emailOrUsername,
+    required String password,
+    String? notes,
+  }) async {
+    emit(EditPlatformAccountLoadingState());
+    final encrypted = await _vaultCryptoService.encryptPassword(
+      password: password,
+    );
+
+    final updatedAccount = PlatformAccount(
+      id: originalAccount.id,
+      platform: originalAccount.platform,
+      emailOrUsername: emailOrUsername,
+      encryptedPassword: encrypted.cipherText,
+      notes: notes,
+      createdAt: originalAccount.createdAt,
+      mac: encrypted.mac.bytes,
+      nonce: encrypted.nonce,
+    );
+
+    final result = await _updatePlatformAccountUseCase.invoke(
+      userId,
+      updatedAccount,
+    );
+    result.fold(
+      (failure) => emit(EditPlatformAccountErrorState(failure.message)),
+      (_) => emit(EditPlatformAccountSuccessState()),
+    );
+  }
+
+  Future<void> deletePlatformAccount({
+    required String userId,
+    required String accountId,
+  }) async {
+    emit(DeletePlatformAccountLoadingState());
+    final result = await _deletePlatformAccountUseCase.invoke(
+      userId,
+      accountId,
+    );
+    result.fold(
+      (failure) => emit(DeletePlatformAccountErrorState(failure.message)),
+      (_) => emit(DeletePlatformAccountSuccessState()),
+    );
+  }
+}

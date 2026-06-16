@@ -161,8 +161,15 @@
   "arabic" : "Arabic",
   "The supplied auth credential is incorrect, malformed or has expired." : "The password is incorrect",
   "no" : "No",
-  "account_deleted_successfully" : "Account Deleted Successfully"
-
+  "account_deleted_successfully" : "Account Deleted Successfully",
+  "account_details" : "Account details",
+  "are_you_sure_you_want_to_delete_account" : "Are you sure you want to delete account ?",
+  "no_notes" : "No notes added",
+  "user_name-email_address": "Username - Email Address",
+  "website_address" : "Website Address",
+  "save_changes" : "Save changes",
+  "details" : "Details",
+  "edit_account" : "Edit account"
 
 
 

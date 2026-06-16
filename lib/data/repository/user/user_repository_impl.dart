@@ -34,7 +34,7 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> createUser({required MyUser user}) async {
+  Future<Either<Failure, Unit>> createDatabaseUser({required MyUser user}) async {
     try {
       await _userRemoteDataSource.createUser(user.toMyUserDto());
       return Right(unit);
@@ -46,7 +46,7 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> deleteUser({required String uId}) async {
+  Future<Either<Failure, Unit>> deleteDatabaseUser({required String uId}) async {
     try {
       await _userRemoteDataSource.deleteUser(uId);
       await _userLocalDataSource.deleteUser();
@@ -59,7 +59,7 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> updateUser({required MyUser user}) async {
+  Future<Either<Failure, Unit>> updateDatabaseUser({required MyUser user}) async {
     try {
       await _userRemoteDataSource.updateUser(user.toMyUserDto());
       await _userLocalDataSource.saveUser(user: user.toMyUserDto());

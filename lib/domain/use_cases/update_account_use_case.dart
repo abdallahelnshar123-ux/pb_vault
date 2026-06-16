@@ -5,12 +5,12 @@ import '../failure/failure.dart';
 import '../repository/account/account_repository.dart';
 
 @injectable
-class AddPlatformAccountUseCase {
+class UpdatePlatformAccountUseCase {
   final AccountRepository _repository;
 
-  AddPlatformAccountUseCase(this._repository);
+  UpdatePlatformAccountUseCase(this._repository);
 
   Future<Either<Failure, Unit>> invoke(String userId, PlatformAccount account) {
-    return _repository.addAccount(userId, account);
+    return _repository.updateAccount(userId, account);
   }
 }

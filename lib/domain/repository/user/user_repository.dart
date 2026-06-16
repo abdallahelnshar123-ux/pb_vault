@@ -10,11 +10,11 @@ abstract class UserRepository {
 
   Either<Failure, Option<MyUser>> getUserFromCache();
 
-  Future<Either<Failure, Unit>> createUser({required MyUser user});
+  Future<Either<Failure, Unit>> createDatabaseUser({required MyUser user});
 
-  Future<Either<Failure, Unit>> updateUser({required MyUser user});
+  Future<Either<Failure, Unit>> updateDatabaseUser({required MyUser user});
 
-  Future<Either<Failure, Unit>> deleteUser({required String uId});
+  Future<Either<Failure, Unit>> deleteDatabaseUser({required String uId});
 
   Future<Either<Failure, Unit>> setMasterPassword({required MyUser user});
 }
