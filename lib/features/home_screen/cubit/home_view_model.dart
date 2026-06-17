@@ -21,24 +21,29 @@ class HomeCubit extends Cubit<HomeState> {
 
   HomeCubit(this._getAccountsUseCase, this._vaultCryptoService)
     : super(HomeInitial());
+  List<PlatformAccount> accountsList = [];
 
   void getAccounts(String userId) {
     emit(HomeLoading());
     _subscription?.cancel();
-    _subscription = _getAccountsUseCase.invoke(userId).listen(
-      (result) {
-        result.fold(
-          (failure) => emit(HomeError(failure.message)),
-          (accounts) => emit(HomeSuccess(accounts)),
+    _subscription = _getAccountsUseCase
+        .invoke(userId)
+        .listen(
+          (result) {
+            result.fold((failure) => emit(HomeError(failure.message)), (
+              accounts,
+            ) {
+              accountsList = accounts;
+              emit(HomeSuccess(accounts));
+            });
+          },
+          onError: (error) {
+            // Silently handle permission denied errors during platform_account deletion/logout
+            if (!error.toString().contains('permission-denied')) {
+              emit(HomeError(error.toString()));
+            }
+          },
         );
-      },
-      onError: (error) {
-        // Silently handle permission denied errors during platform_account deletion/logout
-        if (!error.toString().contains('permission-denied')) {
-          emit(HomeError(error.toString()));
-        }
-      },
-    );
   }
 
   Future<void> copyAccountPassword({
@@ -57,6 +62,12 @@ class HomeCubit extends Cubit<HomeState> {
         message: 'password_copied_to_clipboard'.tr(),
       );
     });
+  }
+
+  Future<void> clearHomeAccounts()async {
+    emit(HomeInitial());
+    await _subscription?.cancel();
+    accountsList.clear();
   }
 
   @override

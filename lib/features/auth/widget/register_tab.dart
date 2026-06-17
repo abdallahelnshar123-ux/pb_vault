@@ -14,7 +14,7 @@ import '../../../core/utils/screen_size.dart';
 import '../../../core/utils/validators.dart';
 import '../../../widgets/custom_elevated_button.dart';
 import '../../../widgets/custom_text_form_field.dart';
-import '../cubit/User_state.dart';
+import '../cubit/user_state.dart';
 import '../cubit/user_view_model.dart';
 
 class RegisterTab extends StatefulWidget {

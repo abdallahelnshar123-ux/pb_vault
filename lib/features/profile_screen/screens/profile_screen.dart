@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pb_vault/core/utils/app_assets.dart';
-import 'package:pb_vault/features/auth/cubit/User_state.dart';
+import 'package:pb_vault/features/auth/cubit/user_state.dart';
 import 'package:pb_vault/widgets/custom_elevated_button.dart';
 
 import '../../../../core/utils/app_colors.dart';

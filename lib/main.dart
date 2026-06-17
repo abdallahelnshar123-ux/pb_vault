@@ -14,6 +14,7 @@ import 'core/utils/app_routes.dart';
 import 'core/utils/app_theme.dart';
 import 'domain/use_cases/set_onboarding_done_use_case.dart';
 import 'features/auth/cubit/user_view_model.dart';
+import 'features/home_screen/cubit/home_view_model.dart';
 import 'features/onboarding_screen/provider/onboarding_view_model.dart';
 import 'features/onboarding_screen/screens/onboarding_screen.dart';
 import 'features/platform_account/cubit/platform_account_view_model.dart';
@@ -29,6 +30,8 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => getIt<UserCubit>()),
+        BlocProvider(create: (context) =>
+        getIt<HomeCubit>()),
         BlocProvider(create: (context) => getIt<PlatformAccountCubit>()),
       ],
       child: EasyLocalization(
@@ -51,17 +54,18 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: context.read<UserCubit>().getInitialRoute(),
       routes: {
-        AppRoutes.onboardingRouteName: (context) => ChangeNotifierProvider(
-          create: (context) =>
-              OnboardingViewModel(getIt<SetOnboardingDoneUseCase>()),
-          child: const OnboardingScreen(),
-        ),
+        AppRoutes.onboardingRouteName: (context) =>
+            ChangeNotifierProvider(
+              create: (context) =>
+                  OnboardingViewModel(getIt<SetOnboardingDoneUseCase>()),
+              child: const OnboardingScreen(),
+            ),
         AppRoutes.authScreen: (context) => const AuthScreen(),
         AppRoutes.homeRouteName: (context) => const HomeScreen(),
         AppRoutes.masterPasswordScreen: (context) =>
-            const MasterPasswordScreen(),
+        const MasterPasswordScreen(),
         AppRoutes.addAccountScreen: (context) =>
-            const AddPlatformAccountScreen(),
+        const AddPlatformAccountScreen(),
         AppRoutes.profileScreen: (context) => const ProfileScreen(),
         AppRoutes.editProfileScreen: (context) => const EditProfileScreen(),
       },

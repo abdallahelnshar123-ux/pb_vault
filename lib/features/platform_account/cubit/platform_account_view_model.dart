@@ -120,4 +120,17 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
       (_) => emit(DeletePlatformAccountSuccessState()),
     );
   }
+
+  List<PlatformAccount> searchPlatformAccounts({
+    required List<PlatformAccount> accountsList,
+    required String searchTerm,
+  }) {
+    return accountsList
+        .where(
+          (account) =>
+              account.emailOrUsername.toLowerCase().trim().contains(searchTerm.toLowerCase().trim()) ||
+              account.platform.name.toLowerCase().trim().contains(searchTerm.toLowerCase().trim()),
+        )
+        .toList();
+  }
 }

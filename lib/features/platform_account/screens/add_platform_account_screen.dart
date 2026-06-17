@@ -22,7 +22,8 @@ class AddPlatformAccountScreen extends StatefulWidget {
   const AddPlatformAccountScreen({super.key});
 
   @override
-  State<AddPlatformAccountScreen> createState() => _AddPlatformAccountScreenState();
+  State<AddPlatformAccountScreen> createState() =>
+      _AddPlatformAccountScreenState();
 }
 
 class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
@@ -134,7 +135,7 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
       useSafeArea: true,
       enableDrag: false,
       isScrollControlled: true,
-      constraints: .tight(Size(double.infinity, context.height -150)),
+      constraints: .tight(Size(double.infinity, context.height - 150)),
       backgroundColor: AppColors.backgroundDark,
       context: context,
       shape: const RoundedRectangleBorder(

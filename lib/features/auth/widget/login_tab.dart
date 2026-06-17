@@ -10,7 +10,7 @@ import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
 import '../../../widgets/custom_elevated_button.dart';
-import '../cubit/User_state.dart';
+import '../cubit/user_state.dart';
 import '../cubit/user_view_model.dart';
 import 'continue_with_google_button.dart';
 

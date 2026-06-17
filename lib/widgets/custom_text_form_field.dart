@@ -67,7 +67,6 @@ class CustomTextFormField extends StatelessWidget {
       cursorHeight: context.height * 0.04,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.all(15),
-
         filled: filled,
         fillColor: fillColor,
         errorMaxLines: 2,
