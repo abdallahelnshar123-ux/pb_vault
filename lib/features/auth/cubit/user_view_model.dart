@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:pb_vault/features/home_screen/cubit/home_view_model.dart';
 
 import '../../../core/utils/app_routes.dart';
 import '../../../domain/entities/response/user/my_user.dart';
@@ -14,7 +15,7 @@ import '../../../domain/use_cases/register_with_email_and_password_use_case.dart
 import '../../../domain/use_cases/reset_password_use_case.dart';
 import '../../../domain/use_cases/sign_in_with_google_use_cases.dart';
 import '../../../domain/use_cases/update_account_details_use_case.dart';
-import 'User_state.dart';
+import 'user_state.dart';
 
 @lazySingleton
 class UserCubit extends Cubit<UserState> {
@@ -52,6 +53,7 @@ class UserCubit extends Cubit<UserState> {
 
   void logout(BuildContext context) async {
     emit(LogoutLoadingState());
+    await context.read<HomeCubit>().clearHomeAccounts();
     if (!context.mounted) return;
     var result = await _logoutUseCase.invoke();
     result.fold((failure) => emit(LogoutErrorState(failure.message.tr())), (_) {
