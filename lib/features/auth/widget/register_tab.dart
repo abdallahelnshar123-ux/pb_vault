@@ -153,7 +153,7 @@ class _RegisterTabState extends State<RegisterTab> {
         colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
       ),
       hintText: "name".tr(),
-      hintStyle: AppStyles.robotoBold16SurfaceDark(context),
+      hintStyle: AppStyles.robotoBold14gray(context),
       filled: true,
       fillColor: AppColors.white,
     );

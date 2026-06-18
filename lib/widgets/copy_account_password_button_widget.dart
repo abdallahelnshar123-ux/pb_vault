@@ -1,7 +1,7 @@
-import 'package:cryptography/cryptography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pb_vault/core/services/vault_crypto_service/vault_crypto_service.dart';
+import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+import 'package:pb_vault/domain/repository/vault/vault_repository.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 
 import '../core/di/di.dart';
@@ -32,11 +32,13 @@ class _CopyAccountPasswordButtonWidgetState
       isSelected: isPasswordCopy,
       selectedIcon: Icon(Icons.check, color: widget.iconColor),
       onPressed: () async {
-        final password = await getIt<VaultCryptoService>().decryptPassword(
-          mac: Mac(widget.account.mac),
+        final encryptedData = EncryptedData(
           cipherText: widget.account.encryptedPassword,
+          mac: widget.account.mac,
           nonce: widget.account.nonce,
         );
+
+        final password = await getIt<VaultRepository>().decrypt(encryptedData);
 
         await Clipboard.setData(ClipboardData(text: password));
         setState(() {

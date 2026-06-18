@@ -40,9 +40,15 @@ class _SearchPlatformAccountsScreenState
     return SafeArea(
       top: false,
       bottom: true,
-      child: Scaffold(
-        appBar: _builtAppBar(),
-        body: Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: _builtBody()),
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          appBar: _builtAppBar(),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _builtBody(),
+          ),
+        ),
       ),
     );
   }
@@ -82,7 +88,23 @@ class _SearchPlatformAccountsScreenState
             });
           },
         ),
-        Expanded(child: PasswordCardItem(accountsList: filteredAccountsList)),
+        Expanded(
+          child: widget.allAccountsList.isEmpty
+              ? Center(
+                  child: Text(
+                    'no_accounts_to_search_add_some_accounts'.tr(),
+                    style: AppStyles.robotoBold16Secondary(context),
+                    textAlign: .center,
+                  ),
+                )
+              : filteredAccountsList.isEmpty ?Center(
+            child: Text(
+              'no_accounts_matches_search_term'.tr(),
+              style: AppStyles.robotoBold16Secondary(context),
+              textAlign: .center,
+            ),
+          ) :PasswordCardItem(accountsList: filteredAccountsList),
+        ),
       ],
     );
   }
