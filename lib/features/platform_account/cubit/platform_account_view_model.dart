@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pb_vault/core/services/vault_crypto_service/vault_crypto_service.dart';
+import 'package:pb_vault/domain/use_cases/vault/encrypt_password_use_case.dart';
 
 import '../../../domain/entities/response/platform_account/platform_account.dart';
 import '../../../domain/entities/response/platform_account/platform_data.dart';
@@ -14,7 +14,7 @@ import 'platform_account_state.dart';
 @injectable
 class PlatformAccountCubit extends Cubit<PlatformAccountState> {
   final AddPlatformAccountUseCase _addPlatformAccountUseCase;
-  final VaultCryptoService _vaultCryptoService;
+  final EncryptPasswordUseCase _encryptPasswordUseCase;
   final UpdatePlatformAccountUseCase _updatePlatformAccountUseCase;
   final DeletePlatformAccountUseCase _deletePlatformAccountUseCase;
 
@@ -22,7 +22,7 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
     this._updatePlatformAccountUseCase,
     this._deletePlatformAccountUseCase,
     this._addPlatformAccountUseCase,
-    this._vaultCryptoService,
+    this._encryptPasswordUseCase,
   ) : super(AddPlatformAccountInitialState());
 
   String generateStrongPassword() {
@@ -53,15 +53,14 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
   }) async {
     emit(AddPlatformAccountLoadingState());
 
-    final secretBox = await _vaultCryptoService.encryptPassword(
-      password: password,
-    );
+    final encryptedData = await _encryptPasswordUseCase.invoke(password);
+
     final account = PlatformAccount(
       platform: platform,
       emailOrUsername: emailOrUsername,
-      encryptedPassword: secretBox.cipherText,
-      mac: secretBox.mac.bytes,
-      nonce: secretBox.nonce,
+      encryptedPassword: encryptedData.cipherText,
+      mac: encryptedData.mac,
+      nonce: encryptedData.nonce,
       notes: notes,
       createdAt: DateTime.now(),
     );
@@ -81,29 +80,32 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
     String? notes,
   }) async {
     emit(EditPlatformAccountLoadingState());
-    final encrypted = await _vaultCryptoService.encryptPassword(
-      password: password,
-    );
 
-    final updatedAccount = PlatformAccount(
-      id: originalAccount.id,
-      platform: originalAccount.platform,
-      emailOrUsername: emailOrUsername,
-      encryptedPassword: encrypted.cipherText,
-      notes: notes,
-      createdAt: originalAccount.createdAt,
-      mac: encrypted.mac.bytes,
-      nonce: encrypted.nonce,
-    );
+    try {
+      final encryptedData = await _encryptPasswordUseCase.invoke(password);
 
-    final result = await _updatePlatformAccountUseCase.invoke(
-      userId,
-      updatedAccount,
-    );
-    result.fold(
-      (failure) => emit(EditPlatformAccountErrorState(failure.message)),
-      (_) => emit(EditPlatformAccountSuccessState()),
-    );
+      final updatedAccount = PlatformAccount(
+        id: originalAccount.id,
+        platform: originalAccount.platform,
+        emailOrUsername: emailOrUsername,
+        encryptedPassword: encryptedData.cipherText,
+        notes: notes,
+        createdAt: originalAccount.createdAt,
+        mac: encryptedData.mac,
+        nonce: encryptedData.nonce,
+      );
+
+      final result = await _updatePlatformAccountUseCase.invoke(
+        userId,
+        updatedAccount,
+      );
+      result.fold(
+        (failure) => emit(EditPlatformAccountErrorState(failure.message)),
+        (_) => emit(EditPlatformAccountSuccessState()),
+      );
+    } catch (e) {
+      emit(EditPlatformAccountErrorState(e.toString()));
+    }
   }
 
   Future<void> deletePlatformAccount({
@@ -128,8 +130,12 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
     return accountsList
         .where(
           (account) =>
-              account.emailOrUsername.toLowerCase().trim().contains(searchTerm.toLowerCase().trim()) ||
-              account.platform.name.toLowerCase().trim().contains(searchTerm.toLowerCase().trim()),
+              account.emailOrUsername.toLowerCase().trim().contains(
+                searchTerm.toLowerCase().trim(),
+              ) ||
+              account.platform.name.toLowerCase().trim().contains(
+                searchTerm.toLowerCase().trim(),
+              ),
         )
         .toList();
   }

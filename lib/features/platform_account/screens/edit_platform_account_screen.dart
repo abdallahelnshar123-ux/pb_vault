@@ -1,4 +1,3 @@
-import 'package:cryptography/cryptography.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,8 +10,9 @@ import '../../../../core/utils/screen_size.dart';
 import '../../../../widgets/custom_elevated_button.dart';
 import '../../../../widgets/custom_text_form_field.dart';
 import '../../../core/di/di.dart';
-import '../../../core/services/vault_crypto_service/vault_crypto_service.dart';
 import '../../../domain/entities/response/platform_account/platform_account.dart';
+import '../../../domain/entities/vault/encrypted_data.dart';
+import '../../../domain/repository/vault/vault_repository.dart';
 import '../../../widgets/email_text_field_widget.dart';
 import '../../../widgets/password_text_field_widget.dart';
 import '../../auth/cubit/user_view_model.dart';
@@ -38,14 +38,21 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
   );
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      passwordController.text = await getIt<VaultCryptoService>().decryptPassword(
-        mac: Mac(widget.account.mac),
+      final encryptedData = EncryptedData(
         cipherText: widget.account.encryptedPassword,
+        mac: widget.account.mac,
         nonce: widget.account.nonce,
       );
+      final password = await getIt<VaultRepository>().decrypt(encryptedData);
+      if (mounted) {
+        setState(() {
+          passwordController.text = password;
+        });
+      }
     });
     super.initState();
   }

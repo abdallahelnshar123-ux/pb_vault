@@ -172,7 +172,13 @@
   "save_changes" : "حفظ التغييرات",
   "details" : "التفاصيل",
   "edite_account" : "تعديل الحساب",
-  "search_password" : "إبحث في كلمات السر"
+  "search_password" : "إبحث في كلمات السر",
+  "account_updated_successfully" : "تم تحديث الحساب بنجاح",
+  "no_accounts_to_search_add_some_accounts" : "لا يوجد حسابات للبحث عنها. غضف بعض الحسابات",
+  "no_accounts_matches_search_term" : "لا يوجد حسابات تطابق البحث"
+
+
+
 
 
 

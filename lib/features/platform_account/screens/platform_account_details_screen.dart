@@ -1,10 +1,10 @@
-import 'package:cryptography/cryptography.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:pb_vault/core/services/vault_crypto_service/vault_crypto_service.dart';
 import 'package:pb_vault/domain/entities/response/user/my_user.dart';
+import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+import 'package:pb_vault/domain/repository/vault/vault_repository.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_state.dart';
 import 'package:pb_vault/widgets/copy_account_password_button_widget.dart';
 
@@ -32,16 +32,22 @@ class PlatformAccountDetailsScreen extends StatefulWidget {
 class _PlatformAccountDetailsScreenState
     extends State<PlatformAccountDetailsScreen> {
   final ValueNotifier<bool> isObscure = ValueNotifier(true);
-  late final String unEncryptedPassword;
+  String unEncryptedPassword = '';
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      unEncryptedPassword = await getIt<VaultCryptoService>().decryptPassword(
-        mac: Mac(widget.account.mac),
+      final encryptedData = EncryptedData(
         cipherText: widget.account.encryptedPassword,
+        mac: widget.account.mac,
         nonce: widget.account.nonce,
       );
+      final password = await getIt<VaultRepository>().decrypt(encryptedData);
+      if (mounted) {
+        setState(() {
+          unEncryptedPassword = password;
+        });
+      }
     });
     super.initState();
   }

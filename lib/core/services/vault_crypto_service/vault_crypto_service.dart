@@ -1,43 +1,51 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cryptography/cryptography.dart';
 import 'package:cryptography/helpers.dart';
 import 'package:injectable/injectable.dart';
+import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+import 'package:pb_vault/domain/repository/vault/vault_repository.dart';
 
-@LazySingleton()
-class VaultCryptoService {
+@LazySingleton(as: VaultRepository)
+class VaultCryptoService implements VaultRepository {
   final Cryptography _cryptography;
+  final Pbkdf2 _pbkdf2;
 
   SecretKey? _secretKey;
-  final Pbkdf2 _pbkdf2;
 
   VaultCryptoService(this._cryptography, this._pbkdf2);
 
-  void setSecretKey(SecretKey key) {
-    _secretKey = key;
+  @override
+  bool get isLocked => _secretKey == null;
+
+  @override
+  void lock() {
+    _secretKey = null;
   }
 
-  SecretKey get secretKey {
-    return _secretKey!;
-  }
-
-  Future<Map<String, Object>> createVerifier({required String password}) async {
+  @override
+  Future<Map<String, dynamic>> createVerifier(String password) async {
     final salt = randomBytes(16);
 
     final hash = await _cryptography.sha256().hash([
       ...utf8.encode(password),
       ...salt,
     ]);
+
     final secretKey = await _pbkdf2.deriveKey(
       secretKey: SecretKey(utf8.encode(password)),
       nonce: salt,
     );
-    setSecretKey(secretKey);
+    _secretKey = secretKey;
 
-    return {'salt': salt, 'hash': base64Encode(hash.bytes)};
+    return {
+      'salt': salt,
+      'hash': base64Encode(hash.bytes),
+    };
   }
 
-  Future<String> verifyVerifier({
+  Future<String> _calculateVerifier({
     required String password,
     required List<int> salt,
   }) async {
@@ -49,43 +57,61 @@ class VaultCryptoService {
     return base64Encode(hash.bytes);
   }
 
-  Future<bool> verifyMasterPassword({
-    required String masterPassword,
+  @override
+  Future<bool> unlock({
+    required String password,
     required List<int> salt,
-    required String passwordVerifier,
+    required String verifier,
   }) async {
-    final verifier = await verifyVerifier(password: masterPassword, salt: salt);
+    final calculatedVerifier = await _calculateVerifier(
+      password: password,
+      salt: salt,
+    );
 
-    if (passwordVerifier == verifier) {
+    if (verifier == calculatedVerifier) {
       final secretKey = await _pbkdf2.deriveKey(
-        secretKey: SecretKey(utf8.encode(masterPassword)),
+        secretKey: SecretKey(utf8.encode(password)),
         nonce: salt,
       );
 
-      setSecretKey(secretKey);
+      _secretKey = secretKey;
       return true;
     }
     return false;
   }
 
-  Future<SecretBox> encryptPassword({required String password}) async {
+  @override
+  Future<EncryptedData> encrypt(String text) async {
+    if (_secretKey == null) {
+      throw Exception('Vault is locked. Unlock it first.');
+    }
+
     final nonce = randomBytes(12);
 
     final encrypted = await _cryptography.aesGcm().encrypt(
-      utf8.encode(password),
+      utf8.encode(text),
       secretKey: _secretKey!,
       nonce: nonce,
     );
 
-    return encrypted;
+    return EncryptedData(
+      cipherText: encrypted.cipherText,
+      mac: encrypted.mac.bytes,
+      nonce: encrypted.nonce,
+    );
   }
 
-  Future<String> decryptPassword({
-    required Mac mac,
-    required var cipherText,
-    required List<int> nonce,
-  }) async {
-    final secretBox = SecretBox(cipherText, nonce: nonce, mac: mac);
+  @override
+  Future<String> decrypt(EncryptedData data) async {
+    if (_secretKey == null) {
+      throw Exception('Vault is locked. Unlock it first.');
+    }
+
+    final secretBox = SecretBox(
+      data.cipherText,
+      nonce: data.nonce,
+      mac: Mac(data.mac),
+    );
 
     final bytes = await _cryptography.aesGcm().decrypt(
       secretBox,
@@ -95,7 +121,8 @@ class VaultCryptoService {
     return utf8.decode(bytes);
   }
 
-  void clear() {
-    _secretKey = null;
+  List<int> generateSalt([int length = 16]) {
+    final Random random = Random.secure();
+    return List<int>.generate(length, (i) => random.nextInt(256));
   }
 }
