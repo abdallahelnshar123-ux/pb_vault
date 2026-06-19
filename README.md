@@ -81,7 +81,7 @@ Passwords are encrypted before being stored, ensuring that sensitive information
 ## 🎬 Demo
 
 <p align="center">
-  <img src="assets/gifs/onboarding.gif" width="640"  alt="onboarding"/>
+  <img src="assets/gifs/onboarding.gif" width="240"  alt="onboarding"/>
 </p>
 
 <p align="center">
