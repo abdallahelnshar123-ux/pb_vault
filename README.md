@@ -85,23 +85,23 @@ Passwords are encrypted before being stored, ensuring that sensitive information
 </p>
 
 <p align="center">
-  <img src="assets/gifs/register.gif" width="640"  alt="register"/>
+  <img src="assets/gifs/register.gif" width="240"  alt="register"/>
   <img src="assets/gifs/login.gif" width="640"  alt="login"/>
 </p>
 
 <p align="center">
-  <img src="assets/gifs/change_language.gif" width="640"  alt="change_language"/>
+  <img src="assets/gifs/change_language.gif" width="240"  alt="change_language"/>
 </p>
 
 <p align="center">
-  <img src="assets/gifs/add_account.gif" width="640"  alt="add_account"/>
-  <img src="assets/gifs/account_details.gif" width="640"  alt="account_details"/>
-  <img src="assets/gifs/edit_account.gif" width="640"  alt="edit_account"/>
+  <img src="assets/gifs/add_account.gif" width="240"  alt="add_account"/>
+  <img src="assets/gifs/account_details.gif" width="240"  alt="account_details"/>
+  <img src="assets/gifs/edit_account.gif" width="240"  alt="edit_account"/>
 </p>
 
 <p align="center">
-  <img src="assets/gifs/delete_account.gif" width="640"  alt="delete_account"/>
-  <img src="assets/gifs/search.gif" width="640"  alt="search_account"/>
+  <img src="assets/gifs/delete_account.gif" width="240"  alt="delete_account"/>
+  <img src="assets/gifs/search.gif" width="240"  alt="search_account"/>
 </p>
 
 <hr/>
