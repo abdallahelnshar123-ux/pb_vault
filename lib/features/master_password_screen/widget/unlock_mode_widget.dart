@@ -20,9 +20,7 @@ class UnlockModeWidget extends StatefulWidget {
 
 class _UnlockModeWidgetState extends State<UnlockModeWidget> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final TextEditingController passwordController = TextEditingController(
-    text: 'abcdefg123',
-  );
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   void dispose() {
