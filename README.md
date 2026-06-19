@@ -86,7 +86,7 @@ Passwords are encrypted before being stored, ensuring that sensitive information
 
 <p align="center">
   <img src="assets/gifs/register.gif" width="240"  alt="register"/>
-  <img src="assets/gifs/login.gif" width="640"  alt="login"/>
+  <img src="assets/gifs/login.gif" width="240"  alt="login"/>
 </p>
 
 <p align="center">
