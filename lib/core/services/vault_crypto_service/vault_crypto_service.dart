@@ -39,10 +39,7 @@ class VaultCryptoService implements VaultRepository {
     );
     _secretKey = secretKey;
 
-    return {
-      'salt': salt,
-      'hash': base64Encode(hash.bytes),
-    };
+    return {'salt': salt, 'hash': base64Encode(hash.bytes)};
   }
 
   Future<String> _calculateVerifier({

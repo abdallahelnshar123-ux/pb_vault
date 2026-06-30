@@ -9,6 +9,7 @@ import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_styles.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../widgets/custom_elevated_button.dart';
+import '../../../core/utils/app_routes.dart';
 import '../provider/onboarding_view_model.dart';
 import '../widget/dots_widget.dart';
 
@@ -68,8 +69,27 @@ class OnboardingScreen extends StatelessWidget {
               CustomElevatedButton(
                 buttonWidth: double.infinity,
                 onPressed: () {
-                  provider.onFirstButtonClick(context);
+                  final wasLastPage =
+                      provider.currentIndex ==
+                      provider.onboardingPagesNumber - 1;
+
+                  provider.onFirstButtonClick();
+
+                  if (wasLastPage) {
+                    Navigator.pushReplacementNamed(
+                      context,
+                      AppRoutes.authScreen,
+                    );
+                  }
                 },
+                // onPressed: () {
+                //   // provider.onFirstButtonClick(context);
+                //   final action = provider.onFirstButtonClick();
+                //
+                //   if (action == OnboardingAction.navigateToAuth) {
+                //     Navigator.pushReplacementNamed(context, AppRoutes.authScreen);
+                //   }
+                // },
                 backgroundColor: AppColors.primary,
                 child: Text(
                   onboardingDataList[currentIndex].firstButton.tr(),
@@ -80,7 +100,8 @@ class OnboardingScreen extends StatelessWidget {
               CustomElevatedButton(
                 buttonWidth: double.infinity,
                 onPressed: () {
-                  provider.onSecondButtonClick(context);
+                  provider.onSecondButtonClick();
+                  Navigator.pushReplacementNamed(context, AppRoutes.authScreen);
                 },
                 backgroundColor: AppColors.backgroundLight,
                 borderSideColor: AppColors.primary,

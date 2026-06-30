@@ -20,7 +20,7 @@ class UserRepositoryImpl extends UserRepository {
   UserRepositoryImpl(this._userRemoteDataSource, this._userLocalDataSource);
 
   @override
-  Future<Either<Failure, Option<MyUser>>> getUserFromRemoteDataSource({
+  Future<Either<Failure, Option<MyUser>>> getUserFromRemoteDataBase({
     required String uId,
   }) async {
     try {

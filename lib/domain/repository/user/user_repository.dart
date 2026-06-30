@@ -4,7 +4,7 @@ import '../../entities/response/user/my_user.dart';
 import '../../failure/failure.dart';
 
 abstract class UserRepository {
-  Future<Either<Failure, Option<MyUser>>> getUserFromRemoteDataSource({
+  Future<Either<Failure, Option<MyUser>>> getUserFromRemoteDataBase({
     required String uId,
   });
 

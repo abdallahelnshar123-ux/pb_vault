@@ -1,4 +1,6 @@
-class MyUser {
+import 'package:equatable/equatable.dart';
+
+class MyUser extends Equatable {
   final String name;
   final String email;
   final String id;
@@ -14,6 +16,16 @@ class MyUser {
     this.salt,
     this.passwordVerifier,
   });
+
+  @override
+  List<Object?> get props => [
+    id,
+    email,
+    name,
+    provider,
+    salt,
+    passwordVerifier,
+  ];
 
   MyUser copyWith({String? name, List<int>? salt, String? passwordVerifier}) {
     return MyUser(

@@ -25,6 +25,10 @@ import '../../data/data_sources/local/user/impl/user_local_data_source_impl.dart
     as _i111;
 import '../../data/data_sources/local/user/user_local_data_source.dart'
     as _i996;
+import '../../data/data_sources/remote/account/account_remote_data_source.dart'
+    as _i629;
+import '../../data/data_sources/remote/account/impl/account_remote_data_source_impl.dart'
+    as _i875;
 import '../../data/data_sources/remote/auth/auth_remote_data_source.dart'
     as _i202;
 import '../../data/data_sources/remote/auth/impl/auth_remote_data_source_impl.dart'
@@ -105,11 +109,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i75.FirestoreService>(
       () => _i75.FirestoreService(gh<_i974.FirebaseFirestore>()),
     );
-    gh.factory<_i406.AccountRepository>(
-      () => _i381.AccountRepositoryImpl(gh<_i75.FirestoreService>()),
+    gh.factory<_i629.AccountRemoteDataSource>(
+      () => _i875.AccountRemoteDataSourceImpl(gh<_i75.FirestoreService>()),
     );
     gh.factory<_i632.UserRemoteDataSource>(
       () => _i22.UserRemoteDataSourceImpl(gh<_i75.FirestoreService>()),
+    );
+    gh.factory<_i406.AccountRepository>(
+      () => _i381.AccountRepositoryImpl(gh<_i629.AccountRemoteDataSource>()),
     );
     gh.factory<_i327.AddPlatformAccountUseCase>(
       () => _i327.AddPlatformAccountUseCase(gh<_i406.AccountRepository>()),
@@ -234,9 +241,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i183.UserRepository>(),
       ),
     );
-    gh.factory<_i926.OnboardingViewModel>(
-      () => _i926.OnboardingViewModel(gh<_i551.SetOnboardingDoneUseCase>()),
-    );
     gh.lazySingleton<_i8.UserCubit>(
       () => _i8.UserCubit(
         gh<_i447.ContinueWithGoogleUseCases>(),
@@ -247,7 +251,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i274.UpdateUserDetailsUseCase>(),
         gh<_i638.ResetPasswordUseCase>(),
         gh<_i543.CheckAppStartupUseCase>(),
+        gh<_i941.HomeCubit>(),
       ),
+    );
+    gh.factory<_i926.OnboardingViewModel>(
+      () => _i926.OnboardingViewModel(gh<_i551.SetOnboardingDoneUseCase>()),
     );
     return this;
   }

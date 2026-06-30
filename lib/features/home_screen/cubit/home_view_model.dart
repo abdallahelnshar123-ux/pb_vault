@@ -1,14 +1,11 @@
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
 import 'package:pb_vault/domain/use_cases/vault/decrypt_password_use_case.dart';
 
-import '../../../core/utils/snack_bar_utils.dart';
 import '../../../domain/entities/response/platform_account/platform_account.dart';
 import '../../../domain/use_cases/get_accounts_use_case.dart';
 import 'home_state.dart';
@@ -36,7 +33,6 @@ class HomeCubit extends Cubit<HomeState> {
         });
       },
       onError: (error) {
-        // Silently handle permission denied errors during platform_account deletion/logout
         if (!error.toString().contains('permission-denied')) {
           emit(HomeError(error.toString()));
         }
@@ -46,9 +42,9 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> copyAccountPassword({
     required PlatformAccount account,
-    required BuildContext context,
+    // required BuildContext context,
   }) async {
-    try {
+    // try {
       final encryptedData = EncryptedData(
         cipherText: account.encryptedPassword,
         mac: account.mac,
@@ -58,18 +54,18 @@ class HomeCubit extends Cubit<HomeState> {
       final password = await _decryptPasswordUseCase.invoke(encryptedData);
 
       await Clipboard.setData(ClipboardData(text: password));
-      if (!context.mounted) return;
-      SnackBarUtils.showSuccessSnackBar(
-        context: context,
-        message: 'password_copied_to_clipboard'.tr(),
-      );
-    } catch (e) {
-      if (!context.mounted) return;
-      SnackBarUtils.showErrorSnackBar(
-        context: context,
-        message: 'error_copying_password'.tr(),
-      );
-    }
+      // if (!context.mounted) return;
+      // SnackBarUtils.showSuccessSnackBar(
+      //   context: context,
+      //   message: 'password_copied_to_clipboard'.tr(),
+      // );
+    // } catch (e) {
+    //   if (!context.mounted) return;
+    //   SnackBarUtils.showErrorSnackBar(
+    //     context: context,
+    //     message: 'error_copying_password'.tr(),
+    //   );
+    // }
   }
 
   Future<void> clearHomeAccounts() async {

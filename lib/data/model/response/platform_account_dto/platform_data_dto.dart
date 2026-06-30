@@ -1,4 +1,6 @@
-class PlatformDataDto {
+import 'package:equatable/equatable.dart';
+
+class PlatformDataDto extends Equatable {
   final String name;
   final String icon;
   final String website;
@@ -24,4 +26,7 @@ class PlatformDataDto {
       'website': website,
     };
   }
+
+  @override
+  List<Object?> get props => [name, icon, website];
 }
