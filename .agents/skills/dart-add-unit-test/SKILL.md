@@ -15,6 +15,8 @@ metadata:
 - [Testing ChangeNotifier/ViewModels](#testing-changenotifierviewmodels)
 - [Testing Streams (Firestore Patterns)](#testing-streams-firestore-patterns)
 - [Advanced Testing Patterns](#advanced-testing-patterns)
+- [Testing Stateful Services](#testing-stateful-services)
+- [Testing Randomness and Uniqueness](#testing-randomness-and-uniqueness)
 - [Test Implementation Workflow](#test-implementation-workflow)
 - [Examples](#examples)
 
@@ -40,6 +42,11 @@ Utilize `package:test` as the standard testing library for Dart applications.
     );
     ```
 * **Value Equality**: For `expect()` to correctly compare custom objects (DTOs, Entities), ensure they extend `package:equatable/equatable.dart`. This allows comparing by field values rather than memory references.
+* **Equatable Comparison Rule**: When classes implement `Equatable`, always prefer comparing the entire object directly rather than individual fields. This makes tests cleaner and ensures all properties are correctly mapped.
+    ```dart
+    final expected = MyDto(id: '1', name: 'Test');
+    expect(actual, expected); // Uses Equatable's == operator
+    ```
 * Write asynchronous tests using standard `async`/`await` syntax. The test runner automatically waits for the `Future` to complete.
 * Manage test setup and teardown using `setUp()` and `tearDown()` callbacks.
 * If testing code that relies on dependency injection, use `package:mocktail` alongside `package:test` to create mock objects without code generation, configure scenarios, and verify interactions.
@@ -52,6 +59,12 @@ Utilize `package:test` as the standard testing library for Dart applications.
     * **Strict Verification**:
         * Use `verifyNoMoreInteractions(mock)` after all expected calls to ensure no other methods were called on that mock.
         * Use `verifyZeroInteractions(mock)` to prove that a mock was never used during a specific test case (e.g., in error scenarios where a dependency shouldn't be touched).
+        * **Strict Argument Matching**: Use `any(that: isA<T>().having(...))` to verify that a mock was called with an object that has specific properties, without needing to compare the entire object:
+            ```dart
+            verify(() => mockUseCase.invoke(
+              any(that: isA<User>().having((u) => u.name, 'name', 'Expected Name')),
+            )).called(1);
+            ```
 * **Argument Matchers and Custom Types**:
     * For primitive types (String, int, etc.), use `any()`.
     * For **custom classes** (DTOs, Entities), you MUST register a fallback value in `setUpAll()` before using `any()`: `registerFallbackValue(MyClass(...));` or `registerFallbackValue(FakeClass());`.
@@ -75,6 +88,14 @@ Use `package:bloc_test` for verifying BLoC and Cubit behavior.
 * **Mocking BLoCs/Cubits**: When a Cubit depends on another Cubit, use `MockCubit<S>` from `package:bloc_test/src/mock_bloc.dart`:
     ```dart
     class MockHomeCubit extends MockCubit<HomeState> implements HomeCubit {}
+    ```
+* **Testing Non-State Emitting Methods**: If a Cubit/ViewModel contains pure logic or helper methods (e.g., string manipulation, filtering) that do NOT emit states, use standard `test()` functions instead of `blocTest`:
+    ```dart
+    test('should generate different passwords', () {
+      final pass1 = cubit.generateStrongPassword();
+      final pass2 = cubit.generateStrongPassword();
+      expect(pass1, isNot(pass2));
+    });
     ```
 * **Strict Verification in BLoC Tests**:
     * Always include a `verify` block within `blocTest` to ensure interactions occurred as expected.
@@ -144,6 +165,18 @@ test('should cancel previous subscription', () async {
 });
 ```
 
+### Dependency Order in Constructors
+When mocking a class with many dependencies of the same type (e.g., multiple UseCases), explicitly document or verify the order in the constructor during setup to avoid "Type confusion" errors:
+```dart
+// Correct order: update, delete, add, encrypt
+cubit = PlatformAccountCubit(
+  mockUpdate,
+  mockDelete,
+  mockAdd,
+  mockEncrypt,
+);
+```
+
 ### Conditional Error Handling
 When testing streams that might emit errors you want to ignore (e.g., `permission-denied`), ensure your `expect` block matches the intended behavior:
 ```dart
@@ -157,6 +190,21 @@ blocTest<MyCubit, MyState>(
   expect: () => [isA<LoadingState>()],
 );
 ```
+
+## Testing Stateful Services
+For services that maintain internal state (e.g., authentication, encryption vaults), verify both state transitions and behavior constraints.
+
+* **Initial State**: Always verify the object is in the expected state immediately after instantiation.
+* **State Persistence**: Verify that actions (like unlocking) correctly update the internal state and that the state persists for subsequent calls.
+* **Constraint Enforcement**: Verify that methods throw exceptions or return early if called while the service is in an invalid state (e.g., calling `encrypt` on a locked vault).
+* **Resetting State**: Ensure "lock" or "logout" methods correctly return the service to its restricted initial state.
+
+## Testing Randomness and Uniqueness
+When testing methods that generate non-deterministic output (salts, nonces, hashes):
+
+* **Property Verification**: Verify the output type and length rather than specific values: `expect(result, hasLength(16))`.
+* **Uniqueness**: Verify that multiple calls produce different results to ensure proper entropy: `expect(first, isNot(equals(second)))`.
+* **Standard Matching**: Use `isA<T>()` and `isNotEmpty` to validate that generated data is present and of the correct type.
 
 ## Test Implementation Workflow
 
@@ -333,4 +381,4 @@ void main() {
   });
 }
 ```
-</HomeState></ServerException>
+</HomeState></User></ServerException>

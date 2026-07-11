@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:cryptography/cryptography.dart';
 import 'package:cryptography/helpers.dart';
@@ -24,24 +23,6 @@ class VaultCryptoService implements VaultRepository {
     _secretKey = null;
   }
 
-  @override
-  Future<Map<String, dynamic>> createVerifier(String password) async {
-    final salt = randomBytes(16);
-
-    final hash = await _cryptography.sha256().hash([
-      ...utf8.encode(password),
-      ...salt,
-    ]);
-
-    final secretKey = await _pbkdf2.deriveKey(
-      secretKey: SecretKey(utf8.encode(password)),
-      nonce: salt,
-    );
-    _secretKey = secretKey;
-
-    return {'salt': salt, 'hash': base64Encode(hash.bytes)};
-  }
-
   Future<String> _calculateVerifier({
     required String password,
     required List<int> salt,
@@ -52,6 +33,29 @@ class VaultCryptoService implements VaultRepository {
     ]);
 
     return base64Encode(hash.bytes);
+  }
+
+  Future<void> _createSecretKey({
+    required String password,
+    required List<int> salt,
+  }) async {
+    final secretKey = await _pbkdf2.deriveKey(
+      secretKey: SecretKey(utf8.encode(password)),
+      nonce: salt,
+    );
+
+    _secretKey = secretKey;
+  }
+
+  @override
+  Future<Map<String, dynamic>> createVerifier(String password) async {
+    final salt = randomBytes(16);
+
+    final hash = await _calculateVerifier(password: password, salt: salt);
+
+    await _createSecretKey(password: password, salt: salt);
+
+    return {'salt': salt, 'hash': hash};
   }
 
   @override
@@ -66,12 +70,7 @@ class VaultCryptoService implements VaultRepository {
     );
 
     if (verifier == calculatedVerifier) {
-      final secretKey = await _pbkdf2.deriveKey(
-        secretKey: SecretKey(utf8.encode(password)),
-        nonce: salt,
-      );
-
-      _secretKey = secretKey;
+      await _createSecretKey(password: password, salt: salt);
       return true;
     }
     return false;
@@ -116,10 +115,5 @@ class VaultCryptoService implements VaultRepository {
     );
 
     return utf8.decode(bytes);
-  }
-
-  List<int> generateSalt([int length = 16]) {
-    final Random random = Random.secure();
-    return List<int>.generate(length, (i) => random.nextInt(256));
   }
 }

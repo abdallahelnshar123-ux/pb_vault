@@ -93,35 +93,6 @@ void main() {
     });
   });
 
-  // group('generateStrongPassword', () {
-  //   test('should generate a password of length 16', () {
-  //     final password = cubit.generateStrongPassword();
-  //     expect(password.length, 16);
-  //   });
-  //
-  //   test('should generate a password with mix of characters', () {
-  //     // Run multiple times to ensure the pool includes all types (statistically guaranteed)
-  //     bool hasLower = false;
-  //     bool hasUpper = false;
-  //     bool hasNumber = false;
-  //     bool hasSpecial = false;
-  //
-  //     for (int i = 0; i < 100; i++) {
-  //       final password = cubit.generateStrongPassword();
-  //       if (password.contains(RegExp(r'[a-z]'))) hasLower = true;
-  //       if (password.contains(RegExp(r'[A-Z]'))) hasUpper = true;
-  //       if (password.contains(RegExp(r'[0-9]'))) hasNumber = true;
-  //       if (password.contains(RegExp(r'[@#%^&*_\-+()\[\]{}]')))
-  //         hasSpecial = true;
-  //     }
-  //
-  //     expect(hasLower, isTrue, reason: 'Should contain lowercase letters');
-  //     expect(hasUpper, isTrue, reason: 'Should contain uppercase letters');
-  //     expect(hasNumber, isTrue, reason: 'Should contain numbers');
-  //     expect(hasSpecial, isTrue, reason: 'Should contain special characters');
-  //   });
-  // });
-
   group('addPlatformAccount', () {
     final tEncryptedData = EncryptedData(
       cipherText: [1, 2, 3],
@@ -157,19 +128,12 @@ void main() {
             tUserId,
             any(
               that: isA<PlatformAccount>()
-                  .having(
-                    (e) => e.emailOrUsername,
-                'email',
-                'test@gmail.com',
-              )
-                  .having(
-                    (e) => e.platform,
-                'platform',
-                tPlatformData,
-              ),
+                  .having((e) => e.emailOrUsername, 'email', 'test@gmail.com')
+                  .having((e) => e.platform, 'platform', tPlatformData),
             ),
           );
-        }).called(1);      },
+        }).called(1);
+      },
     );
 
     blocTest<PlatformAccountCubit, PlatformAccountState>(
@@ -299,7 +263,7 @@ void main() {
       expect: () => [
         isA<EditPlatformAccountLoadingState>(),
         isA<EditPlatformAccountErrorState>().having(
-              (e) => e.message,
+          (e) => e.message,
           'message',
           'Exception: Error',
         ),
