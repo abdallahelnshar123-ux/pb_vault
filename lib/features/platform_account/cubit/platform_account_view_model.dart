@@ -53,23 +53,27 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
   }) async {
     emit(AddPlatformAccountLoadingState());
 
-    final encryptedData = await _encryptPasswordUseCase.invoke(password);
+    try {
+      final encryptedData = await _encryptPasswordUseCase.invoke(password);
 
-    final account = PlatformAccount(
-      platform: platform,
-      emailOrUsername: emailOrUsername,
-      encryptedPassword: encryptedData.cipherText,
-      mac: encryptedData.mac,
-      nonce: encryptedData.nonce,
-      notes: notes,
-      createdAt: DateTime.now(),
-    );
+      final account = PlatformAccount(
+        platform: platform,
+        emailOrUsername: emailOrUsername,
+        encryptedPassword: encryptedData.cipherText,
+        mac: encryptedData.mac,
+        nonce: encryptedData.nonce,
+        notes: notes,
+        createdAt: DateTime.now(),
+      );
 
-    final result = await _addPlatformAccountUseCase.invoke(userId, account);
-    result.fold(
-      (failure) => emit(AddPlatformAccountErrorState(failure.message)),
-      (_) => emit(AddPlatformAccountSuccessState()),
-    );
+      final result = await _addPlatformAccountUseCase.invoke(userId, account);
+      result.fold(
+        (failure) => emit(AddPlatformAccountErrorState(failure.message)),
+        (_) => emit(AddPlatformAccountSuccessState()),
+      );
+    } catch (e) {
+      emit(AddPlatformAccountErrorState(e.toString()));
+    }
   }
 
   Future<void> updatePlatformAccount({

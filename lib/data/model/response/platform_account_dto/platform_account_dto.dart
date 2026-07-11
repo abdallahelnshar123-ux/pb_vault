@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/platform_data_dto.dart';
 
-class PlatformAccountDto {
+class PlatformAccountDto extends Equatable {
   String? id;
   final PlatformDataDto platform;
   final String emailOrUsername;
@@ -16,10 +17,10 @@ class PlatformAccountDto {
     required this.platform,
     required this.emailOrUsername,
     required this.encryptedPassword,
-    this.notes,
-    required this.createdAt,
     required this.nonce,
     required this.mac,
+    this.notes,
+    required this.createdAt,
   });
 
   factory PlatformAccountDto.fromFireStore(Map<String, dynamic> data) {
@@ -47,4 +48,16 @@ class PlatformAccountDto {
       'mac': mac,
     };
   }
+
+  @override
+  List<Object?> get props => [
+    id,
+    platform,
+    emailOrUsername,
+    encryptedPassword,
+    nonce,
+    mac,
+    notes,
+    createdAt,
+  ];
 }

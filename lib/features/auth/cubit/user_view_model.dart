@@ -28,6 +28,7 @@ class UserCubit extends Cubit<UserState> {
   final UpdateUserDetailsUseCase _updateUserDetailsUseCase;
   final ResetPasswordUseCase _resetPasswordUseCase;
   final CheckAppStartupUseCase _checkAppStartupUseCase;
+  final HomeCubit _homeCubit;
 
   UserCubit(
     this._signInWithGoogleUseCases,
@@ -38,6 +39,7 @@ class UserCubit extends Cubit<UserState> {
     this._updateUserDetailsUseCase,
     this._resetPasswordUseCase,
     this._checkAppStartupUseCase,
+    this._homeCubit,
   ) : super(UserInitial());
 
   MyUser? currentUser;
@@ -51,9 +53,111 @@ class UserCubit extends Cubit<UserState> {
     return _selectedAvatarIndex;
   }
 
+  Future<void> loginWithEmailAndPassword(String email, String password) async {
+    emit(LoginWithEmailPasswordLoadingState());
+    final result = await _loginWithEmailAndPasswordUseCase.invoke(
+      email: email,
+      password: password,
+    );
+    result.fold(
+      (failure) => emit(LoginWithEmailPasswordErrorState(failure.message.tr())),
+      (user) {
+        currentUser = user;
+        emit(UserAuthenticatedState(user));
+      },
+    );
+  }
+
+  // Future<void> loginWithEmailAndPassword(String email, String password) async {
+  //   try {
+  //     emit(LoginWithEmailPasswordLoadingState());
+  //     final result = await _loginWithEmailAndPasswordUseCase.invoke(
+  //       email: email,
+  //       password: password,
+  //     );
+  //     result.fold(
+  //           (failure) =>
+  //           emit(LoginWithEmailPasswordErrorState(failure.message.tr())),
+  //           (user) {
+  //         currentUser = user;
+  //         emit(UserAuthenticatedState(user));
+  //       },
+  //     );
+  //   } catch (e) {
+  //     emit(LoginWithEmailPasswordErrorState('Unexpected Error'));
+  //   }
+  // }
+
+  Future<void> registerWithEmailAndPassword({
+    required String email,
+    required String password,
+    required String name,
+    required int avatarIndex,
+  }) async {
+    emit(RegisterWithEmailPasswordLoadingState());
+    final result = await _registerWithEmailAndPasswordUseCases.invoke(
+      name: name,
+      avatarIndex: avatarIndex,
+      password: password,
+      email: email,
+    );
+
+    result.fold(
+      (failure) =>
+          emit(RegisterWithEmailPasswordErrorState(failure.message.tr())),
+      (user) {
+        currentUser = user;
+        emit(UserAuthenticatedState(user));
+      },
+    );
+  }
+
+  // Future<void> registerWithEmailAndPassword({
+  //   required String email,
+  //   required String password,
+  //   required String name,
+  //   required int avatarIndex,
+  // }) async {
+  //   try {
+  //     emit(RegisterWithEmailPasswordLoadingState());
+  //     final result = await _registerWithEmailAndPasswordUseCases.invoke(
+  //       name: name,
+  //       avatarIndex: avatarIndex,
+  //       password: password,
+  //       email: email,
+  //     );
+  //
+  //     result.fold(
+  //           (failure) =>
+  //           emit(RegisterWithEmailPasswordErrorState(failure.message.tr())),
+  //           (user) {
+  //         currentUser = user;
+  //         emit(UserAuthenticatedState(user));
+  //       },
+  //     );
+  //   } catch (e) {
+  //     emit(RegisterWithEmailPasswordErrorState('Unexpected Error'));
+  //   }
+  // }
+
+  Future<void> continueWithGoogle() async {
+    emit(ContinueWithGoogleLoadingState());
+    final result = await _signInWithGoogleUseCases.invoke();
+
+    result.fold(
+      (failure) {
+        emit(ContinueWithGoogleErrorState(failure.message.tr()));
+      },
+      (user) {
+        currentUser = user;
+        emit(UserAuthenticatedState(user));
+      },
+    );
+  }
+
   void logout(BuildContext context) async {
     emit(LogoutLoadingState());
-    await context.read<HomeCubit>().clearHomeAccounts();
+    await _homeCubit.clearHomeAccounts();
     if (!context.mounted) return;
     var result = await _logoutUseCase.invoke();
     result.fold((failure) => emit(LogoutErrorState(failure.message.tr())), (_) {
@@ -79,77 +183,18 @@ class UserCubit extends Cubit<UserState> {
     });
   }
 
-  Future<void> updateUSerDetails({required MyUser user}) async {
+  Future<void> updateUserDetails({required MyUser user}) async {
     emit(UserDetailsUpdateLoadingState());
     var result = await _updateUserDetailsUseCase.updateAccountDetails(
       user: user,
     );
-    result.fold((failure) => emit(USerDetailsUpdateErrorState(failure.message)), (
-      unit,
-    ) {
-      currentUser = user;
-      emit(UserDetailsUpdateSuccessState());
-    });
-  }
-
-  ///   auth with google
-  Future<void> continueWithGoogle() async {
-    emit(ContinueWithGoogleLoadingState());
-    final result = await _signInWithGoogleUseCases.invoke();
-
     result.fold(
-      (failure) {
-        emit(ContinueWithGoogleErrorState(failure.message.tr()));
-      },
-      (user) {
+      (failure) => emit(USerDetailsUpdateErrorState(failure.message)),
+      (unit) {
         currentUser = user;
-        emit(UserAuthenticatedState(user));
+        emit(UserDetailsUpdateSuccessState());
       },
     );
-  }
-
-  Future<void> loginWithEmailAndPassword(String email, String password) async {
-    try {
-      emit(LoginWithEmailPasswordLoadingState());
-      final result = await _loginWithEmailAndPasswordUseCase.invoke(
-        email: email,
-        password: password,
-      );
-      result.fold((failure) => emit(LoginWithEmailPasswordErrorState(failure.message.tr())), (
-        user,
-      ) {
-        currentUser = user;
-        emit(UserAuthenticatedState(user));
-      });
-    } catch (e) {
-      emit(LoginWithEmailPasswordErrorState('Unexpected Error'));
-    }
-  }
-
-  Future<void> registerWithEmailAndPassword({
-    required String email,
-    required String password,
-    required String name,
-    required int avatarIndex,
-  }) async {
-    try {
-      emit(RegisterWithEmailPasswordLoadingState());
-      final result = await _registerWithEmailAndPasswordUseCases.invoke(
-        name: name,
-        avatarIndex: avatarIndex,
-        password: password,
-        email: email,
-      );
-
-      result.fold((failure) => emit(RegisterWithEmailPasswordErrorState(failure.message.tr())), (
-        user,
-      ) {
-        currentUser = user;
-        emit(UserAuthenticatedState(user));
-      });
-    } catch (e) {
-      emit(RegisterWithEmailPasswordErrorState('Unexpected Error'));
-    }
   }
 
   Future<void> resetPassword({required String email}) async {
