@@ -1,17 +1,186 @@
-# pb_vault
+# 🔐 PB Vault
 
-A new Flutter project.
+<img src="assets/images/cover.png" alt="PB Vault Cover" width="1672"/>
 
-## Getting Started
+<p>
+<b>PB Vault</b> is a secure password manager built with Flutter, designed to help users safely store, organize, and manage their credentials across multiple platforms.
+Passwords are encrypted before being stored, ensuring that sensitive information remains protected while providing a smooth and user-friendly experience. 🚀🔒
+</p>
 
-This project is a starting point for a Flutter application.
+<hr/>
 
-A few resources to get you started if this is your first Flutter project:
+## 🚀 Features
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+<ul>
+  <li>
+    <b>Authentication System</b>
+    <ul>
+      <li>Secure email & password authentication 🔑</li>
+      <li>Google Sign-In support 🚀</li>
+      <li>User account management</li>
+    </ul>
+  </li>
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+  <li>
+    <b>Password Vault</b>
+    <ul>
+      <li>Create and save platform accounts securely 🔐</li>
+      <li>Edit existing passwords and account information ✏️</li>
+      <li>Delete stored accounts 🗑️</li>
+      <li>Store platform name, email, username, password, and notes</li>
+    </ul>
+  </li>
+
+  <li>
+    <b>Advanced Search</b>
+    <ul>
+      <li>Search accounts instantly by platform name 🔍</li>
+      <li>Search using registered email addresses 📧</li>
+      <li>Fast filtering experience for large vaults</li>
+    </ul>
+  </li>
+
+  <li>
+    <b>Security & Encryption</b>
+    <ul>
+      <li>Passwords are encrypted before storage 🔒</li>
+      <li>Sensitive data is never stored as plain text</li>
+      <li>Built with a dedicated encryption layer using cryptography</li>
+    </ul>
+  </li>
+
+  <li>
+    <b>Offline Support</b>
+    <ul>
+      <li>Create, update, and delete accounts while offline 📡</li>
+      <li>Firestore offline persistence support</li>
+      <li>Automatic synchronization when connection is restored 🔄</li>
+    </ul>
+  </li>
+
+  <li>
+    <b>Localization</b>
+    <ul>
+      <li>English 🇺🇸 and Arabic 🇪🇬 support</li>
+      <li>Easy language switching</li>
+    </ul>
+  </li>
+
+  <li>
+    <b>Modern UI</b>
+    <ul>
+      <li>Clean and responsive design ✨</li>
+      <li>Dark Mode support 🌙</li>
+      <li>Shimmer loading effects for better UX</li>
+    </ul>
+  </li>
+</ul>
+
+<hr/>
+
+## 🎬 Demo
+
+<p align="center">
+  <img src="assets/gifs/onboarding.gif" width="640"  alt="onboarding"/>
+</p>
+
+<p align="center">
+  <img src="assets/gifs/register.gif" width="640"  alt="register"/>
+  <img src="assets/gifs/login.gif" width="640"  alt="login"/>
+</p>
+
+<p align="center">
+  <img src="assets/gifs/change_language.gif" width="640"  alt="change_language"/>
+</p>
+
+<p align="center">
+  <img src="assets/gifs/add_account.gif" width="640"  alt="add_account"/>
+  <img src="assets/gifs/account_details.gif" width="640"  alt="account_details"/>
+  <img src="assets/gifs/edit_account.gif" width="640"  alt="edit_account"/>
+</p>
+
+<p align="center">
+  <img src="assets/gifs/delete_account.gif" width="640"  alt="delete_account"/>
+  <img src="assets/gifs/search.gif" width="640"  alt="search_account"/>
+</p>
+
+<hr/>
+
+## 📦 Packages Used
+
+### 🔐 Authentication
+
+* firebase_auth
+* google_sign_in
+
+### ☁️ Backend & Database
+
+* cloud_firestore
+
+### 🧠 State Management
+
+* flutter_bloc
+* provider
+
+### 🌍 Localization
+
+* easy_localization
+
+### 🔒 Security & Encryption
+
+* cryptography
+
+### 💾 Local Storage
+
+* shared_preferences
+
+<hr/>
+
+## 🔮 Upcoming Features
+
+* Master Password Protection
+* Password Generator
+* Password Strength Analysis
+* Account Categories
+* Favorites & Pinned Accounts
+* Export / Import Vault Data
+* Biometric Authentication (Fingerprint & Face ID)
+* Auto Backup & Restore
+
+<hr/>
+## 🧱 Architecture
+
+This project follows the principles of:
+
+* Clean Architecture
+* SOLID Principles
+* Feature-based Structure
+* Repository Pattern
+
+<hr/>
+
+## 🛠 Installation & Run
+
+```bash
+git clone https://github.com/abdallahelnshar123-ux/pb-vault.git
+
+cd pb-vault
+
+flutter pub get
+
+flutter run
+```
+
+<hr/>
+
+## 👨‍💻 Author & License
+
+### Abdallah Samir El nshar
+
+This app is part of my Flutter development journey and focuses on building scalable, clean, and
+production-ready applications. 🚀
+
+Thank you for checking out my work! 🙏
+
+This project is open source and available under the **MIT License**.
+
