@@ -5,53 +5,58 @@ This file serves as the definitive guide for any AI assistant working on the PB 
 ## 🏛 Architecture Overview
 The project follows **Clean Architecture** principles with a **Feature-based** UI structure.
 
-- **lib/core/**: Cross-cutting concerns (Theme, Utils, Constants, Routes, Services).
+- **lib/core/**: Cross-cutting concerns.
+    - `constants/`: App-wide constants (e.g., `AppConstants`).
+    - `di/`: Dependency Injection setup (`get_it`, `injectable`).
+    - `services/`: External services (e.g., `firebase_services/firestore_service.dart`, `vault_crypto_service/`).
+    - `utils/`: UI helpers (`AppColors`, `AppStyles`, `AppAssets`, `AppRoutes`, `DialogUtils`, `ScreenSize`).
 - **lib/domain/**: Business logic.
-    - `entities/response/`: Domain entities (e.g., `MyUser`, `Account`). **NO Dependencies on Flutter/Data layers.**
+    - `entities/`: Domain entities. Separated into `request/` and `response/` when applicable. **NO Dependencies on Flutter/Data layers.**
     - `repository/`: Abstract repository interfaces.
     - `use_cases/`: Single-responsibility business logic classes.
 - **lib/data/**: Implementation details.
-    - `model/response/`: Data models suffix with `Dto` (e.g., `MyUserDto`, `AccountDto`).
+    - `model/`: Data models suffix with `Dto`. Separated into `request/` and `response/`.
     - `mapper/`: Extension-based mappers.
         - `_mapper.dart`: Dto to Entity (e.g., `toUser()`).
         - `_dto_mapper.dart`: Entity to Dto (e.g., `toMyUserDto()`).
     - `repository/`: Concrete repository implementations using Services/DataSources.
-- **lib/features/**: UI Layer. Organized by feature (e.g., `auth`, `add_account`, `home_screen`, `master_password_screen`). Each feature contains:
+    - `data_sources/`: Remote and Local data sources.
+- **lib/widgets/**: Shared/Common UI components used across multiple features.
+- **lib/features/**: UI Layer. Organized by feature (e.g., `auth`, `home_screen`, `master_password_screen`). Each feature contains:
     - `screens/`: UI pages.
     - `widgets/`: Feature-specific widgets.
-    - `cubit/`: State management logic (`_state.dart` and `_view_model.dart`).
+    - `cubit/`: State management logic. Files are `_state.dart` and `_view_model.dart`.
 
 ## 🛠 Tech Stack & Libraries
 - **State Management**: `Bloc/Cubit` (Preferred).
-    - Always use separate files for `State` and `ViewModel`.
-    - Features like `home_screen` and `add_account` should have distinct Cubits.
+    - Class name: `...Cubit`.
+    - File names: `..._view_model.dart` and `..._state.dart`.
 - **Dependency Injection**: `injectable` & `get_it`.
     - Annotate with `@injectable`, `@lazySingleton`.
     - Always run `flutter pub run build_runner build --delete-conflicting-outputs` after DI changes.
 - **Localization**: `easy_localization`. Use `.tr()` on strings.
-- **Data Persistence**: `FirebaseFirestore` (via `FirestoreService`) and `SharedPreferences` (via `LocalStorage`).
-- **Icons/Images**: `flutter_svg` for local SVGs, `Image.network` for platform icons.
+- **Data Persistence**: `FirebaseFirestore` (via `FirestoreService`), `SharedPreferences` (via `LocalStorage`), and Secure Storage.
+- **Encryption**: Handled via `VaultRepository` (implemented in `VaultCryptoService`) using UseCases.
 
 ## 🎨 Coding Standards & UI Rules
 - **Design System**: Use `AppColors`, `AppStyles`, and `AppAssets`.
 - **Responsive UI**: Use `context.width`, `context.height` from `screen_size.dart`.
 - **Spacing**: Use `spacing` property in `Column`/`Row` or `SizedBox`.
 - **Forms**: Use `CustomTextFormField` and `GlobalKey<FormState>` for validation.
-- **Feedback**: Use `DialogUtils` for loading/errors and `ScaffoldMessenger` for success snackbars.
+- **Feedback**: Use `DialogUtils` for loading/errors and `SnackBarUtils` for notifications.
 
 ## 📝 Naming & Mapping Rules
 - **Files**: `snake_case.dart`.
 - **Mappers**: ALWAYS create two-way mappers in `lib/data/mapper/`.
-    - Correct: `account_mapper.dart` (Dto -> Entity) AND `account_dto_mapper.dart` (Entity -> Dto).
-- **Entities**: Place in `lib/domain/entities/response/`.
-- **Dtos**: Place in `lib/data/model/response/`.
+- **Entities**: Place in `lib/domain/entities/`.
+- **Dtos**: Place in `lib/data/model/`.
 
 ## 🚀 Workflows
 1. **Adding a Feature**:
     - Define Domain Entity -> UseCase -> Repository Interface.
     - Create Data Model (Dto) -> Mappers (Two-way) -> Repository Impl.
     - Build UI (Screens/Widgets) -> Cubit (ViewModel/State).
-2. **Encryption**: All passwords (Master or Account) must be encrypted (SHA-256) in the Cubit before sending to the Repository.
+2. **Encryption**: Passwords must be processed via appropriate UseCases (e.g., `EncryptPasswordUseCase`, `CreateVaultVerifierUseCase`) which interact with `VaultRepository`.
 3. **Firestore**: Nest user data under `users/{uId}/accounts/`. Use `FirestoreService` for all DB calls.
 
 ## ⚠️ Critical Constraints
