@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pb_vault/features/auth/screens/auth_screen.dart';
 import 'package:pb_vault/features/edit_profile/screens/edit_profile_screen.dart';
 import 'package:pb_vault/features/home_screen/screens/home_screen.dart';
+import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
+import 'package:pb_vault/features/master_password_screen/screens/biometrics_screen.dart';
 import 'package:pb_vault/features/master_password_screen/screens/master_password_screen.dart';
 import 'package:pb_vault/features/profile_screen/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +35,7 @@ void main() async {
         BlocProvider(create: (context) =>
         getIt<HomeCubit>()),
         BlocProvider(create: (context) => getIt<PlatformAccountCubit>()),
+        BlocProvider(create: (context) => getIt<MasterPasswordCubit>()),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en'), Locale('ar')],
@@ -68,6 +71,7 @@ class MyApp extends StatelessWidget {
         const AddPlatformAccountScreen(),
         AppRoutes.profileScreen: (context) => const ProfileScreen(),
         AppRoutes.editProfileScreen: (context) => const EditProfileScreen(),
+        AppRoutes.biometricsScreen: (context) => const BiometricsScreen(),
       },
       themeMode: ThemeMode.dark,
       darkTheme: AppTheme.darkTheme,

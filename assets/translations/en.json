@@ -173,7 +173,13 @@
   "search_password" : "Search Password",
   "account_updated_successfully" : "Account updated successfully",
   "no_accounts_to_search_add_some_accounts" : "No accounts to search. add some accounts",
-  "no_accounts_matches_search_term" : "No accounts matches search term"
+  "no_accounts_matches_search_term" : "No accounts matches search term",
+  "skip_for_now" : "Skip for now",
+  "enable_biometric_login" : "Enable biometric login",
+  "use_biometric_authentication" : "Use biometric authentication",
+  "unlock_your_vault_with_your_biometric_credential" : "unlock your vault with your biometric credential",
+  "biometric_authentication_is_now_activated" : "Biometric authentication is now activated",
+  "you_can_turn_it_off_from_sittings" : "You can turn it off from sittings"
 
 
 

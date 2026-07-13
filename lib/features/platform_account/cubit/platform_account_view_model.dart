@@ -53,27 +53,28 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
   }) async {
     emit(AddPlatformAccountLoadingState());
 
-    try {
-      final encryptedData = await _encryptPasswordUseCase.invoke(password);
+    final encryptResult = await _encryptPasswordUseCase.invoke(password);
 
-      final account = PlatformAccount(
-        platform: platform,
-        emailOrUsername: emailOrUsername,
-        encryptedPassword: encryptedData.cipherText,
-        mac: encryptedData.mac,
-        nonce: encryptedData.nonce,
-        notes: notes,
-        createdAt: DateTime.now(),
-      );
+    encryptResult.fold(
+      (failure) => emit(AddPlatformAccountErrorState(failure.message)),
+      (encryptedData) async {
+        final account = PlatformAccount(
+          platform: platform,
+          emailOrUsername: emailOrUsername,
+          encryptedPassword: encryptedData.cipherText,
+          mac: encryptedData.mac,
+          nonce: encryptedData.nonce,
+          notes: notes,
+          createdAt: DateTime.now(),
+        );
 
-      final result = await _addPlatformAccountUseCase.invoke(userId, account);
-      result.fold(
-        (failure) => emit(AddPlatformAccountErrorState(failure.message)),
-        (_) => emit(AddPlatformAccountSuccessState()),
-      );
-    } catch (e) {
-      emit(AddPlatformAccountErrorState(e.toString()));
-    }
+        final result = await _addPlatformAccountUseCase.invoke(userId, account);
+        result.fold(
+          (failure) => emit(AddPlatformAccountErrorState(failure.message)),
+          (_) => emit(AddPlatformAccountSuccessState()),
+        );
+      },
+    );
   }
 
   Future<void> updatePlatformAccount({
@@ -85,31 +86,31 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
   }) async {
     emit(EditPlatformAccountLoadingState());
 
-    try {
-      final encryptedData = await _encryptPasswordUseCase.invoke(password);
+    final encryptResult = await _encryptPasswordUseCase.invoke(password);
+    encryptResult.fold(
+      (failure) => emit(EditPlatformAccountErrorState(failure.message)),
+      (encryptedData) async {
+        final updatedAccount = PlatformAccount(
+          id: originalAccount.id,
+          platform: originalAccount.platform,
+          emailOrUsername: emailOrUsername,
+          encryptedPassword: encryptedData.cipherText,
+          notes: notes,
+          createdAt: originalAccount.createdAt,
+          mac: encryptedData.mac,
+          nonce: encryptedData.nonce,
+        );
 
-      final updatedAccount = PlatformAccount(
-        id: originalAccount.id,
-        platform: originalAccount.platform,
-        emailOrUsername: emailOrUsername,
-        encryptedPassword: encryptedData.cipherText,
-        notes: notes,
-        createdAt: originalAccount.createdAt,
-        mac: encryptedData.mac,
-        nonce: encryptedData.nonce,
-      );
-
-      final result = await _updatePlatformAccountUseCase.invoke(
-        userId,
-        updatedAccount,
-      );
-      result.fold(
-        (failure) => emit(EditPlatformAccountErrorState(failure.message)),
-        (_) => emit(EditPlatformAccountSuccessState()),
-      );
-    } catch (e) {
-      emit(EditPlatformAccountErrorState(e.toString()));
-    }
+        final result = await _updatePlatformAccountUseCase.invoke(
+          userId,
+          updatedAccount,
+        );
+        result.fold(
+          (failure) => emit(EditPlatformAccountErrorState(failure.message)),
+          (_) => emit(EditPlatformAccountSuccessState()),
+        );
+      },
+    );
   }
 
   Future<void> deletePlatformAccount({

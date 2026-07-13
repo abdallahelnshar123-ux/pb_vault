@@ -157,18 +157,14 @@ void main() {
           () => mockGetAccountsUseCase.invoke(tUserId),
         ).thenAnswer((_) => controller1.stream);
 
-        // أول اشتراك
         homeCubit.getAccounts(tUserId);
 
-        // خليه يرجع Stream جديد في المرة التانية
         when(
           () => mockGetAccountsUseCase.invoke(tUserId),
         ).thenAnswer((_) => controller2.stream);
 
-        // ثاني اشتراك (المفروض يلغي الأول)
         homeCubit.getAccounts(tUserId);
 
-        // Assert
         expect(controller1.hasListener, isFalse);
         expect(controller2.hasListener, isTrue);
 
@@ -182,7 +178,7 @@ void main() {
     test('calls decrypt and copies password to clipboard', () async {
       when(
         () => mockDecryptPasswordUseCase.invoke(any()),
-      ).thenAnswer((_) async => 'decrypted_password');
+      ).thenAnswer((_) async => Right('decrypted_password'));
 
       await homeCubit.copyAccountPassword(account: tAccount1);
 

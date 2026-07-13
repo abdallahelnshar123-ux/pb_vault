@@ -4,10 +4,9 @@ import 'package:cryptography/cryptography.dart';
 import 'package:cryptography/helpers.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
-import 'package:pb_vault/domain/repository/vault/vault_repository.dart';
 
-@LazySingleton(as: VaultRepository)
-class VaultCryptoService implements VaultRepository {
+@lazySingleton
+class VaultCryptoService {
   final Cryptography _cryptography;
   final Pbkdf2 _pbkdf2;
 
@@ -15,10 +14,8 @@ class VaultCryptoService implements VaultRepository {
 
   VaultCryptoService(this._cryptography, this._pbkdf2);
 
-  @override
   bool get isLocked => _secretKey == null;
 
-  @override
   void lock() {
     _secretKey = null;
   }
@@ -47,7 +44,13 @@ class VaultCryptoService implements VaultRepository {
     _secretKey = secretKey;
   }
 
-  @override
+  Future<List<int>> getSecretKeyBytes() async {
+    if (_secretKey == null) {
+      throw  Exception( 'Vault is locked.');
+    }
+    return await _secretKey!.extractBytes();
+  }
+
   Future<Map<String, dynamic>> createVerifier(String password) async {
     final salt = randomBytes(16);
 
@@ -58,7 +61,6 @@ class VaultCryptoService implements VaultRepository {
     return {'salt': salt, 'hash': hash};
   }
 
-  @override
   Future<bool> unlock({
     required String password,
     required List<int> salt,
@@ -76,7 +78,6 @@ class VaultCryptoService implements VaultRepository {
     return false;
   }
 
-  @override
   Future<EncryptedData> encrypt(String text) async {
     if (_secretKey == null) {
       throw Exception('Vault is locked. Unlock it first.');
@@ -97,7 +98,6 @@ class VaultCryptoService implements VaultRepository {
     );
   }
 
-  @override
   Future<String> decrypt(EncryptedData data) async {
     if (_secretKey == null) {
       throw Exception('Vault is locked. Unlock it first.');

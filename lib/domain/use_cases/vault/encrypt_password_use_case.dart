@@ -1,4 +1,6 @@
+import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:pb_vault/domain/failure/failure.dart';
 import '../../entities/vault/encrypted_data.dart';
 import '../../repository/vault/vault_repository.dart';
 
@@ -8,7 +10,7 @@ class EncryptPasswordUseCase {
 
   EncryptPasswordUseCase(this._repository);
 
-  Future<EncryptedData> invoke(String password) {
+  Future<Either<Failure, EncryptedData>> invoke(String password) {
     return _repository.encrypt(password);
   }
 }

@@ -45,4 +45,10 @@ class LocalStorage {
 
   Future<void> clearUser() =>
       _sharedPrefs.removeData(key: SharedPrefsKeys.userKey);
+
+  bool get useBiometric =>
+      _sharedPrefs.getData<bool>(key: SharedPrefsKeys.useBiometricKey) ?? false;
+
+  Future<void> setUseBiometric(bool value) =>
+      _sharedPrefs.saveData(key: SharedPrefsKeys.useBiometricKey, value: value);
 }

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pb_vault/domain/use_cases/vault/decrypt_password_use_case.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_state.dart';
 
 import '../../../../core/utils/app_colors.dart';
@@ -12,7 +13,6 @@ import '../../../../widgets/custom_text_form_field.dart';
 import '../../../core/di/di.dart';
 import '../../../domain/entities/response/platform_account/platform_account.dart';
 import '../../../domain/entities/vault/encrypted_data.dart';
-import '../../../domain/repository/vault/vault_repository.dart';
 import '../../../widgets/email_text_field_widget.dart';
 import '../../../widgets/password_text_field_widget.dart';
 import '../../auth/cubit/user_view_model.dart';
@@ -38,7 +38,6 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
   );
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -47,15 +46,20 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
         mac: widget.account.mac,
         nonce: widget.account.nonce,
       );
-      final password = await getIt<VaultRepository>().decrypt(encryptedData);
+      final result = await getIt<DecryptPasswordUseCase>().invoke(
+        encryptedData,
+      );
       if (mounted) {
-        setState(() {
-          passwordController.text = password;
+        result.fold((failure) {}, (password) {
+          setState(() {
+            passwordController.text = password;
+          });
         });
       }
     });
     super.initState();
   }
+
   @override
   void dispose() {
     emailController.dispose();

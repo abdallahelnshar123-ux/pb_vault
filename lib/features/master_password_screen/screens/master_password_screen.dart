@@ -41,60 +41,72 @@ class _MasterPasswordScreenState extends State<MasterPasswordScreen> {
         authCubit.currentUser?.passwordVerifier == null ||
         authCubit.currentUser!.passwordVerifier!.isEmpty;
 
-    return BlocProvider(
-      create: (context) => getIt<MasterPasswordCubit>(),
-      child: BlocListener<MasterPasswordCubit, MasterPasswordState>(
-        listener: (context, state) {
-          if (state is MasterPasswordSetupSuccess) {
-            DialogUtils.hideLoading(context: context);
-            context.read<UserCubit>().currentUser = state.user;
+    return BlocListener<MasterPasswordCubit, MasterPasswordState>(
+      listener: (context, state) {
+        if (state is MasterPasswordSetupSuccess) {
+          DialogUtils.hideLoading(context: context);
+          context.read<UserCubit>().currentUser = state.user;
+          if(state.offerBiometric){
+            Future.delayed(Duration(seconds: 2), () {
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.biometricsScreen,
+                      (route) => false,
+                );
+              }
+            });
+          }else{
+            context.read<MasterPasswordCubit>().enableBiometric(false);
             Future.delayed(Duration(seconds: 2), () {
               if (context.mounted) {
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   AppRoutes.homeRouteName,
-                  (route) => false,
+                      (route) => false,
                 );
               }
             });
-          }
-          if (state is MasterPasswordVerifySuccess) {
-            DialogUtils.hideLoading(context: context);
-            Future.delayed(Duration(seconds: 2), () {
-              if (context.mounted) {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.homeRouteName,
-                  (route) => false,
-                );
-              }
-            });
-          }
-          if (state is MasterPasswordSetupError ||
-              state is MasterPasswordVerifyError) {
-            DialogUtils.hideLoading(context: context);
-            String message = '';
-            if (state is MasterPasswordSetupError) message = state.message;
-            if (state is MasterPasswordVerifyError) message = state.message;
 
-            DialogUtils.showMessage(
-              context: context,
-              title: 'error'.tr(),
-              message: message,
-              posActionText: 'ok'.tr(),
-            );
           }
-          if (state is MasterPasswordSetupLoading ||
-              state is MasterPasswordVerifyLoading) {
-            DialogUtils.showLoading(context: context);
-          }
-        },
-        child: GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: Scaffold(
-            appBar: CustomAppBar(),
-            body: isSetupMode ? SetupModeWidget() : UnlockModeWidget(),
-          ),
+
+        }
+        if (state is MasterPasswordVerifySuccess) {
+          DialogUtils.hideLoading(context: context);
+          Future.delayed(Duration(seconds: 2), () {
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.homeRouteName,
+                (route) => false,
+              );
+            }
+          });
+        }
+        if (state is MasterPasswordSetupError ||
+            state is MasterPasswordVerifyError) {
+          DialogUtils.hideLoading(context: context);
+          String message = '';
+          if (state is MasterPasswordSetupError) message = state.message;
+          if (state is MasterPasswordVerifyError) message = state.message;
+
+          DialogUtils.showMessage(
+            context: context,
+            title: 'error'.tr(),
+            message: message,
+            posActionText: 'ok'.tr(),
+          );
+        }
+        if (state is MasterPasswordSetupLoading ||
+            state is MasterPasswordVerifyLoading) {
+          DialogUtils.showLoading(context: context);
+        }
+      },
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          appBar: CustomAppBar(),
+          body: isSetupMode ? SetupModeWidget() : UnlockModeWidget(),
         ),
       ),
     );
