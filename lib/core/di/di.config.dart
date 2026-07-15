@@ -63,8 +63,12 @@ import '../../domain/repository/on_boarding/on_boarding_repository.dart'
 import '../../domain/repository/user/user_repository.dart' as _i183;
 import '../../domain/repository/vault/vault_repository.dart' as _i402;
 import '../../domain/use_cases/add_account_use_case.dart' as _i327;
+import '../../domain/use_cases/biometric/biometric_unlock_use_case.dart'
+    as _i547;
 import '../../domain/use_cases/biometric/enable_biometric_use_case.dart'
     as _i167;
+import '../../domain/use_cases/biometric/is_biometric_enabled_use_case.dart'
+    as _i277;
 import '../../domain/use_cases/biometric/is_biometric_supported_use_case.dart'
     as _i1065;
 import '../../domain/use_cases/check_app_startup_use_case.dart' as _i543;
@@ -72,6 +76,7 @@ import '../../domain/use_cases/delete_account_from_vault_use_case.dart'
     as _i202;
 import '../../domain/use_cases/delete_account_use_case.dart' as _i1008;
 import '../../domain/use_cases/get_accounts_use_case.dart' as _i941;
+import '../../domain/use_cases/get_app_settings_use_case.dart' as _i648;
 import '../../domain/use_cases/login_with_email_and_password_use_case.dart'
     as _i1065;
 import '../../domain/use_cases/logout_use_case.dart' as _i250;
@@ -96,11 +101,14 @@ import '../../features/onboarding_screen/provider/onboarding_view_model.dart'
     as _i926;
 import '../../features/platform_account/cubit/platform_account_view_model.dart'
     as _i458;
+import '../../features/profile_screen/cubit/settings_cubit.dart' as _i618;
 import '../data_bases/cache/local_storage.dart' as _i1020;
 import '../data_bases/cache/local_storage_module.dart' as _i2;
-import '../data_bases/cache/shared_prefs_utils.dart' as _i1059;
-import '../data_bases/secure_storage/secure_storage_module.dart' as _i248;
-import '../data_bases/secure_storage/secure_storage_utils.dart' as _i614;
+import '../data_bases/cache/secure_storage/secure_storage_utils.dart' as _i229;
+import '../data_bases/cache/shared_prefs/shared_prefs_utils.dart' as _i264;
+import '../services/biometric_service/biometric_auth_service.dart' as _i544;
+import '../services/biometric_service/biometric_auth_service_impl.dart'
+    as _i291;
 import '../services/biometric_service/biometric_module.dart' as _i470;
 import '../services/firebase_services/firebase_auth_service.dart' as _i286;
 import '../services/firebase_services/firebase_module.dart' as _i971;
@@ -118,7 +126,6 @@ extension GetItInjectableX on _i174.GetIt {
     final localStorageModule = _$LocalStorageModule();
     final firebaseModule = _$FirebaseModule();
     final cryptographyModule = _$CryptographyModule();
-    final secureStorageModule = _$SecureStorageModule();
     final biometricModule = _$BiometricModule();
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => localStorageModule.sharedPreferences,
@@ -130,7 +137,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i95.Cryptography>(() => cryptographyModule.cryptography);
     gh.singleton<_i95.Pbkdf2>(() => cryptographyModule.pbkf2);
     gh.lazySingleton<_i558.FlutterSecureStorage>(
-      () => secureStorageModule.secureStorage,
+      () => localStorageModule.secureStorage,
     );
     gh.lazySingleton<_i152.LocalAuthentication>(
       () => biometricModule.localAuth,
@@ -141,11 +148,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i629.AccountRemoteDataSource>(
       () => _i875.AccountRemoteDataSourceImpl(gh<_i75.FirestoreService>()),
     );
-    gh.lazySingleton<_i614.SecureStorageUtils>(
-      () => _i614.SecureStorageUtils(gh<_i558.FlutterSecureStorage>()),
+    gh.lazySingleton<_i229.SecureStorageUtils>(
+      () => _i229.SecureStorageUtils(gh<_i558.FlutterSecureStorage>()),
     );
     gh.factory<_i632.UserRemoteDataSource>(
       () => _i22.UserRemoteDataSourceImpl(gh<_i75.FirestoreService>()),
+    );
+    gh.factory<_i544.BiometricAuthService>(
+      () => _i291.BiometricAuthServiceImpl(gh<_i152.LocalAuthentication>()),
     );
     gh.factory<_i406.AccountRepository>(
       () => _i381.AccountRepositoryImpl(gh<_i629.AccountRemoteDataSource>()),
@@ -166,8 +176,8 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i515.VaultCryptoService(gh<_i95.Cryptography>(), gh<_i95.Pbkdf2>()),
     );
-    gh.lazySingleton<_i1059.SharedPrefsUtils>(
-      () => _i1059.SharedPrefsUtils(gh<_i460.SharedPreferences>()),
+    gh.lazySingleton<_i264.SharedPrefsUtils>(
+      () => _i264.SharedPrefsUtils(gh<_i460.SharedPreferences>()),
     );
     gh.lazySingleton<_i286.FirebaseAuthService>(
       () => _i286.FirebaseAuthService(
@@ -176,7 +186,13 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.lazySingleton<_i1020.LocalStorage>(
-      () => _i1020.LocalStorage(gh<_i1059.SharedPrefsUtils>()),
+      () => _i1020.LocalStorage(
+        gh<_i264.SharedPrefsUtils>(),
+        gh<_i229.SecureStorageUtils>(),
+      ),
+    );
+    gh.factory<_i983.BiometricLocalDataSource>(
+      () => _i823.BiometricLocalDataSourceImpl(gh<_i1020.LocalStorage>()),
     );
     gh.factory<_i202.AuthRemoteDataSource>(
       () => _i646.AuthRemoteDataSourceImpl(gh<_i286.FirebaseAuthService>()),
@@ -194,14 +210,24 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i996.UserLocalDataSource>(),
       ),
     );
-    gh.factory<_i250.LogoutUseCase>(
-      () => _i250.LogoutUseCase(gh<_i912.AuthRepository>()),
-    );
     gh.factory<_i638.ResetPasswordUseCase>(
       () => _i638.ResetPasswordUseCase(gh<_i912.AuthRepository>()),
     );
     gh.lazySingleton<_i402.VaultRepository>(
       () => _i830.VaultRepositoryImpl(gh<_i735.VaultRemoteDataSource>()),
+    );
+    gh.factory<_i1053.BiometricRepository>(
+      () => _i120.BiometricRepositoryImpl(
+        gh<_i544.BiometricAuthService>(),
+        gh<_i983.BiometricLocalDataSource>(),
+      ),
+    );
+    gh.factory<_i250.LogoutUseCase>(
+      () => _i250.LogoutUseCase(
+        gh<_i912.AuthRepository>(),
+        gh<_i1053.BiometricRepository>(),
+        gh<_i402.VaultRepository>(),
+      ),
     );
     gh.factory<_i183.UserRepository>(
       () => _i1053.UserRepositoryImpl(
@@ -211,12 +237,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i54.OnBoardingLocalDataSource>(
       () => _i434.OnBoardingLocalDataSourceImpl(gh<_i1020.LocalStorage>()),
-    );
-    gh.factory<_i983.BiometricLocalDataSource>(
-      () => _i823.BiometricLocalDataSourceImpl(
-        gh<_i1020.LocalStorage>(),
-        gh<_i614.SecureStorageUtils>(),
-      ),
     );
     gh.factory<_i1008.DeleteUserUseCase>(
       () => _i1008.DeleteUserUseCase(
@@ -237,6 +257,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i447.ContinueWithGoogleUseCases>(
       () => _i447.ContinueWithGoogleUseCases(gh<_i912.AuthRepository>()),
     );
+    gh.factory<_i277.IsBiometricEnabledUseCase>(
+      () => _i277.IsBiometricEnabledUseCase(gh<_i1053.BiometricRepository>()),
+    );
+    gh.factory<_i1065.IsBiometricSupportedUseCase>(
+      () =>
+          _i1065.IsBiometricSupportedUseCase(gh<_i1053.BiometricRepository>()),
+    );
+    gh.factory<_i648.GetAppSettingsUseCase>(
+      () => _i648.GetAppSettingsUseCase(gh<_i1053.BiometricRepository>()),
+    );
     gh.factory<_i246.CreateVaultVerifierUseCase>(
       () => _i246.CreateVaultVerifierUseCase(gh<_i402.VaultRepository>()),
     );
@@ -249,12 +279,24 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1040.UnlockVaultUseCase>(
       () => _i1040.UnlockVaultUseCase(gh<_i402.VaultRepository>()),
     );
-    gh.factory<_i458.PlatformAccountCubit>(
+    gh.lazySingleton<_i458.PlatformAccountCubit>(
       () => _i458.PlatformAccountCubit(
         gh<_i432.UpdatePlatformAccountUseCase>(),
         gh<_i202.DeletePlatformAccountUseCase>(),
         gh<_i327.AddPlatformAccountUseCase>(),
         gh<_i578.EncryptPasswordUseCase>(),
+      ),
+    );
+    gh.factory<_i547.BiometricUnlockUseCase>(
+      () => _i547.BiometricUnlockUseCase(
+        gh<_i1053.BiometricRepository>(),
+        gh<_i402.VaultRepository>(),
+      ),
+    );
+    gh.factory<_i167.EnableBiometricUseCase>(
+      () => _i167.EnableBiometricUseCase(
+        gh<_i1053.BiometricRepository>(),
+        gh<_i402.VaultRepository>(),
       ),
     );
     gh.factory<_i756.SetMasterPasswordUseCase>(
@@ -263,16 +305,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i274.UpdateUserDetailsUseCase>(
       () => _i274.UpdateUserDetailsUseCase(gh<_i183.UserRepository>()),
     );
-    gh.factory<_i941.HomeCubit>(
+    gh.lazySingleton<_i941.HomeCubit>(
       () => _i941.HomeCubit(
         gh<_i941.GetAccountsUseCase>(),
         gh<_i1001.DecryptPasswordUseCase>(),
       ),
     );
-    gh.factory<_i1053.BiometricRepository>(
-      () => _i120.BiometricRepositoryImpl(
-        gh<_i152.LocalAuthentication>(),
-        gh<_i983.BiometricLocalDataSource>(),
+    gh.lazySingleton<_i884.MasterPasswordCubit>(
+      () => _i884.MasterPasswordCubit(
+        gh<_i756.SetMasterPasswordUseCase>(),
+        gh<_i246.CreateVaultVerifierUseCase>(),
+        gh<_i1040.UnlockVaultUseCase>(),
+        gh<_i1065.IsBiometricSupportedUseCase>(),
+        gh<_i167.EnableBiometricUseCase>(),
+        gh<_i277.IsBiometricEnabledUseCase>(),
+        gh<_i547.BiometricUnlockUseCase>(),
       ),
     );
     gh.factory<_i551.SetOnboardingDoneUseCase>(
@@ -284,15 +331,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i183.UserRepository>(),
       ),
     );
-    gh.factory<_i1065.IsBiometricSupportedUseCase>(
-      () =>
-          _i1065.IsBiometricSupportedUseCase(gh<_i1053.BiometricRepository>()),
-    );
-    gh.factory<_i167.EnableBiometricUseCase>(
-      () => _i167.EnableBiometricUseCase(
-        gh<_i1053.BiometricRepository>(),
-        gh<_i402.VaultRepository>(),
+    gh.lazySingleton<_i618.SettingsCubit>(
+      () => _i618.SettingsCubit(
+        gh<_i167.EnableBiometricUseCase>(),
+        gh<_i648.GetAppSettingsUseCase>(),
       ),
+    );
+    gh.factory<_i926.OnboardingViewModel>(
+      () => _i926.OnboardingViewModel(gh<_i551.SetOnboardingDoneUseCase>()),
     );
     gh.lazySingleton<_i8.UserCubit>(
       () => _i8.UserCubit(
@@ -305,18 +351,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i638.ResetPasswordUseCase>(),
         gh<_i543.CheckAppStartupUseCase>(),
         gh<_i941.HomeCubit>(),
-      ),
-    );
-    gh.factory<_i926.OnboardingViewModel>(
-      () => _i926.OnboardingViewModel(gh<_i551.SetOnboardingDoneUseCase>()),
-    );
-    gh.factory<_i884.MasterPasswordCubit>(
-      () => _i884.MasterPasswordCubit(
-        gh<_i756.SetMasterPasswordUseCase>(),
-        gh<_i246.CreateVaultVerifierUseCase>(),
-        gh<_i1040.UnlockVaultUseCase>(),
-        gh<_i1065.IsBiometricSupportedUseCase>(),
-        gh<_i167.EnableBiometricUseCase>(),
+        gh<_i884.MasterPasswordCubit>(),
       ),
     );
     return this;
@@ -328,7 +363,5 @@ class _$LocalStorageModule extends _i2.LocalStorageModule {}
 class _$FirebaseModule extends _i971.FirebaseModule {}
 
 class _$CryptographyModule extends _i128.CryptographyModule {}
-
-class _$SecureStorageModule extends _i248.SecureStorageModule {}
 
 class _$BiometricModule extends _i470.BiometricModule {}

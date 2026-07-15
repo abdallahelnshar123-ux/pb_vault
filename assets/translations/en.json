@@ -133,7 +133,7 @@
   "create_master_password": "Create a master password for your account",
   "unlock" : "Unlock",
   "invalid_master_password" : "Invalid master password",
-  "locked" : "Locked",
+  "unlocked" : "Unlocked",
   "done" : "Done",
   "create" : "Create",
   "save_your_password_easily_and_securely" : "Save your password easily and securely",
@@ -179,7 +179,12 @@
   "use_biometric_authentication" : "Use biometric authentication",
   "unlock_your_vault_with_your_biometric_credential" : "unlock your vault with your biometric credential",
   "biometric_authentication_is_now_activated" : "Biometric authentication is now activated",
-  "you_can_turn_it_off_from_sittings" : "You can turn it off from sittings"
+  "you_can_turn_it_off_from_sittings" : "You can turn it off from sittings",
+  "error_while_trying_activating_biometric" : "Error while trying activating biometric",
+  "cancelled_by_user" : "Cancelled by user",
+  "no_biometric_found" : "No biometric found",
+  "error_while_trying_to_authenticate" : "Error while trying to authenticate",
+  "biometric_unlock" : "Biometric unlock"
 
 
 

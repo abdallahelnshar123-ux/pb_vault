@@ -10,7 +10,7 @@ import '../../../domain/entities/response/platform_account/platform_account.dart
 import '../../../domain/use_cases/get_accounts_use_case.dart';
 import 'home_state.dart';
 
-@injectable
+@lazySingleton
 class HomeCubit extends Cubit<HomeState> {
   final GetAccountsUseCase _getAccountsUseCase;
   final DecryptPasswordUseCase _decryptPasswordUseCase;

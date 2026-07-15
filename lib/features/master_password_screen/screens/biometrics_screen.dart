@@ -27,6 +27,7 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
       listenWhen: (previous, current) => current is BiometricErrorState,
       listener: (context, state) {
         if (state is BiometricErrorState) {
+
           DialogUtils.showMessage(
             context: context,
             message: 'error_while_trying_activating_biometric',
@@ -101,10 +102,14 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
             );
           }
         } else {
-          await context.read<MasterPasswordCubit>().enableBiometric(true);
-          setState(() {
-            isBiometricsActivated = true;
-          });
+          bool biometricResult = await context
+              .read<MasterPasswordCubit>()
+              .enableBiometric(true);
+          if (biometricResult) {
+            setState(() {
+              isBiometricsActivated = true;
+            });
+          }
         }
       },
       borderSideColor: AppColors.backgroundDark,

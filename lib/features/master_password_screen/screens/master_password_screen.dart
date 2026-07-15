@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pb_vault/features/master_password_screen/widget/setup_mode_widget.dart';
 import 'package:pb_vault/widgets/custom_app_bar.dart';
 
-import '../../../../core/di/di.dart';
 import '../../../../core/utils/app_routes.dart';
 import '../../../../core/utils/dialog_utils.dart';
 import '../../auth/cubit/user_view_model.dart';
@@ -73,15 +72,27 @@ class _MasterPasswordScreenState extends State<MasterPasswordScreen> {
         }
         if (state is MasterPasswordVerifySuccess) {
           DialogUtils.hideLoading(context: context);
-          Future.delayed(Duration(seconds: 2), () {
-            if (context.mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                AppRoutes.homeRouteName,
-                (route) => false,
-              );
-            }
-          });
+          if (state.offerBiometric) {
+            Future.delayed(Duration(seconds: 2), () {
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.biometricsScreen,
+                  (route) => false,
+                );
+              }
+            });
+          } else {
+            Future.delayed(Duration(seconds: 2), () {
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.homeRouteName,
+                  (route) => false,
+                );
+              }
+            });
+          }
         }
         if (state is MasterPasswordSetupError ||
             state is MasterPasswordVerifyError) {

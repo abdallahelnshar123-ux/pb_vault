@@ -15,6 +15,8 @@ abstract class VaultRemoteDataSource {
     required String verifier,
   });
 
+  Future<void> unlockWithKey(List<int> keyBytes);
+
   void lock();
 
   bool get isLocked;

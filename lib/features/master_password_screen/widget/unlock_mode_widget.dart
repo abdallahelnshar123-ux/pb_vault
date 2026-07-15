@@ -23,6 +23,14 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
   final TextEditingController passwordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MasterPasswordCubit>().biometricUnlock();
+    });
+  }
+
+  @override
   void dispose() {
     passwordController.dispose();
     super.dispose();
@@ -56,6 +64,31 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
       ),
     );
   }
+
+  // Widget _buildBiometricButton() {
+  //   return BlocBuilder<MasterPasswordCubit, MasterPasswordState>(
+  //     builder: (context, state) {
+  //       return InkWell(
+  //         onTap: state is MasterPasswordVerifySuccess
+  //             ? null
+  //             : () => context.read<MasterPasswordCubit>().biometricUnlock(),
+  //         child: Container(
+  //           padding: EdgeInsets.all(context.width * 0.03),
+  //           decoration: BoxDecoration(
+  //             color: AppColors.secondary,
+  //             borderRadius: BorderRadius.circular(12),
+  //             border: Border.all(color: AppColors.primary),
+  //           ),
+  //           child: Icon(
+  //             Icons.fingerprint_rounded,
+  //             color: AppColors.primary,
+  //             size: 30,
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   Widget _builtTitle() {
     return Text(
@@ -115,11 +148,11 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
                 },
           borderSideColor: AppColors.backgroundDark,
           backgroundColor: state is MasterPasswordVerifySuccess
-              ? AppColors.surfaceDark
+              ? AppColors.backgroundDark
               : AppColors.primary,
           child: Text(
             state is MasterPasswordVerifySuccess
-                ? "locked".tr()
+                ? "unlocked".tr()
                 : "unlock".tr(),
             style: AppStyles.robotoBold20White(context),
           ),

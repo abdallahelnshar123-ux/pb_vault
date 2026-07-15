@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:local_auth/local_auth.dart';
+import 'package:pb_vault/core/services/biometric_service/biometric_auth_service.dart';
+
 import '../../../domain/failure/failure.dart';
 import '../../../domain/repository/biometric/biometric_repository.dart';
 import '../../data_sources/local/biometric/biometric_local_data_source.dart';
@@ -9,20 +10,24 @@ import '../../mapper/exception_mapper.dart';
 
 @Injectable(as: BiometricRepository)
 class BiometricRepositoryImpl implements BiometricRepository {
-  final LocalAuthentication _localAuth;
+  final BiometricAuthService _biometricAuthService;
   final BiometricLocalDataSource _localDataSource;
 
-  BiometricRepositoryImpl(this._localAuth, this._localDataSource);
+  BiometricRepositoryImpl(this._biometricAuthService, this._localDataSource);
 
   @override
   Future<Either<Failure, bool>> isBiometricSupported() async {
     try {
-      final bool canAuthenticateWithBiometrics =
-          await _localAuth.canCheckBiometrics;
+      final bool canAuthenticateWithBiometrics = await _biometricAuthService
+          .canCheckBiometrics();
+      final bool isDeviceSupported = await _biometricAuthService
+          .isDeviceSupported();
       final bool canAuthenticate =
-          canAuthenticateWithBiometrics ||
-          await _localAuth.isDeviceSupported();
+          canAuthenticateWithBiometrics || isDeviceSupported;
+
       return Right(canAuthenticate);
+    } on AppException catch (e) {
+      return Left(e.toFailure());
     } catch (e) {
       return Left(UnexpectedFailure(e.toString()));
     }
@@ -31,13 +36,10 @@ class BiometricRepositoryImpl implements BiometricRepository {
   @override
   Future<Either<Failure, bool>> authenticate() async {
     try {
-      final authenticated = await _localAuth.authenticate(
-        localizedReason: 'Please authenticate to unlock your vault',
-        biometricOnly: false,
-        persistAcrossBackgrounding: true,
-
-      );
+      final authenticated = await _biometricAuthService.authenticate();
       return Right(authenticated);
+    } on AppException catch (e) {
+      return Left(e.toFailure());
     } catch (e) {
       return Left(UnexpectedFailure(e.toString()));
     }

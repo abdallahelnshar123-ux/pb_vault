@@ -64,6 +64,15 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
   }
 
   @override
+  Future<void> unlockWithKey(List<int> keyBytes) async {
+    try {
+      _vaultCryptoService.unlockWithKey(keyBytes);
+    } catch (e) {
+      throw UnexpectedException(message: e.toString(), statusCode: null);
+    }
+  }
+
+  @override
   void lock() {
     _vaultCryptoService.lock();
   }

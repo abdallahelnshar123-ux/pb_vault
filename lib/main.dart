@@ -8,12 +8,14 @@ import 'package:pb_vault/features/home_screen/screens/home_screen.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
 import 'package:pb_vault/features/master_password_screen/screens/biometrics_screen.dart';
 import 'package:pb_vault/features/master_password_screen/screens/master_password_screen.dart';
+import 'package:pb_vault/features/profile_screen/cubit/settings_cubit.dart';
 import 'package:pb_vault/features/profile_screen/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'core/di/di.dart';
 import 'core/utils/app_routes.dart';
 import 'core/utils/app_theme.dart';
+import 'core/utils/bloc_observer.dart';
 import 'domain/use_cases/set_onboarding_done_use_case.dart';
 import 'features/auth/cubit/user_view_model.dart';
 import 'features/home_screen/cubit/home_view_model.dart';
@@ -28,20 +30,20 @@ void main() async {
   EasyLocalization.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   configureDependencies();
+  Bloc.observer = MyBlocObserver();
   runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => getIt<UserCubit>()),
-        BlocProvider(create: (context) =>
-        getIt<HomeCubit>()),
-        BlocProvider(create: (context) => getIt<PlatformAccountCubit>()),
-        BlocProvider(create: (context) => getIt<MasterPasswordCubit>()),
-      ],
-      child: EasyLocalization(
-        supportedLocales: const [Locale('en'), Locale('ar')],
-        path: 'assets/translations',
-        fallbackLocale: const Locale('en'),
-        startLocale: Locale('en'),
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('ar')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      startLocale: Locale('en'),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => getIt<UserCubit>()),
+          BlocProvider(create: (context) => getIt<HomeCubit>()),
+          BlocProvider(create: (context) => getIt<PlatformAccountCubit>()),
+          BlocProvider(create: (context) => getIt<MasterPasswordCubit>()),
+        ],
         child: const MyApp(),
       ),
     ),
@@ -57,19 +59,24 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: context.read<UserCubit>().getInitialRoute(),
       routes: {
-        AppRoutes.onboardingRouteName: (context) =>
-            ChangeNotifierProvider(
-              create: (context) =>
-                  OnboardingViewModel(getIt<SetOnboardingDoneUseCase>()),
-              child: const OnboardingScreen(),
-            ),
+        AppRoutes.onboardingRouteName: (context) =>  ChangeNotifierProvider(
+          create: (context) =>
+              OnboardingViewModel(getIt<SetOnboardingDoneUseCase>()),
+
+          child: const OnboardingScreen(),
+        ),
         AppRoutes.authScreen: (context) => const AuthScreen(),
         AppRoutes.homeRouteName: (context) => const HomeScreen(),
         AppRoutes.masterPasswordScreen: (context) =>
-        const MasterPasswordScreen(),
+            const MasterPasswordScreen(),
         AppRoutes.addAccountScreen: (context) =>
-        const AddPlatformAccountScreen(),
-        AppRoutes.profileScreen: (context) => const ProfileScreen(),
+            const AddPlatformAccountScreen(),
+        // AppRoutes.profileScreen: (context) => BlocProvider(
+        //   create: (context) =>
+        //       getIt<SettingsCubit>()
+        //         ..loadSettings(currentLocale: context.locale),
+        //   child: const ProfileScreen(),
+        // ),
         AppRoutes.editProfileScreen: (context) => const EditProfileScreen(),
         AppRoutes.biometricsScreen: (context) => const BiometricsScreen(),
       },

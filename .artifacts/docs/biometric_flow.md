@@ -294,7 +294,7 @@ Fallback:
 
 - Do not create SecretKey.
 - Do not overwrite SecureStorage.
-- Stay on login screen.
+- Stay on master password screen.
 
 ---
 

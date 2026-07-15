@@ -11,7 +11,7 @@ import '../../../domain/use_cases/delete_account_from_vault_use_case.dart';
 import '../../../domain/use_cases/update_account_use_case.dart';
 import 'platform_account_state.dart';
 
-@injectable
+@lazySingleton
 class PlatformAccountCubit extends Cubit<PlatformAccountState> {
   final AddPlatformAccountUseCase _addPlatformAccountUseCase;
   final EncryptPasswordUseCase _encryptPasswordUseCase;

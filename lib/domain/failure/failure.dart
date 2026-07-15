@@ -21,6 +21,10 @@ class CacheFailure extends Failure {
   const CacheFailure(super.message);
 }
 
+class BiometricFailure extends Failure {
+  const BiometricFailure(super.message);
+}
+
 class ValidationFailure extends Failure {
   const ValidationFailure(super.message);
 }

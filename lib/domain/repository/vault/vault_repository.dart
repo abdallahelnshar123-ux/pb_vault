@@ -17,6 +17,8 @@ abstract class VaultRepository {
     required String verifier,
   });
 
+  Future<Either<Failure, Unit>> unlockWithKey(List<int> keyBytes);
+
   void lock();
 
   bool get isLocked;

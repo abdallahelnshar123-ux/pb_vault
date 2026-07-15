@@ -11,7 +11,10 @@ import 'package:pb_vault/widgets/main_loading_widget.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_styles.dart';
 import '../../../../core/utils/screen_size.dart';
+import '../../../core/di/di.dart';
 import '../../auth/cubit/user_view_model.dart';
+import '../../profile_screen/cubit/settings_cubit.dart';
+import '../../profile_screen/screens/profile_screen.dart';
 import '../cubit/home_state.dart';
 import '../cubit/home_view_model.dart';
 
@@ -134,7 +137,18 @@ class _HomeScreenState extends State<HomeScreen> {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           onPressed: () {
-            Navigator.pushNamed(context, AppRoutes.profileScreen);
+            var currentLocale = context.locale;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (context) =>
+                      getIt<SettingsCubit>()
+                        ..loadSettings(currentLocale: currentLocale),
+                  child: const ProfileScreen(),
+                ),
+              ),
+            );
           },
           icon: Icon(
             Icons.account_circle_outlined,

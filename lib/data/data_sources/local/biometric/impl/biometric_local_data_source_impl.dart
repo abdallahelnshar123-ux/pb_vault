@@ -1,22 +1,20 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import '../../../../../core/data_bases/cache/local_storage.dart';
-import '../../../../../core/data_bases/secure_storage/secure_storage_keys.dart';
-import '../../../../../core/data_bases/secure_storage/secure_storage_utils.dart';
+import '../../../../../core/data_bases/cache/secure_storage/secure_storage_utils.dart';
 import '../../../../exceptions/app_exceptions.dart';
 import '../biometric_local_data_source.dart';
 
 @Injectable(as: BiometricLocalDataSource)
 class BiometricLocalDataSourceImpl implements BiometricLocalDataSource {
   final LocalStorage _localStorage;
-  final SecureStorageUtils _secureStorage;
 
-  BiometricLocalDataSourceImpl(this._localStorage, this._secureStorage);
+  BiometricLocalDataSourceImpl(this._localStorage, );
 
   @override
   Future<void> saveSecretKey(List<int> secretKey) async {
     try {
-      await _secureStorage.writeBytes(SecureStorageKeys.secretKey, secretKey);
+      await _localStorage.saveSecretKey(secretKey);
     } catch (e) {
       throw CacheException(message: e.toString(), statusCode: null);
     }
@@ -25,7 +23,7 @@ class BiometricLocalDataSourceImpl implements BiometricLocalDataSource {
   @override
   Future<Option<List<int>>> getSecretKey() async {
     try {
-      final key = await _secureStorage.readBytes(SecureStorageKeys.secretKey);
+      final key = await _localStorage.secretKey;
       return key != null ? Some(key) : const None();
     } catch (e) {
       throw CacheException(message: e.toString(), statusCode: null);
@@ -35,7 +33,7 @@ class BiometricLocalDataSourceImpl implements BiometricLocalDataSource {
   @override
   Future<void> deleteSecretKey() async {
     try {
-      await _secureStorage.delete(SecureStorageKeys.secretKey);
+      await _localStorage.deleteSecretKey();
     } catch (e) {
       throw CacheException(message: e.toString(), statusCode: null);
     }

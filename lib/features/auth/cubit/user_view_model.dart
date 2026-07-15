@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pb_vault/features/home_screen/cubit/home_view_model.dart';
+import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
 
 import '../../../core/utils/app_routes.dart';
 import '../../../domain/entities/response/user/my_user.dart';
@@ -29,6 +29,7 @@ class UserCubit extends Cubit<UserState> {
   final ResetPasswordUseCase _resetPasswordUseCase;
   final CheckAppStartupUseCase _checkAppStartupUseCase;
   final HomeCubit _homeCubit;
+  final MasterPasswordCubit _masterPasswordCubit;
 
   UserCubit(
     this._signInWithGoogleUseCases,
@@ -40,6 +41,7 @@ class UserCubit extends Cubit<UserState> {
     this._resetPasswordUseCase,
     this._checkAppStartupUseCase,
     this._homeCubit,
+    this._masterPasswordCubit,
   ) : super(UserInitial());
 
   MyUser? currentUser;
@@ -68,26 +70,6 @@ class UserCubit extends Cubit<UserState> {
     );
   }
 
-  // Future<void> loginWithEmailAndPassword(String email, String password) async {
-  //   try {
-  //     emit(LoginWithEmailPasswordLoadingState());
-  //     final result = await _loginWithEmailAndPasswordUseCase.invoke(
-  //       email: email,
-  //       password: password,
-  //     );
-  //     result.fold(
-  //           (failure) =>
-  //           emit(LoginWithEmailPasswordErrorState(failure.message.tr())),
-  //           (user) {
-  //         currentUser = user;
-  //         emit(UserAuthenticatedState(user));
-  //       },
-  //     );
-  //   } catch (e) {
-  //     emit(LoginWithEmailPasswordErrorState('Unexpected Error'));
-  //   }
-  // }
-
   Future<void> registerWithEmailAndPassword({
     required String email,
     required String password,
@@ -112,34 +94,6 @@ class UserCubit extends Cubit<UserState> {
     );
   }
 
-  // Future<void> registerWithEmailAndPassword({
-  //   required String email,
-  //   required String password,
-  //   required String name,
-  //   required int avatarIndex,
-  // }) async {
-  //   try {
-  //     emit(RegisterWithEmailPasswordLoadingState());
-  //     final result = await _registerWithEmailAndPasswordUseCases.invoke(
-  //       name: name,
-  //       avatarIndex: avatarIndex,
-  //       password: password,
-  //       email: email,
-  //     );
-  //
-  //     result.fold(
-  //           (failure) =>
-  //           emit(RegisterWithEmailPasswordErrorState(failure.message.tr())),
-  //           (user) {
-  //         currentUser = user;
-  //         emit(UserAuthenticatedState(user));
-  //       },
-  //     );
-  //   } catch (e) {
-  //     emit(RegisterWithEmailPasswordErrorState('Unexpected Error'));
-  //   }
-  // }
-
   Future<void> continueWithGoogle() async {
     emit(ContinueWithGoogleLoadingState());
     final result = await _signInWithGoogleUseCases.invoke();
@@ -155,20 +109,21 @@ class UserCubit extends Cubit<UserState> {
     );
   }
 
-  void logout(BuildContext context) async {
+  Future<void> logout() async {
     emit(LogoutLoadingState());
-    await _homeCubit.clearHomeAccounts();
-    if (!context.mounted) return;
+
     var result = await _logoutUseCase.invoke();
-    result.fold((failure) => emit(LogoutErrorState(failure.message.tr())), (_) {
+    result.fold((failure) => emit(LogoutErrorState(failure.message.tr())), (
+      _,
+    ) async {
+      _masterPasswordCubit.lockVault();
+      await _homeCubit.clearHomeAccounts();
+      currentUser = null;
       emit(UserUnauthenticatedState());
     });
   }
 
-  Future<void> deleteUser({
-    required BuildContext context,
-    required String password,
-  }) async {
+  Future<void> deleteUser({required String password}) async {
     emit(UserDeleteLoadingState());
 
     var result = await _deleteAccountUseCase.invoke(
@@ -179,7 +134,7 @@ class UserCubit extends Cubit<UserState> {
       unit,
     ) {
       emit(UserDeleteSuccessState());
-      logout(context);
+      logout();
     });
   }
 

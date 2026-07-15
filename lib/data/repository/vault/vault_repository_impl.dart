@@ -84,6 +84,18 @@ class VaultRepositoryImpl implements VaultRepository {
   }
 
   @override
+  Future<Either<Failure, Unit>> unlockWithKey(List<int> keyBytes) async {
+    try {
+      await _vaultRemoteDataSource.unlockWithKey(keyBytes);
+      return const Right(unit);
+    } on AppException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnexpectedFailure(e.toString()));
+    }
+  }
+
+  @override
   void lock() {
     _vaultRemoteDataSource.lock();
   }

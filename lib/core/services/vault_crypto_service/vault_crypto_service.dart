@@ -78,6 +78,10 @@ class VaultCryptoService {
     return false;
   }
 
+  void unlockWithKey(List<int> keyBytes) {
+    _secretKey = SecretKey(keyBytes);
+  }
+
   Future<EncryptedData> encrypt(String text) async {
     if (_secretKey == null) {
       throw Exception('Vault is locked. Unlock it first.');
