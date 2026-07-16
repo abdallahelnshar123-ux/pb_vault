@@ -6,10 +6,12 @@ import 'package:pb_vault/domain/use_cases/biometric/biometric_unlock_use_case.da
 import 'package:pb_vault/domain/use_cases/biometric/enable_biometric_use_case.dart';
 import 'package:pb_vault/domain/use_cases/biometric/is_biometric_enabled_use_case.dart';
 import 'package:pb_vault/domain/use_cases/biometric/is_biometric_supported_use_case.dart';
+import 'package:pb_vault/domain/use_cases/biometric/set_biometric_rejected_use_case.dart';
 import 'package:pb_vault/domain/use_cases/vault/create_vault_verifier_use_case.dart';
 import 'package:pb_vault/domain/use_cases/vault/unlock_vault_use_case.dart';
 
 import '../../../domain/entities/response/user/my_user.dart';
+import '../../../domain/use_cases/biometric/is_biometric_rejected_use_case.dart';
 import '../../../domain/use_cases/set_master_password_use_case.dart';
 import 'master_password_state.dart';
 
@@ -21,7 +23,9 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
   final IsBiometricSupportedUseCase _isBiometricSupportedUseCase;
   final EnableBiometricUseCase _enableBiometricUseCase;
   final IsBiometricEnabledUseCase _isBiometricEnabledUseCase;
+  final IsBiometricRejectedUseCase _isBiometricRejectedUseCase;
   final BiometricUnlockUseCase _biometricUnlockUseCase;
+  final SetBiometricRejectedUseCase _biometricRejectedUseCase;
 
   MasterPasswordCubit(
     this._setMasterPasswordUseCase,
@@ -30,7 +34,9 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
     this._isBiometricSupportedUseCase,
     this._enableBiometricUseCase,
     this._isBiometricEnabledUseCase,
+    this._isBiometricRejectedUseCase,
     this._biometricUnlockUseCase,
+      this._biometricRejectedUseCase
   ) : super(MasterPasswordInitial());
 
   Future<void> setMasterPassword({
@@ -73,12 +79,12 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
     );
   }
 
-  Future<void> verifyMasterPassword({
+  Future<void> unlockVault({
     required List<int> salt,
     required String masterPassword,
     required String passwordVerifier,
   }) async {
-    emit(MasterPasswordVerifyLoading());
+    emit(UnlockLoadingState());
     final result = await _unlockVaultUseCase.invoke(
       password: masterPassword,
       salt: salt,
@@ -86,22 +92,24 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
     );
 
     await result.fold(
-      (failure) async => emit(MasterPasswordVerifyError(failure.message)),
+      (failure) async => emit(UnlockErrorState(failure.message)),
       (isUnlocked) async {
         if (isUnlocked) {
-          final supportedResult = await _isBiometricSupportedUseCase.invoke();
-          final isSupported = supportedResult.getOrElse(() => false);
+          final rejectedResult = _isBiometricRejectedUseCase.invoke();
+          final isRejected = rejectedResult.getOrElse(() => false);
+          var offerBiometric = false;
+          if (!isRejected) {
+            final supportedResult = await _isBiometricSupportedUseCase.invoke();
+            final isSupported = supportedResult.getOrElse(() => false);
 
-          final enabledResult = _isBiometricEnabledUseCase.invoke();
-          final isEnabled = enabledResult.getOrElse(() => false);
+            final enabledResult = _isBiometricEnabledUseCase.invoke();
+            final isEnabled = enabledResult.getOrElse(() => false);
+            offerBiometric = isSupported && !isEnabled;
+          }
 
-          emit(
-            MasterPasswordVerifySuccess(
-              offerBiometric: isSupported && !isEnabled,
-            ),
-          );
+          emit(UnlockSuccessState(offerBiometric: offerBiometric));
         } else {
-          emit(MasterPasswordVerifyError('invalid_master_password'));
+          emit(UnlockErrorState('invalid_master_password'));
         }
       },
     );
@@ -112,13 +120,15 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
     final isEnabled = enabledResult.getOrElse(() => false);
 
     if (isEnabled) {
-      emit(MasterPasswordVerifyLoading());
+      emit(UnlockLoadingState());
       final result = await _biometricUnlockUseCase.invoke();
       result.fold(
-        (failure) => emit(MasterPasswordVerifyError(failure.message)),
+        (failure) {
+          emit(UnlockErrorState(failure.message));
+        },
         (success) {
           if (success) {
-            emit(MasterPasswordVerifySuccess());
+            emit(UnlockSuccessState());
           } else {
             // If biometric fails, we stay on the screen to allow manual entry
             // but we might want to clear the loading state.
@@ -137,6 +147,10 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
       }
       return false;
     }, (_) => true);
+  }
+
+  void rejectBiometric(bool enable){
+    _biometricRejectedUseCase.invoke(enable);
   }
 
   void lockVault() {

@@ -15,7 +15,7 @@ class BiometricAuthServiceImpl implements BiometricAuthService {
     try {
       return await _localAuth.authenticate(
         localizedReason: 'Please authenticate to unlock your vault',
-        biometricOnly: false,
+        biometricOnly: true,
         persistAcrossBackgrounding: true,
       );
     } on LocalAuthException catch (e) {

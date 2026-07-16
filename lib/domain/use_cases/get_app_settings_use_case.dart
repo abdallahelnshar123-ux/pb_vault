@@ -15,8 +15,9 @@ class GetAppSettingsUseCase {
     var isBiometricSupported = await _biometricRepository
         .isBiometricSupported();
 
-
-    return AppSettings(isBiometricEnabled: isBiometricEnabled,
-        isBiometricSupported: isBiometricSupported.getOrElse(() => false));
+    return AppSettings(
+      isBiometricEnabled: isBiometricEnabled,
+      isBiometricSupported: isBiometricSupported.getOrElse(() => false),
+    );
   }
 }

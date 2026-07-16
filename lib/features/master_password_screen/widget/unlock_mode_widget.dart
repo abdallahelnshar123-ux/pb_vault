@@ -113,11 +113,11 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
     return BlocBuilder<MasterPasswordCubit, MasterPasswordState>(
       builder: (context, state) {
         return Icon(
-          state is MasterPasswordVerifySuccess
+          state is UnlockSuccessState
               ? Icons.lock_open_outlined
               : Icons.lock_outline,
           size: 80,
-          color: state is MasterPasswordVerifySuccess
+          color: state is UnlockSuccessState
               ? AppColors.success
               : AppColors.primary,
         );
@@ -132,12 +132,12 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
     return BlocBuilder<MasterPasswordCubit, MasterPasswordState>(
       builder: (context, state) {
         return CustomElevatedButton(
-          onPressed: state is MasterPasswordVerifySuccess
+          onPressed: state is UnlockSuccessState
               ? null
               : () async {
                   if (formKey.currentState!.validate()) {
                     {
-                      masterCubit.verifyMasterPassword(
+                      masterCubit.unlockVault(
                         masterPassword: passwordController.text,
                         salt: authCubit.currentUser!.salt!,
                         passwordVerifier:
@@ -147,11 +147,11 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
                   }
                 },
           borderSideColor: AppColors.backgroundDark,
-          backgroundColor: state is MasterPasswordVerifySuccess
+          backgroundColor: state is UnlockSuccessState
               ? AppColors.backgroundDark
               : AppColors.primary,
           child: Text(
-            state is MasterPasswordVerifySuccess
+            state is UnlockSuccessState
                 ? "unlocked".tr()
                 : "unlock".tr(),
             style: AppStyles.robotoBold20White(context),

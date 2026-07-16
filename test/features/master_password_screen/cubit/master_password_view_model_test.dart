@@ -7,7 +7,9 @@ import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/use_cases/biometric/biometric_unlock_use_case.dart';
 import 'package:pb_vault/domain/use_cases/biometric/enable_biometric_use_case.dart';
 import 'package:pb_vault/domain/use_cases/biometric/is_biometric_enabled_use_case.dart';
+import 'package:pb_vault/domain/use_cases/biometric/is_biometric_rejected_use_case.dart';
 import 'package:pb_vault/domain/use_cases/biometric/is_biometric_supported_use_case.dart';
+import 'package:pb_vault/domain/use_cases/biometric/set_biometric_rejected_use_case.dart';
 import 'package:pb_vault/domain/use_cases/set_master_password_use_case.dart';
 import 'package:pb_vault/domain/use_cases/vault/create_vault_verifier_use_case.dart';
 import 'package:pb_vault/domain/use_cases/vault/unlock_vault_use_case.dart';
@@ -31,8 +33,14 @@ class MockEnableBiometricUseCase extends Mock
 class MockIsBiometricEnabledUseCase extends Mock
     implements IsBiometricEnabledUseCase {}
 
+class MockIsBiometricRejectedUseCase extends Mock
+    implements IsBiometricRejectedUseCase {}
+
 class MockBiometricUnlockUseCase extends Mock
     implements BiometricUnlockUseCase {}
+
+class MockSetBiometricRejectedUseCase extends Mock
+    implements SetBiometricRejectedUseCase {}
 
 void main() {
   late MasterPasswordCubit cubit;
@@ -43,6 +51,8 @@ void main() {
   late MockEnableBiometricUseCase mockEnableBiometricUseCase;
   late MockBiometricUnlockUseCase mockBiometricUnlockUseCase;
   late MockIsBiometricEnabledUseCase mockIsBiometricEnabledUseCase;
+  late MockIsBiometricRejectedUseCase mockIsBiometricRejectedUseCase;
+  late MockSetBiometricRejectedUseCase mockSetBiometricRejectedUseCase;
 
   const tUser = MyUser(
     id: '1',
@@ -69,6 +79,8 @@ void main() {
     mockEnableBiometricUseCase = MockEnableBiometricUseCase();
     mockIsBiometricEnabledUseCase = MockIsBiometricEnabledUseCase();
     mockBiometricUnlockUseCase = MockBiometricUnlockUseCase();
+    mockIsBiometricRejectedUseCase = MockIsBiometricRejectedUseCase();
+    mockSetBiometricRejectedUseCase = MockSetBiometricRejectedUseCase();
     cubit = MasterPasswordCubit(
       mockSetMasterPasswordUseCase,
       mockCreateVaultVerifierUseCase,
@@ -76,7 +88,9 @@ void main() {
       mockIsBiometricSupportedUseCase,
       mockEnableBiometricUseCase,
       mockIsBiometricEnabledUseCase,
+      mockIsBiometricRejectedUseCase,
       mockBiometricUnlockUseCase,
+      mockSetBiometricRejectedUseCase,
     );
   });
 
@@ -192,9 +206,11 @@ void main() {
       );
     });
 
-    group('verifyMasterPassword', () {
+    group('unlockVault', () {
       blocTest<MasterPasswordCubit, MasterPasswordState>(
-        'emits [MasterPasswordVerifyLoading, MasterPasswordVerifySuccess]  with offer biometric equal true  when successful and unlock is true ',
+        'emits [MasterPasswordVerifyLoading, MasterPasswordVerifySuccess]'
+        '  with offer biometric equal true when successful'
+        ' and unlock is true and biometric is not rejected ',
         build: () {
           when(
             () => mockUnlockVaultUseCase.invoke(
@@ -207,18 +223,21 @@ void main() {
             () => mockIsBiometricSupportedUseCase.invoke(),
           ).thenAnswer((_) async => Right(true));
           when(
+            () => mockIsBiometricRejectedUseCase.invoke(),
+          ).thenReturn(Right(false));
+          when(
             () => mockIsBiometricEnabledUseCase.invoke(),
           ).thenReturn(Right(false));
           return cubit;
         },
-        act: (cubit) => cubit.verifyMasterPassword(
+        act: (cubit) => cubit.unlockVault(
           salt: tSalt,
           masterPassword: tPassword,
           passwordVerifier: tVerifier,
         ),
         expect: () => [
-          isA<MasterPasswordVerifyLoading>(),
-          isA<MasterPasswordVerifySuccess>().having(
+          isA<UnlockLoadingState>(),
+          isA<UnlockSuccessState>().having(
             (s) => s.offerBiometric,
             "offer biometric",
             true,
@@ -233,15 +252,18 @@ void main() {
             ),
           ).called(1);
           verify(() => mockIsBiometricEnabledUseCase.invoke()).called(1);
+          verify(() => mockIsBiometricRejectedUseCase.invoke()).called(1);
           verify(() => mockIsBiometricSupportedUseCase.invoke()).called(1);
           verifyNoMoreInteractions(mockUnlockVaultUseCase);
           verifyNoMoreInteractions(mockIsBiometricSupportedUseCase);
+          verifyNoMoreInteractions(mockIsBiometricRejectedUseCase);
           verifyNoMoreInteractions(mockIsBiometricEnabledUseCase);
         },
       );
-
       blocTest<MasterPasswordCubit, MasterPasswordState>(
-        'emits [MasterPasswordVerifyLoading, MasterPasswordVerifySuccess]  with offer biometric equal false  when successful and unlock is true ',
+        'emits [MasterPasswordVerifyLoading, MasterPasswordVerifySuccess]'
+        '  with offer biometric equal false when successful'
+        ' and unlock is true and biometric is rejected ',
         build: () {
           when(
             () => mockUnlockVaultUseCase.invoke(
@@ -250,6 +272,55 @@ void main() {
               verifier: any(named: 'verifier'),
             ),
           ).thenAnswer((_) async => Right(true));
+          when(
+            () => mockIsBiometricRejectedUseCase.invoke(),
+          ).thenReturn(Right(true));
+          return cubit;
+        },
+        act: (cubit) => cubit.unlockVault(
+          salt: tSalt,
+          masterPassword: tPassword,
+          passwordVerifier: tVerifier,
+        ),
+        expect: () => [
+          isA<UnlockLoadingState>(),
+          isA<UnlockSuccessState>().having(
+            (s) => s.offerBiometric,
+            "offer biometric",
+            false,
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => mockUnlockVaultUseCase.invoke(
+              password: tPassword,
+              salt: tSalt,
+              verifier: tVerifier,
+            ),
+          ).called(1);
+          verify(() => mockIsBiometricRejectedUseCase.invoke()).called(1);
+          verifyNoMoreInteractions(mockUnlockVaultUseCase);
+          verifyZeroInteractions(mockIsBiometricSupportedUseCase);
+          verifyNoMoreInteractions(mockIsBiometricRejectedUseCase);
+          verifyZeroInteractions(mockIsBiometricEnabledUseCase);
+        },
+      );
+
+      blocTest<MasterPasswordCubit, MasterPasswordState>(
+        'emits [MasterPasswordVerifyLoading, MasterPasswordVerifySuccess]'
+        '  with offer biometric equal false  when successful '
+        'and unlock is true and biometric is not rejected ',
+        build: () {
+          when(
+            () => mockUnlockVaultUseCase.invoke(
+              password: any(named: 'password'),
+              salt: any(named: 'salt'),
+              verifier: any(named: 'verifier'),
+            ),
+          ).thenAnswer((_) async => Right(true));
+          when(
+            () => mockIsBiometricRejectedUseCase.invoke(),
+          ).thenReturn(Right(false));
           when(
             () => mockIsBiometricSupportedUseCase.invoke(),
           ).thenAnswer((_) async => Right(true));
@@ -258,14 +329,14 @@ void main() {
           ).thenReturn(Right(true));
           return cubit;
         },
-        act: (cubit) => cubit.verifyMasterPassword(
+        act: (cubit) => cubit.unlockVault(
           salt: tSalt,
           masterPassword: tPassword,
           passwordVerifier: tVerifier,
         ),
         expect: () => [
-          isA<MasterPasswordVerifyLoading>(),
-          isA<MasterPasswordVerifySuccess>().having(
+          isA<UnlockLoadingState>(),
+          isA<UnlockSuccessState>().having(
             (s) => s.offerBiometric,
             "offer biometric",
             false,
@@ -281,14 +352,18 @@ void main() {
           ).called(1);
           verify(() => mockIsBiometricEnabledUseCase.invoke()).called(1);
           verify(() => mockIsBiometricSupportedUseCase.invoke()).called(1);
+          verify(() => mockIsBiometricRejectedUseCase.invoke()).called(1);
           verifyNoMoreInteractions(mockUnlockVaultUseCase);
+          verifyNoMoreInteractions(mockIsBiometricRejectedUseCase);
           verifyNoMoreInteractions(mockIsBiometricSupportedUseCase);
           verifyNoMoreInteractions(mockIsBiometricEnabledUseCase);
         },
       );
 
       blocTest<MasterPasswordCubit, MasterPasswordState>(
-        'emits [MasterPasswordVerifyLoading, MasterPasswordVerifySuccess]  with offer biometric equal false  when successful and unlock is true ',
+        'emits [MasterPasswordVerifyLoading, MasterPasswordVerifySuccess] '
+        ' with offer biometric equal false  when successful and '
+        'unlock is true and biometric is not rejected',
         build: () {
           when(
             () => mockUnlockVaultUseCase.invoke(
@@ -298,6 +373,9 @@ void main() {
             ),
           ).thenAnswer((_) async => Right(true));
           when(
+            () => mockIsBiometricRejectedUseCase.invoke(),
+          ).thenReturn(Right(false));
+          when(
             () => mockIsBiometricSupportedUseCase.invoke(),
           ).thenAnswer((_) async => Right(false));
           when(
@@ -305,14 +383,14 @@ void main() {
           ).thenReturn(Right(false));
           return cubit;
         },
-        act: (cubit) => cubit.verifyMasterPassword(
+        act: (cubit) => cubit.unlockVault(
           salt: tSalt,
           masterPassword: tPassword,
           passwordVerifier: tVerifier,
         ),
         expect: () => [
-          isA<MasterPasswordVerifyLoading>(),
-          isA<MasterPasswordVerifySuccess>().having(
+          isA<UnlockLoadingState>(),
+          isA<UnlockSuccessState>().having(
             (s) => s.offerBiometric,
             "offer biometric",
             false,
@@ -328,7 +406,9 @@ void main() {
           ).called(1);
           verify(() => mockIsBiometricEnabledUseCase.invoke()).called(1);
           verify(() => mockIsBiometricSupportedUseCase.invoke()).called(1);
+          verify(() => mockIsBiometricRejectedUseCase.invoke()).called(1);
           verifyNoMoreInteractions(mockUnlockVaultUseCase);
+          verifyNoMoreInteractions(mockIsBiometricRejectedUseCase);
           verifyNoMoreInteractions(mockIsBiometricSupportedUseCase);
           verifyNoMoreInteractions(mockIsBiometricEnabledUseCase);
         },
@@ -346,14 +426,14 @@ void main() {
           ).thenAnswer((_) async => Right(false));
           return cubit;
         },
-        act: (cubit) => cubit.verifyMasterPassword(
+        act: (cubit) => cubit.unlockVault(
           salt: tSalt,
           masterPassword: tPassword,
           passwordVerifier: tVerifier,
         ),
         expect: () => [
-          isA<MasterPasswordVerifyLoading>(),
-          isA<MasterPasswordVerifyError>().having(
+          isA<UnlockLoadingState>(),
+          isA<UnlockErrorState>().having(
             (s) => s.message,
             'message',
             'invalid_master_password',
@@ -386,18 +466,14 @@ void main() {
           ).thenAnswer((_) async => Left(tFailure));
           return cubit;
         },
-        act: (cubit) => cubit.verifyMasterPassword(
+        act: (cubit) => cubit.unlockVault(
           salt: tSalt,
           masterPassword: tPassword,
           passwordVerifier: tVerifier,
         ),
         expect: () => [
-          isA<MasterPasswordVerifyLoading>(),
-          isA<MasterPasswordVerifyError>().having(
-            (s) => s.message,
-            'message',
-            'error',
-          ),
+          isA<UnlockLoadingState>(),
+          isA<UnlockErrorState>().having((s) => s.message, 'message', 'error'),
         ],
         verify: (_) {
           verify(
@@ -439,10 +515,7 @@ void main() {
           return cubit;
         },
         act: (cubit) => cubit.biometricUnlock(),
-        expect: () => [
-          MasterPasswordVerifyLoading(),
-          MasterPasswordVerifySuccess(),
-        ],
+        expect: () => [UnlockLoadingState(), UnlockSuccessState()],
       );
 
       blocTest<MasterPasswordCubit, MasterPasswordState>(
@@ -459,7 +532,7 @@ void main() {
           return cubit;
         },
         act: (cubit) => cubit.biometricUnlock(),
-        expect: () => [MasterPasswordVerifyLoading(), MasterPasswordInitial()],
+        expect: () => [UnlockLoadingState(), MasterPasswordInitial()],
       );
 
       blocTest<MasterPasswordCubit, MasterPasswordState>(
@@ -477,8 +550,8 @@ void main() {
         },
         act: (cubit) => cubit.biometricUnlock(),
         expect: () => [
-          MasterPasswordVerifyLoading(),
-          MasterPasswordVerifyError('biometric_error'),
+          UnlockLoadingState(),
+          UnlockErrorState('biometric_error'),
         ],
       );
     });
@@ -528,11 +601,24 @@ void main() {
       );
     });
 
+    group('rejectBiometric', () {
+      test('should call setBiometricRejectedUseCase', () {
+        when(
+          () => mockSetBiometricRejectedUseCase.invoke(false),
+        ).thenAnswer((_) async => Right(unit));
+
+        cubit.rejectBiometric(false);
+
+        verify(() => mockSetBiometricRejectedUseCase.invoke(false)).called(1);
+        verifyNoMoreInteractions(mockSetBiometricRejectedUseCase);
+      });
+    });
+
     group('lockVault', () {
       blocTest<MasterPasswordCubit, MasterPasswordState>(
         'should emit initial state when lockVault is called',
         build: () => cubit,
-        seed: () => MasterPasswordVerifySuccess(),
+        seed: () => UnlockSuccessState(),
         act: (cubit) => cubit.lockVault(),
         expect: () => [MasterPasswordInitial()],
       );

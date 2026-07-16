@@ -69,8 +69,12 @@ import '../../domain/use_cases/biometric/enable_biometric_use_case.dart'
     as _i167;
 import '../../domain/use_cases/biometric/is_biometric_enabled_use_case.dart'
     as _i277;
+import '../../domain/use_cases/biometric/is_biometric_rejected_use_case.dart'
+    as _i166;
 import '../../domain/use_cases/biometric/is_biometric_supported_use_case.dart'
     as _i1065;
+import '../../domain/use_cases/biometric/set_biometric_rejected_use_case.dart'
+    as _i870;
 import '../../domain/use_cases/check_app_startup_use_case.dart' as _i543;
 import '../../domain/use_cases/delete_account_from_vault_use_case.dart'
     as _i202;
@@ -260,9 +264,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i277.IsBiometricEnabledUseCase>(
       () => _i277.IsBiometricEnabledUseCase(gh<_i1053.BiometricRepository>()),
     );
+    gh.factory<_i166.IsBiometricRejectedUseCase>(
+      () => _i166.IsBiometricRejectedUseCase(gh<_i1053.BiometricRepository>()),
+    );
     gh.factory<_i1065.IsBiometricSupportedUseCase>(
       () =>
           _i1065.IsBiometricSupportedUseCase(gh<_i1053.BiometricRepository>()),
+    );
+    gh.factory<_i870.SetBiometricRejectedUseCase>(
+      () => _i870.SetBiometricRejectedUseCase(gh<_i1053.BiometricRepository>()),
     );
     gh.factory<_i648.GetAppSettingsUseCase>(
       () => _i648.GetAppSettingsUseCase(gh<_i1053.BiometricRepository>()),
@@ -319,7 +329,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1065.IsBiometricSupportedUseCase>(),
         gh<_i167.EnableBiometricUseCase>(),
         gh<_i277.IsBiometricEnabledUseCase>(),
+        gh<_i166.IsBiometricRejectedUseCase>(),
         gh<_i547.BiometricUnlockUseCase>(),
+        gh<_i870.SetBiometricRejectedUseCase>(),
       ),
     );
     gh.factory<_i551.SetOnboardingDoneUseCase>(
@@ -331,7 +343,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i183.UserRepository>(),
       ),
     );
-    gh.lazySingleton<_i618.SettingsCubit>(
+    gh.factory<_i618.SettingsCubit>(
       () => _i618.SettingsCubit(
         gh<_i167.EnableBiometricUseCase>(),
         gh<_i648.GetAppSettingsUseCase>(),

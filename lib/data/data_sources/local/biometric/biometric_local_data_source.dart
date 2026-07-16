@@ -10,4 +10,8 @@ abstract class BiometricLocalDataSource {
   Future<void> setBiometricEnabled(bool enabled);
 
   bool isBiometricEnabled();
+
+  bool isBiometricRejected();
+
+  Future<void> setBiometricRejected(bool enabled);
 }

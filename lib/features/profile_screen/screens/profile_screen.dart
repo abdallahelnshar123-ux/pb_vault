@@ -106,7 +106,9 @@ class ProfileScreen extends StatelessWidget {
                   BlocBuilder<SettingsCubit, SettingsState>(
                     buildWhen: (previous, current) =>
                         previous.isBiometricEnabled !=
-                        current.isBiometricEnabled,
+                            current.isBiometricEnabled ||
+                        previous.isBiometricSupported !=
+                            current.isBiometricSupported,
                     builder: (context, state) {
                       return Visibility(
                         visible: state.isBiometricSupported,

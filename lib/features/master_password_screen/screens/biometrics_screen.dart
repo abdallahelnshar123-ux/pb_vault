@@ -27,7 +27,6 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
       listenWhen: (previous, current) => current is BiometricErrorState,
       listener: (context, state) {
         if (state is BiometricErrorState) {
-
           DialogUtils.showMessage(
             context: context,
             message: 'error_while_trying_activating_biometric',
@@ -127,7 +126,7 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
       visible: !isBiometricsActivated,
       child: CustomElevatedButton(
         onPressed: () {
-          context.read<MasterPasswordCubit>().enableBiometric(false);
+          context.read<MasterPasswordCubit>().rejectBiometric(true);
           Navigator.pushNamedAndRemoveUntil(
             context,
             AppRoutes.homeRouteName,
@@ -136,7 +135,6 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
         },
         borderSideColor: AppColors.primary,
         backgroundColor: AppColors.backgroundDark,
-
         child: Text(
           "skip_for_now".tr(),
           style: AppStyles.robotoRegular16White(context),

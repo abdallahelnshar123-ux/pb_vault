@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import '../../../../../core/data_bases/cache/local_storage.dart';
-import '../../../../../core/data_bases/cache/secure_storage/secure_storage_utils.dart';
 import '../../../../exceptions/app_exceptions.dart';
 import '../biometric_local_data_source.dart';
 
@@ -52,6 +51,24 @@ class BiometricLocalDataSourceImpl implements BiometricLocalDataSource {
   bool isBiometricEnabled() {
     try {
       return _localStorage.useBiometric;
+    } catch (e) {
+      throw CacheException(message: e.toString(), statusCode: null);
+    }
+  }
+
+  @override
+  Future<void> setBiometricRejected(bool enabled) async {
+    try {
+      await _localStorage.setBiometricRejected(enabled);
+    } catch (e) {
+      throw CacheException(message: e.toString(), statusCode: null);
+    }
+  }
+
+  @override
+  bool isBiometricRejected() {
+    try {
+      return _localStorage.isBiometricRejected;
     } catch (e) {
       throw CacheException(message: e.toString(), statusCode: null);
     }

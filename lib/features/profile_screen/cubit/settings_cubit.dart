@@ -6,7 +6,7 @@ import 'package:pb_vault/features/profile_screen/cubit/settings_state.dart';
 
 import '../../../domain/use_cases/biometric/enable_biometric_use_case.dart';
 
-@lazySingleton
+@injectable
 class SettingsCubit extends Cubit<SettingsState> {
   final EnableBiometricUseCase _enableBiometricUseCase;
   final GetAppSettingsUseCase _appSettingsUseCase;

@@ -6,7 +6,6 @@ import '../repository/auth/auth_repository.dart';
 import '../repository/biometric/biometric_repository.dart';
 import '../repository/vault/vault_repository.dart';
 
-
 @injectable
 class LogoutUseCase {
   final AuthRepository _authRepository;
@@ -23,13 +22,16 @@ class LogoutUseCase {
     // 1. Clear SecretKey from memory
     _vaultRepository.lock();
 
-    // 2. Delete SecretKey from SecureStorage
-    await _biometricRepository.deleteSecretKey();
+    await Future.wait([
+      // 2. Delete SecretKey from SecureStorage
+      _biometricRepository.deleteSecretKey(),
+      // 3. Save useBiometric = false
+      _biometricRepository.setBiometricEnabled(false),
+      // 4. Save rejectBiometric = false to offer it after first login again
+      _biometricRepository.setBiometricRejected(false),
+    ]);
 
-    // 3. Save useBiometric = false
-    await _biometricRepository.setBiometricEnabled(false);
-
-    // 4. Firebase signOut and clear user cache
+    // 5. Firebase signOut and clear user cache
     return await _authRepository.logout();
   }
 }

@@ -35,24 +35,24 @@ class MasterPasswordSetupError extends MasterPasswordState {
 }
 
 /// ==========================   Master Password Verify states   ===========================
-class MasterPasswordVerifyLoading extends MasterPasswordState {
+class UnlockLoadingState extends MasterPasswordState {
   @override
   List<Object?> get props => [];
 }
 
-class MasterPasswordVerifySuccess extends MasterPasswordState {
+class UnlockSuccessState extends MasterPasswordState {
   final bool offerBiometric;
 
-  MasterPasswordVerifySuccess({this.offerBiometric = false});
+  UnlockSuccessState({this.offerBiometric = false});
 
   @override
   List<Object?> get props => [offerBiometric];
 }
 
-class MasterPasswordVerifyError extends MasterPasswordState {
+class UnlockErrorState extends MasterPasswordState {
   final String message;
 
-  MasterPasswordVerifyError(this.message);
+  UnlockErrorState(this.message);
 
   @override
   List<Object?> get props => [message];

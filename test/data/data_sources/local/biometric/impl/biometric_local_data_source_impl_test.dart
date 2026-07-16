@@ -249,5 +249,89 @@ void main() {
         },
       );
     });
+
+    group('setBiometricRejected', () {
+      test(
+        'should call localStorage.setBiometricRejected with correct value',
+        () async {
+          // arrange
+          when(
+            () => mockLocalStorage.setBiometricRejected(any()),
+          ).thenAnswer((_) async => {});
+
+          // act
+          await dataSource.setBiometricRejected(true);
+
+          // assert
+          verify(() => mockLocalStorage.setBiometricRejected(true)).called(1);
+          verifyNoMoreInteractions(mockLocalStorage);
+        },
+      );
+
+      test(
+        'should throw CacheException when localStorage throws an exception',
+        () async {
+          // arrange
+          when(
+            () => mockLocalStorage.setBiometricRejected(any()),
+          ).thenThrow(tException);
+
+          // act
+          final call = dataSource.setBiometricRejected;
+
+          // assert
+          expect(
+            () => call(true),
+            throwsA(
+              isA<CacheException>().having(
+                (e) => e.message,
+                'message',
+                contains(tException.toString()),
+              ),
+            ),
+          );
+          verify(() => mockLocalStorage.setBiometricRejected(true)).called(1);
+        },
+      );
+    });
+
+    group('isBiometricRejected', () {
+      test('should return value from localStorage.isBiometricRejected', () {
+        // arrange
+        when(() => mockLocalStorage.isBiometricRejected).thenReturn(true);
+
+        // act
+        final result = dataSource.isBiometricRejected();
+
+        // assert
+        expect(result, isTrue);
+        verify(() => mockLocalStorage.isBiometricRejected).called(1);
+        verifyNoMoreInteractions(mockLocalStorage);
+      });
+
+      test(
+        'should throw CacheException when localStorage throws an exception',
+        () {
+          // arrange
+          when(() => mockLocalStorage.isBiometricRejected).thenThrow(tException);
+
+          // act
+          final call = dataSource.isBiometricRejected;
+
+          // assert
+          expect(
+            () => call(),
+            throwsA(
+              isA<CacheException>().having(
+                (e) => e.message,
+                'message',
+                contains(tException.toString()),
+              ),
+            ),
+          );
+          verify(() => mockLocalStorage.isBiometricRejected).called(1);
+        },
+      );
+    });
   });
 }

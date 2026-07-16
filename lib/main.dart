@@ -8,8 +8,6 @@ import 'package:pb_vault/features/home_screen/screens/home_screen.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
 import 'package:pb_vault/features/master_password_screen/screens/biometrics_screen.dart';
 import 'package:pb_vault/features/master_password_screen/screens/master_password_screen.dart';
-import 'package:pb_vault/features/profile_screen/cubit/settings_cubit.dart';
-import 'package:pb_vault/features/profile_screen/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'core/di/di.dart';

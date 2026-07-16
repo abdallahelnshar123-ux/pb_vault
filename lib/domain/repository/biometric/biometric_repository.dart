@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+
 import '../../failure/failure.dart';
 
 abstract class BiometricRepository {
@@ -15,4 +16,8 @@ abstract class BiometricRepository {
   Future<Either<Failure, Unit>> setBiometricEnabled(bool enabled);
 
   Either<Failure, bool> isBiometricEnabled();
+
+  Either<Failure, bool> isBiometricRejected();
+
+  Future<Either<Failure, Unit>> setBiometricRejected(bool enabled);
 }

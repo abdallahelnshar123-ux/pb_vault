@@ -103,4 +103,27 @@ class BiometricRepositoryImpl implements BiometricRepository {
       return Left(UnexpectedFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> setBiometricRejected(bool enabled) async {
+    try {
+      await _localDataSource.setBiometricRejected(enabled);
+      return const Right(unit);
+    } on AppException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnexpectedFailure(e.toString()));
+    }
+  }
+
+  @override
+  Either<Failure, bool> isBiometricRejected() {
+    try {
+      return Right(_localDataSource.isBiometricRejected());
+    } on AppException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnexpectedFailure(e.toString()));
+    }
+  }
 }

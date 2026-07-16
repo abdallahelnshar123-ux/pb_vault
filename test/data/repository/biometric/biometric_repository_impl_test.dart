@@ -301,5 +301,67 @@ void main() {
         },
       );
     });
+
+    group('setBiometricRejected', () {
+      test('should return Right(unit) when data source succeeds', () async {
+        // arrange
+        when(
+          () => mockLocalDataSource.setBiometricRejected(any()),
+        ).thenAnswer((_) async => {});
+
+        // act
+        final result = await repository.setBiometricRejected(true);
+
+        // assert
+        expect(result, const Right(unit));
+        verify(() => mockLocalDataSource.setBiometricRejected(true)).called(1);
+      });
+
+      test(
+        'should return Left(CacheFailure) when data source throws CacheException',
+        () async {
+          // arrange
+          when(
+            () => mockLocalDataSource.setBiometricRejected(any()),
+          ).thenThrow(tCacheException);
+
+          // act
+          final result = await repository.setBiometricRejected(true);
+
+          // assert
+          expect(result, const Left(CacheFailure(tMessage)));
+        },
+      );
+    });
+
+    group('isBiometricRejected', () {
+      test('should return Right(bool) when data source succeeds', () {
+        // arrange
+        when(() => mockLocalDataSource.isBiometricRejected()).thenReturn(true);
+
+        // act
+        final result = repository.isBiometricRejected();
+
+        // assert
+        expect(result, const Right(true));
+        verify(() => mockLocalDataSource.isBiometricRejected()).called(1);
+      });
+
+      test(
+        'should return Left(CacheFailure) when data source throws CacheException',
+        () {
+          // arrange
+          when(
+            () => mockLocalDataSource.isBiometricRejected(),
+          ).thenThrow(tCacheException);
+
+          // act
+          final result = repository.isBiometricRejected();
+
+          // assert
+          expect(result, const Left(CacheFailure(tMessage)));
+        },
+      );
+    });
   });
 }

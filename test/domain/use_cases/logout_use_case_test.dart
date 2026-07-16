@@ -34,12 +34,17 @@ void main() {
     void setUpSuccessStubs() {
       // Stubbing vault lock (void method)
       when(() => mockVaultRepository.lock()).thenReturn(null);
-      
+
       // Stubbing biometric repository methods
-      when(() => mockBiometricRepository.deleteSecretKey())
-          .thenAnswer((_) async => const Right(unit));
-      when(() => mockBiometricRepository.setBiometricEnabled(any()))
-          .thenAnswer((_) async => const Right(unit));
+      when(
+        () => mockBiometricRepository.deleteSecretKey(),
+      ).thenAnswer((_) async => const Right(unit));
+      when(
+        () => mockBiometricRepository.setBiometricEnabled(any()),
+      ).thenAnswer((_) async => const Right(unit));
+      when(
+        () => mockBiometricRepository.setBiometricRejected(any()),
+      ).thenAnswer((_) async => const Right(unit));
     }
 
     test(
@@ -47,20 +52,26 @@ void main() {
       () async {
         // Arrange
         setUpSuccessStubs();
-        when(() => mockAuthRepo.logout())
-            .thenAnswer((_) async => const Right(unit));
+        when(
+          () => mockAuthRepo.logout(),
+        ).thenAnswer((_) async => const Right(unit));
 
         // Act
         final result = await useCase.invoke();
 
         // Assert
         expect(result, const Right(unit));
-        
+
         verify(() => mockVaultRepository.lock()).called(1);
         verify(() => mockBiometricRepository.deleteSecretKey()).called(1);
-        verify(() => mockBiometricRepository.setBiometricEnabled(false)).called(1);
+        verify(
+          () => mockBiometricRepository.setBiometricEnabled(false),
+        ).called(1);
+        verify(
+          () => mockBiometricRepository.setBiometricRejected(false),
+        ).called(1);
         verify(() => mockAuthRepo.logout()).called(1);
-        
+
         verifyNoMoreInteractions(mockVaultRepository);
         verifyNoMoreInteractions(mockBiometricRepository);
         verifyNoMoreInteractions(mockAuthRepo);
@@ -73,20 +84,26 @@ void main() {
         // Arrange
         setUpSuccessStubs();
         const tFailure = ServerFailure('Logout Failed');
-        when(() => mockAuthRepo.logout())
-            .thenAnswer((_) async => const Left(tFailure));
+        when(
+          () => mockAuthRepo.logout(),
+        ).thenAnswer((_) async => const Left(tFailure));
 
         // Act
         final result = await useCase.invoke();
 
         // Assert
         expect(result, const Left(tFailure));
-        
+
         verify(() => mockVaultRepository.lock()).called(1);
         verify(() => mockBiometricRepository.deleteSecretKey()).called(1);
-        verify(() => mockBiometricRepository.setBiometricEnabled(false)).called(1);
+        verify(
+          () => mockBiometricRepository.setBiometricEnabled(false),
+        ).called(1);
         verify(() => mockAuthRepo.logout()).called(1);
-        
+        verify(
+          () => mockBiometricRepository.setBiometricRejected(false),
+        ).called(1);
+
         verifyNoMoreInteractions(mockVaultRepository);
         verifyNoMoreInteractions(mockBiometricRepository);
         verifyNoMoreInteractions(mockAuthRepo);

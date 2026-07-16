@@ -38,5 +38,5 @@ class UnexpectedFailure extends Failure {
 }
 
 class CancelledByUserFailure extends Failure {
-  const CancelledByUserFailure() : super('Cancelled by user');
+  const CancelledByUserFailure() : super('cancelled_by_user');
 }

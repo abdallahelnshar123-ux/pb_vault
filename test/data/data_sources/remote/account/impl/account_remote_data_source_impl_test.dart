@@ -17,7 +17,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(
-      PlatformAccountDto(
+      PlatformAccountDto(id: '',
         platform: const PlatformDataDto(name: '', icon: '', website: ''),
         emailOrUsername: '',
         encryptedPassword: [],

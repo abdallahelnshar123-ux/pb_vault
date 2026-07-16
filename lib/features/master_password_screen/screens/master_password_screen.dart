@@ -45,32 +45,30 @@ class _MasterPasswordScreenState extends State<MasterPasswordScreen> {
         if (state is MasterPasswordSetupSuccess) {
           DialogUtils.hideLoading(context: context);
           context.read<UserCubit>().currentUser = state.user;
-          if(state.offerBiometric){
+          if (state.offerBiometric) {
             Future.delayed(Duration(seconds: 2), () {
               if (context.mounted) {
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   AppRoutes.biometricsScreen,
-                      (route) => false,
+                  (route) => false,
                 );
               }
             });
-          }else{
+          } else {
             context.read<MasterPasswordCubit>().enableBiometric(false);
             Future.delayed(Duration(seconds: 2), () {
               if (context.mounted) {
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   AppRoutes.homeRouteName,
-                      (route) => false,
+                  (route) => false,
                 );
               }
             });
-
           }
-
         }
-        if (state is MasterPasswordVerifySuccess) {
+        if (state is UnlockSuccessState) {
           DialogUtils.hideLoading(context: context);
           if (state.offerBiometric) {
             Future.delayed(Duration(seconds: 2), () {
@@ -95,21 +93,22 @@ class _MasterPasswordScreenState extends State<MasterPasswordScreen> {
           }
         }
         if (state is MasterPasswordSetupError ||
-            state is MasterPasswordVerifyError) {
+            state is UnlockErrorState) {
           DialogUtils.hideLoading(context: context);
           String message = '';
           if (state is MasterPasswordSetupError) message = state.message;
-          if (state is MasterPasswordVerifyError) message = state.message;
-
-          DialogUtils.showMessage(
-            context: context,
-            title: 'error'.tr(),
-            message: message,
-            posActionText: 'ok'.tr(),
-          );
+          if (state is UnlockErrorState) message = state.message;
+          if (message != 'cancelled_by_user') {
+            DialogUtils.showMessage(
+              context: context,
+              title: 'error'.tr(),
+              message: message,
+              posActionText: 'ok'.tr(),
+            );
+          }
         }
         if (state is MasterPasswordSetupLoading ||
-            state is MasterPasswordVerifyLoading) {
+            state is UnlockLoadingState) {
           DialogUtils.showLoading(context: context);
         }
       },

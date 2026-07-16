@@ -57,8 +57,7 @@ class FirestoreService {
   }) {
     var collection = getAccountsCollection(uId);
     var document = collection.doc();
-    account.id = document.id;
-    return document.set(account);
+    return document.set(account.copyWith(document.id));
   }
   Future<void> updateAccount({
     required PlatformAccountDto account,
