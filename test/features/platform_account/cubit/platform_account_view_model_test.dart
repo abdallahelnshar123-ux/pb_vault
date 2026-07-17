@@ -105,7 +105,7 @@ void main() {
       build: () {
         when(
           () => mockEncrypt.invoke(any()),
-        ).thenAnswer((_) async => tEncryptedData);
+        ).thenAnswer((_) async => Right(tEncryptedData));
         when(
           () => mockAddAccount.invoke(any(), any()),
         ).thenAnswer((_) async => const Right(unit));
@@ -139,7 +139,9 @@ void main() {
     blocTest<PlatformAccountCubit, PlatformAccountState>(
       'emits [AddPlatformAccountLoadingState, AddPlatformAccountErrorState] when encryption fails',
       build: () {
-        when(() => mockEncrypt.invoke(any())).thenThrow(Exception('Error'));
+        when(
+          () => mockEncrypt.invoke(any()),
+        ).thenAnswer((_) async => Left(UnexpectedFailure('error')));
         return cubit;
       },
       act: (cubit) => cubit.addPlatformAccount(
@@ -153,7 +155,7 @@ void main() {
         isA<AddPlatformAccountErrorState>().having(
           (s) => s.message,
           'message',
-          'Exception: Error',
+          'error',
         ),
       ],
     );
@@ -163,7 +165,7 @@ void main() {
       build: () {
         when(
           () => mockEncrypt.invoke(any()),
-        ).thenAnswer((_) async => tEncryptedData);
+        ).thenAnswer((_) async => Right(tEncryptedData));
         when(
           () => mockAddAccount.invoke(any(), any()),
         ).thenAnswer((_) async => const Left(ServerFailure('Server Error')));
@@ -198,7 +200,7 @@ void main() {
       build: () {
         when(
           () => mockEncrypt.invoke(any()),
-        ).thenAnswer((_) async => tEncryptedData);
+        ).thenAnswer((_) async => Right(tEncryptedData));
         when(
           () => mockUpdateAccount.invoke(any(), any()),
         ).thenAnswer((_) async => const Right(unit));
@@ -226,7 +228,7 @@ void main() {
       build: () {
         when(
           () => mockEncrypt.invoke(any()),
-        ).thenAnswer((_) async => tEncryptedData);
+        ).thenAnswer((_) async => Right(tEncryptedData));
         when(
           () => mockUpdateAccount.invoke(any(), any()),
         ).thenAnswer((_) async => const Left(ServerFailure('Update Error')));
@@ -251,7 +253,7 @@ void main() {
     blocTest<PlatformAccountCubit, PlatformAccountState>(
       'emits [EditPlatformAccountLoadingState, EditPlatformAccountErrorState] when encryption fails',
       build: () {
-        when(() => mockEncrypt.invoke(any())).thenThrow(Exception('Error'));
+        when(() => mockEncrypt.invoke(any())).thenAnswer((_) async => Left(UnexpectedFailure('error')));
         return cubit;
       },
       act: (cubit) => cubit.updatePlatformAccount(
@@ -265,7 +267,7 @@ void main() {
         isA<EditPlatformAccountErrorState>().having(
           (e) => e.message,
           'message',
-          'Exception: Error',
+          'error',
         ),
       ],
     );

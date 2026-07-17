@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/core/utils/app_routes.dart';
@@ -19,6 +18,8 @@ import 'package:pb_vault/features/auth/cubit/user_state.dart';
 import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
 import 'package:pb_vault/features/home_screen/cubit/home_state.dart';
 import 'package:pb_vault/features/home_screen/cubit/home_view_model.dart';
+import 'package:pb_vault/features/master_password_screen/cubit/master_password_state.dart';
+import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
 
 class MockContinueWithGoogleUseCases extends Mock
     implements ContinueWithGoogleUseCases {}
@@ -43,7 +44,8 @@ class MockCheckAppStartupUseCase extends Mock
 
 class MockHomeCubit extends MockCubit<HomeState> implements HomeCubit {}
 
-class MockBuildContext extends Mock implements BuildContext {}
+class MockMasterPasswordCubit extends MockCubit<MasterPasswordState>
+    implements MasterPasswordCubit {}
 
 void main() {
   late UserCubit userCubit;
@@ -58,7 +60,7 @@ void main() {
   late MockResetPasswordUseCase mockResetPasswordUseCase;
   late MockCheckAppStartupUseCase mockCheckAppStartupUseCase;
   late MockHomeCubit mockHomeCubit;
-  late MockBuildContext mockBuildContext;
+  late MockMasterPasswordCubit mockMasterPasswordCubit;
 
   const tUser = MyUser(
     id: '1',
@@ -84,7 +86,7 @@ void main() {
     mockResetPasswordUseCase = MockResetPasswordUseCase();
     mockCheckAppStartupUseCase = MockCheckAppStartupUseCase();
     mockHomeCubit = MockHomeCubit();
-    mockBuildContext = MockBuildContext();
+    mockMasterPasswordCubit = MockMasterPasswordCubit();
 
     userCubit = UserCubit(
       mockSignInWithGoogleUseCases,
@@ -96,6 +98,7 @@ void main() {
       mockResetPasswordUseCase,
       mockCheckAppStartupUseCase,
       mockHomeCubit,
+      mockMasterPasswordCubit,
     );
   });
 
@@ -311,38 +314,36 @@ void main() {
         when(
           () => mockHomeCubit.clearHomeAccounts(),
         ).thenAnswer((_) async => {});
-        when(() => mockBuildContext.mounted).thenReturn(true);
         when(
           () => mockLogoutUseCase.invoke(),
         ).thenAnswer((_) async => const Right(unit));
         return userCubit;
       },
-      act: (cubit) => cubit.logout(mockBuildContext),
+      act: (cubit) => cubit.logout(),
       expect: () => [
         isA<LogoutLoadingState>(),
         isA<UserUnauthenticatedState>(),
       ],
       verify: (_) {
         verify(() => mockHomeCubit.clearHomeAccounts()).called(1);
+        verify(() => mockMasterPasswordCubit.lockVault()).called(1);
         verify(() => mockLogoutUseCase.invoke()).called(1);
         verifyNoMoreInteractions(mockHomeCubit);
         verifyNoMoreInteractions(mockLogoutUseCase);
+        verifyNoMoreInteractions(mockMasterPasswordCubit);
       },
     );
 
     blocTest<UserCubit, UserState>(
       'emits [LogoutLoadingState, LogoutErrorState] when failure',
       build: () {
-        when(
-          () => mockHomeCubit.clearHomeAccounts(),
-        ).thenAnswer((_) async => {});
-        when(() => mockBuildContext.mounted).thenReturn(true);
+
         when(
           () => mockLogoutUseCase.invoke(),
         ).thenAnswer((_) async => const Left(tFailure));
         return userCubit;
       },
-      act: (cubit) => cubit.logout(mockBuildContext),
+      act: (cubit) => cubit.logout(),
       expect: () => [
         isA<LogoutLoadingState>(),
         isA<LogoutErrorState>().having(
@@ -352,10 +353,10 @@ void main() {
         ),
       ],
       verify: (_) {
-        verify(() => mockHomeCubit.clearHomeAccounts()).called(1);
         verify(() => mockLogoutUseCase.invoke()).called(1);
-        verifyNoMoreInteractions(mockHomeCubit);
         verifyNoMoreInteractions(mockLogoutUseCase);
+        verifyZeroInteractions(mockMasterPasswordCubit);
+        verifyZeroInteractions(mockHomeCubit);
       },
     );
   });
@@ -377,11 +378,9 @@ void main() {
         when(
           () => mockHomeCubit.clearHomeAccounts(),
         ).thenAnswer((_) async => {});
-        when(() => mockBuildContext.mounted).thenReturn(true);
         return userCubit;
       },
-      act: (cubit) =>
-          cubit.deleteUser(context: mockBuildContext, password: 'password'),
+      act: (cubit) => cubit.deleteUser(password: 'password'),
       expect: () => [
         isA<UserDeleteLoadingState>(),
         isA<UserDeleteSuccessState>(),
@@ -416,8 +415,7 @@ void main() {
         ).thenAnswer((_) async => const Left(tFailure));
         return userCubit;
       },
-      act: (cubit) =>
-          cubit.deleteUser(context: mockBuildContext, password: 'password'),
+      act: (cubit) => cubit.deleteUser(password: 'password'),
       expect: () => [
         isA<UserDeleteLoadingState>(),
         isA<UserDeleteErrorState>().having(

@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pb_vault/core/utils/app_assets.dart';
 import 'package:pb_vault/features/auth/cubit/user_state.dart';
+import 'package:pb_vault/features/profile_screen/cubit/settings_cubit.dart';
+import 'package:pb_vault/features/profile_screen/cubit/settings_state.dart';
 import 'package:pb_vault/widgets/custom_elevated_button.dart';
 
 import '../../../../core/utils/app_colors.dart';
@@ -100,6 +102,37 @@ class ProfileScreen extends StatelessWidget {
                     title: 'dark_mode'.tr(),
                     context,
                     icon: Icons.dark_mode,
+                  ),
+                  BlocBuilder<SettingsCubit, SettingsState>(
+                    buildWhen: (previous, current) =>
+                        previous.isBiometricEnabled !=
+                            current.isBiometricEnabled ||
+                        previous.isBiometricSupported !=
+                            current.isBiometricSupported,
+                    builder: (context, state) {
+                      return Visibility(
+                        visible: state.isBiometricSupported,
+                        child: Column(
+                          children: [
+                            _builtDivider(),
+                            _buildSettingsTile(
+                              trailing: Switch(
+                                value: state.isBiometricEnabled,
+                                onChanged: (value) {
+                                  context.read<SettingsCubit>().toggleBiometric(
+                                    value,
+                                  );
+                                },
+                                activeThumbColor: AppColors.surfaceDark,
+                              ),
+                              title: 'biometric_unlock'.tr(),
+                              context,
+                              icon: Icons.fingerprint_rounded,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -205,13 +238,15 @@ class ProfileScreen extends StatelessWidget {
             fit: .cover,
             height: 25,
           ),
-          onPressed: () {
-            context.read<UserCubit>().logout(context);
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              AppRoutes.authScreen,
-              (route) => false,
-            );
+          onPressed: () async {
+            await context.read<UserCubit>().logout();
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.authScreen,
+                (route) => false,
+              );
+            }
           },
         ),
       ],
@@ -232,10 +267,7 @@ class ProfileScreen extends StatelessWidget {
 
           if (password != null && password.isNotEmpty) {
             if (!context.mounted) return;
-            context.read<UserCubit>().deleteUser(
-              context: context,
-              password: password,
-            );
+            context.read<UserCubit>().deleteUser(password: password);
           }
         } else {
           DialogUtils.showMessage(
@@ -243,10 +275,7 @@ class ProfileScreen extends StatelessWidget {
             message: 'are_you_sure_you_want_to_delete_the_account',
             title: 'confirmation',
             posAction: () {
-              context.read<UserCubit>().deleteUser(
-                context: context,
-                password: "",
-              );
+              context.read<UserCubit>().deleteUser(password: "");
             },
             posActionText: 'yes',
             negActionText: 'no',

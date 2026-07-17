@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pb_vault/domain/entities/response/user/my_user.dart';
 import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
-import 'package:pb_vault/domain/repository/vault/vault_repository.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_state.dart';
 import 'package:pb_vault/widgets/copy_account_password_button_widget.dart';
 
@@ -15,6 +14,7 @@ import '../../../core/di/di.dart';
 import '../../../core/utils/app_assets.dart';
 import '../../../core/utils/snack_bar_utils.dart';
 import '../../../domain/entities/response/platform_account/platform_account.dart';
+import '../../../domain/use_cases/vault/decrypt_password_use_case.dart';
 import '../../auth/cubit/user_view_model.dart';
 import '../cubit/platform_account_view_model.dart';
 import 'edit_platform_account_screen.dart';
@@ -32,7 +32,7 @@ class PlatformAccountDetailsScreen extends StatefulWidget {
 class _PlatformAccountDetailsScreenState
     extends State<PlatformAccountDetailsScreen> {
   final ValueNotifier<bool> isObscure = ValueNotifier(true);
-  String unEncryptedPassword = '';
+  String plainPassword = '';
 
   @override
   void initState() {
@@ -42,10 +42,14 @@ class _PlatformAccountDetailsScreenState
         mac: widget.account.mac,
         nonce: widget.account.nonce,
       );
-      final password = await getIt<VaultRepository>().decrypt(encryptedData);
+      final result = await getIt<DecryptPasswordUseCase>().invoke(
+        encryptedData,
+      );
       if (mounted) {
-        setState(() {
-          unEncryptedPassword = password;
+        result.fold((failure) {}, (password) {
+          setState(() {
+            plainPassword = password;
+          });
         });
       }
     });
@@ -125,7 +129,7 @@ class _PlatformAccountDetailsScreenState
                           valueListenable: isObscure,
                           builder: (context, value, child) {
                             return _buildInfoTile(
-                              value: value ? '******' : unEncryptedPassword,
+                              value: value ? '******' : plainPassword,
                               context,
                               title: 'password'.tr(),
                               icon: Icons.lock_outline,

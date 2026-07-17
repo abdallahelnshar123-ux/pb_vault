@@ -1,5 +1,7 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/repository/vault/vault_repository.dart';
 import 'package:pb_vault/domain/use_cases/vault/unlock_vault_use_case.dart';
 
@@ -24,7 +26,7 @@ void main() {
       password: any(named: 'password'),
       salt: any(named: 'salt'),
       verifier: any(named: 'verifier'),
-    )).thenAnswer((_) async => true);
+    )).thenAnswer((_) async => Right(true));
 
     // Act
     final result = await useCase.invoke(
@@ -34,7 +36,7 @@ void main() {
     );
 
     // Assert
-    expect(result, true);
+    expect(result, Right(true));
     verify(() => mockVaultRepo.unlock(
       password: tPassword,
       salt: tSalt,
@@ -49,7 +51,7 @@ void main() {
       password: any(named: 'password'),
       salt: any(named: 'salt'),
       verifier: any(named: 'verifier'),
-    )).thenAnswer((_) async => false);
+    )).thenAnswer((_) async => Right(false));
 
     // Act
     final result = await useCase.invoke(
@@ -59,7 +61,31 @@ void main() {
     );
 
     // Assert
-    expect(result, false);
+    expect(result, Right(false));
+    verify(() => mockVaultRepo.unlock(
+      password: tPassword,
+      salt: tSalt,
+      verifier: tVerifier,
+    )).called(1);
+    verifyNoMoreInteractions(mockVaultRepo);
+  });
+  test('should return false when VaultRepository.unlock  has error ', () async {
+    // Arrange
+    when(() => mockVaultRepo.unlock(
+      password: any(named: 'password'),
+      salt: any(named: 'salt'),
+      verifier: any(named: 'verifier'),
+    )).thenAnswer((_) async => Left(UnexpectedFailure('error')));
+
+    // Act
+    final result = await useCase.invoke(
+      password: tPassword,
+      salt: tSalt,
+      verifier: tVerifier,
+    );
+
+    // Assert
+    expect(result, Left(UnexpectedFailure('error')));
     verify(() => mockVaultRepo.unlock(
       password: tPassword,
       salt: tSalt,

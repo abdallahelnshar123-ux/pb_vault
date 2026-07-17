@@ -126,10 +126,10 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
                 },
           borderSideColor: AppColors.backgroundDark,
           backgroundColor: state is MasterPasswordSetupSuccess
-              ? AppColors.surfaceDark
+              ? AppColors.backgroundDark
               : AppColors.primary,
           child: Text(
-            state is MasterPasswordSetupSuccess ? "done".tr() : "create".tr(),
+            state is MasterPasswordSetupSuccess ? "success".tr() : "create".tr(),
             style: AppStyles.robotoBold20White(context),
           ),
         );

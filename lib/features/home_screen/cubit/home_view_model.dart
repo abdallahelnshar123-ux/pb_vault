@@ -10,7 +10,7 @@ import '../../../domain/entities/response/platform_account/platform_account.dart
 import '../../../domain/use_cases/get_accounts_use_case.dart';
 import 'home_state.dart';
 
-@injectable
+@lazySingleton
 class HomeCubit extends Cubit<HomeState> {
   final GetAccountsUseCase _getAccountsUseCase;
   final DecryptPasswordUseCase _decryptPasswordUseCase;
@@ -23,49 +23,38 @@ class HomeCubit extends Cubit<HomeState> {
   void getAccounts(String userId) {
     emit(HomeLoading());
     _subscription?.cancel();
-    _subscription = _getAccountsUseCase.invoke(userId).listen(
-      (result) {
-        result.fold((failure) => emit(HomeError(failure.message)), (
-          accounts,
-        ) {
-          accountsList = accounts;
-          emit(HomeSuccess(accounts));
-        });
-      },
-      onError: (error) {
-        if (!error.toString().contains('permission-denied')) {
-          emit(HomeError(error.toString()));
-        }
-      },
-    );
+    _subscription = _getAccountsUseCase
+        .invoke(userId)
+        .listen(
+          (result) {
+            result.fold((failure) => emit(HomeError(failure.message)), (
+              accounts,
+            ) {
+              accountsList = accounts;
+              emit(HomeSuccess(accounts));
+            });
+          },
+          onError: (error) {
+            if (!error.toString().contains('permission-denied')) {
+              emit(HomeError(error.toString()));
+            }
+          },
+        );
   }
 
-  Future<void> copyAccountPassword({
-    required PlatformAccount account,
-    // required BuildContext context,
-  }) async {
-    // try {
-      final encryptedData = EncryptedData(
-        cipherText: account.encryptedPassword,
-        mac: account.mac,
-        nonce: account.nonce,
-      );
+  Future<void> copyAccountPassword({required PlatformAccount account}) async {
+    final encryptedData = EncryptedData(
+      cipherText: account.encryptedPassword,
+      mac: account.mac,
+      nonce: account.nonce,
+    );
 
-      final password = await _decryptPasswordUseCase.invoke(encryptedData);
-
-      await Clipboard.setData(ClipboardData(text: password));
-      // if (!context.mounted) return;
-      // SnackBarUtils.showSuccessSnackBar(
-      //   context: context,
-      //   message: 'password_copied_to_clipboard'.tr(),
-      // );
-    // } catch (e) {
-    //   if (!context.mounted) return;
-    //   SnackBarUtils.showErrorSnackBar(
-    //     context: context,
-    //     message: 'error_copying_password'.tr(),
-    //   );
-    // }
+    final result = await _decryptPasswordUseCase.invoke(encryptedData);
+    result.fold(
+      (failure) {},
+      (password) async =>
+          await Clipboard.setData(ClipboardData(text: password)),
+    );
   }
 
   Future<void> clearHomeAccounts() async {

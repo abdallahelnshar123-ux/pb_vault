@@ -135,7 +135,7 @@
   "you_will_be_asked_to_enter_this_password": " سيطلب منك في كل مره تفتح التطبيق ادخال كلمه السر هذه لذلك تذكرها جيدا",
   "unlock": "إلغاء القفل",
   "invalid_master_password": "كلمة السر غير صحيحة",
-  "locked": "تم الفتح",
+  "unlocked": "تم الفتح",
   "done": "تم",
   "create": "أنشئ",
   "save_your_password_easily_and_securely": "إحفظ كلمة مرورك بسهولة وامان",
@@ -175,7 +175,22 @@
   "search_password" : "إبحث في كلمات السر",
   "account_updated_successfully" : "تم تحديث الحساب بنجاح",
   "no_accounts_to_search_add_some_accounts" : "لا يوجد حسابات للبحث عنها. غضف بعض الحسابات",
-  "no_accounts_matches_search_term" : "لا يوجد حسابات تطابق البحث"
+  "no_accounts_matches_search_term" : "لا يوجد حسابات تطابق البحث",
+  "skip_for_now" : "تخطي",
+  "enable_biometric_login" : "تفعيل تسجيل الدخول بالبصمة",
+  "use_biometric_authentication" : "استخدام المصادقة البيومترية",
+  "unlock_your_vault_with_your_biometric_credential" : "قم بالغاء قفل خزنتك من خلال استخدام المصادقة البيومترية",
+  "biometric_authentication_is_now_activated" : "المصادقة البيومتريه مفعلة الان",
+  "you_can_turn_it_off_from_sittings" : "يمكنك الغاء تفعيلها من الاعدادات",
+  "error_while_trying_activating_biometric" : "خطأ أثناء تفعيل القياسات البيومتريه",
+  "cancelled_by_user" : "تم الالغاء من خلال المستخدم",
+  "no_biometric_found" : "لم يتم العثور علي قياسات حيوية",
+  "error_while_trying_to_authenticate" : "خطأ اثناء المصادقة",
+  "biometric_unlock" : "القياسات الحيوية"
+
+
+
+
 
 
 

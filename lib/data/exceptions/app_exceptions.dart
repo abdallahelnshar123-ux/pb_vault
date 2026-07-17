@@ -20,11 +20,15 @@ class UnauthorizedException extends AppException {
 
 class CancelledByUserException extends AppException {
   const CancelledByUserException()
-    : super(message: 'Cancelled by user', statusCode: null);
+    : super(message: 'cancelled_by_user', statusCode: null);
 }
 
 class CacheException extends AppException {
   const CacheException({required super.message, super.statusCode});
+}
+
+class BiometricException extends AppException {
+  const BiometricException({required super.message, super.statusCode});
 }
 
 class UnexpectedException extends AppException {

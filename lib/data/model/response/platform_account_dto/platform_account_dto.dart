@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/platform_data_dto.dart';
 
 class PlatformAccountDto extends Equatable {
-  String? id;
+  final String? id;
   final PlatformDataDto platform;
   final String emailOrUsername;
   final List<int> encryptedPassword;
@@ -12,8 +12,8 @@ class PlatformAccountDto extends Equatable {
   final String? notes;
   final DateTime createdAt;
 
-  PlatformAccountDto({
-    this.id,
+  const PlatformAccountDto({
+    required this.id,
     required this.platform,
     required this.emailOrUsername,
     required this.encryptedPassword,
@@ -22,6 +22,19 @@ class PlatformAccountDto extends Equatable {
     this.notes,
     required this.createdAt,
   });
+
+  PlatformAccountDto copyWith(String id) {
+    return PlatformAccountDto(
+      id: id,
+      platform: platform,
+      emailOrUsername: emailOrUsername,
+      encryptedPassword: encryptedPassword,
+      nonce: nonce,
+      mac: mac,
+      createdAt: createdAt,
+      notes: notes,
+    );
+  }
 
   factory PlatformAccountDto.fromFireStore(Map<String, dynamic> data) {
     return PlatformAccountDto(

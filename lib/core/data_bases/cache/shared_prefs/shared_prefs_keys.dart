@@ -6,4 +6,7 @@ class SharedPrefsKeys {
   static const String userKey = 'user_key';
 
   static const String tokenKey = 'token_key';
+
+  static const String useBiometricKey = 'use_biometric';
+  static const String biometricRejectedKey = 'reject_biometric';
 }
