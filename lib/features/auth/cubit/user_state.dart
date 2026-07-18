@@ -50,10 +50,10 @@ class UserDetailsUpdateLoadingState extends UserState {}
 
 class UserDetailsUpdateSuccessState extends UserState {}
 
-class USerDetailsUpdateErrorState extends UserState {
+class UserDetailsUpdateErrorState extends UserState {
   final String message;
 
-  USerDetailsUpdateErrorState(this.message);
+  UserDetailsUpdateErrorState(this.message);
 }
 
 /// ====================   delete states   =========================

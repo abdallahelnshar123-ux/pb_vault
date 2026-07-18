@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pb_vault/core/utils/app_routes.dart';
 import 'package:pb_vault/core/utils/dialog_utils.dart';
+import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_state.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
 
@@ -122,6 +123,7 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
   }
 
   Widget _buildSkipButton() {
+    var currentUser = context.read<UserCubit>().currentUser;
     return Visibility(
       visible: !isBiometricsActivated,
       child: CustomElevatedButton(
@@ -129,7 +131,10 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
           context.read<MasterPasswordCubit>().rejectBiometric(true);
           Navigator.pushNamedAndRemoveUntil(
             context,
-            AppRoutes.homeRouteName,
+            currentUser?.avatar == '' &&
+                    context.read<UserCubit>().isAccountJustCreated
+                ? AppRoutes.pickAvatarScreen
+                : AppRoutes.homeRouteName,
             (route) => false,
           );
         },

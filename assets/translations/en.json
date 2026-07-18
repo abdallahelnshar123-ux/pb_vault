@@ -184,7 +184,10 @@
   "cancelled_by_user" : "Cancelled by user",
   "no_biometric_found" : "No biometric found",
   "error_while_trying_to_authenticate" : "Error while trying to authenticate",
-  "biometric_unlock" : "Biometric unlock"
+  "biometric_unlock" : "Biometric unlock",
+  "pick_avatar_for_your_account" : "Pick avatar for your account !",
+  "continue" : "Continue",
+  "avatar_saved_successfully" : "Avatar saved successfully"
 
 
 

@@ -473,7 +473,7 @@ void main() {
       act: (cubit) => cubit.updateUserDetails(user: tUser),
       expect: () => [
         isA<UserDetailsUpdateLoadingState>(),
-        isA<USerDetailsUpdateErrorState>().having(
+        isA<UserDetailsUpdateErrorState>().having(
           (s) => s.message,
           'message',
           'error_message',

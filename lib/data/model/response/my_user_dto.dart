@@ -7,6 +7,7 @@ class MyUserDto extends Equatable {
   final String provider;
   final List<int>? salt;
   final String? passwordVerifier;
+  final String? avatar;
 
   const MyUserDto({
     required this.id,
@@ -15,6 +16,7 @@ class MyUserDto extends Equatable {
     required this.provider,
     this.passwordVerifier,
     this.salt,
+    this.avatar,
   });
 
   factory MyUserDto.fromFireStore(Map<String, dynamic> data) {
@@ -24,6 +26,7 @@ class MyUserDto extends Equatable {
       email: data['email']?.toString() ?? '',
       provider: data['provider']?.toString() ?? '',
       passwordVerifier: data['password_verifier']?.toString(),
+      avatar: data['avatar']?.toString() ?? '',
       salt: data['salt'] != null ? List<int>.from(data['salt']) : null,
     );
   }
@@ -36,6 +39,7 @@ class MyUserDto extends Equatable {
       'provider': provider,
       'password_verifier': passwordVerifier,
       'salt': salt,
+      'avatar': avatar,
     };
   }
 
@@ -47,5 +51,6 @@ class MyUserDto extends Equatable {
     passwordVerifier,
     salt,
     provider,
+    avatar,
   ];
 }

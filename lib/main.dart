@@ -8,6 +8,7 @@ import 'package:pb_vault/features/home_screen/screens/home_screen.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
 import 'package:pb_vault/features/master_password_screen/screens/biometrics_screen.dart';
 import 'package:pb_vault/features/master_password_screen/screens/master_password_screen.dart';
+import 'package:pb_vault/features/master_password_screen/screens/pick_avatar_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'core/di/di.dart';
@@ -29,6 +30,8 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   configureDependencies();
   Bloc.observer = MyBlocObserver();
+  // debugPrintRebuildDirtyWidgets = true;
+  // debugPrintScheduleBuildForStacks = true;
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
@@ -57,7 +60,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: context.read<UserCubit>().getInitialRoute(),
       routes: {
-        AppRoutes.onboardingRouteName: (context) =>  ChangeNotifierProvider(
+        AppRoutes.onboardingRouteName: (context) => ChangeNotifierProvider(
           create: (context) =>
               OnboardingViewModel(getIt<SetOnboardingDoneUseCase>()),
 
@@ -69,14 +72,9 @@ class MyApp extends StatelessWidget {
             const MasterPasswordScreen(),
         AppRoutes.addAccountScreen: (context) =>
             const AddPlatformAccountScreen(),
-        // AppRoutes.profileScreen: (context) => BlocProvider(
-        //   create: (context) =>
-        //       getIt<SettingsCubit>()
-        //         ..loadSettings(currentLocale: context.locale),
-        //   child: const ProfileScreen(),
-        // ),
         AppRoutes.editProfileScreen: (context) => const EditProfileScreen(),
         AppRoutes.biometricsScreen: (context) => const BiometricsScreen(),
+        AppRoutes.pickAvatarScreen: (context) => const PickAvatarScreen(),
       },
       themeMode: ThemeMode.dark,
       darkTheme: AppTheme.darkTheme,

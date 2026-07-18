@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:pb_vault/core/constants/app_constants.dart';
 import 'package:pb_vault/core/utils/app_routes.dart';
 import 'package:pb_vault/features/home_screen/widget/password_card_item.dart';
 import 'package:pb_vault/features/platform_account/screens/search_platform_accounts_screen.dart';
@@ -113,6 +115,8 @@ class _HomeScreenState extends State<HomeScreen> {
     required String name,
     required BuildContext context,
   }) {
+    var currentAvatar = context.watch<UserCubit>().currentUser?.avatar;
+    var avatars = AppConstants.userAvatars;
     return AppBar(
       toolbarHeight: 115,
       centerTitle: false,
@@ -150,11 +154,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
           },
-          icon: Icon(
-            Icons.account_circle_outlined,
-            size: context.width * 0.1,
-            color: AppColors.white,
-          ),
+          icon: currentAvatar == '' && avatars[currentAvatar] != null
+              ? Icon(
+                  Icons.account_circle_outlined,
+                  size: context.width * 0.1,
+                  color: AppColors.white,
+                )
+              : CircleAvatar(
+                  radius: context.width * 0.06,
+                  backgroundColor: AppColors.primary,
+                  child: SvgPicture.asset(avatars[currentAvatar]!),
+                ),
         ),
       ],
     );
