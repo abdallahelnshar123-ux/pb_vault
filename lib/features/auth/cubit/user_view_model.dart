@@ -45,15 +45,13 @@ class UserCubit extends Cubit<UserState> {
   ) : super(UserInitial());
 
   MyUser? currentUser;
-  int _selectedAvatarIndex = 0;
 
-  set changeSelectedIndex(int newIndex) {
-    _selectedAvatarIndex = newIndex;
-  }
+   bool _isAccountJustCreated = false;
 
-  int get selectedAvatarIndex {
-    return _selectedAvatarIndex;
-  }
+   set isAccountJustCreated (bool value) {
+     _isAccountJustCreated = false;
+   }
+   bool get isAccountJustCreated => _isAccountJustCreated;
 
   Future<void> loginWithEmailAndPassword(String email, String password) async {
     emit(LoginWithEmailPasswordLoadingState());
@@ -118,8 +116,9 @@ class UserCubit extends Cubit<UserState> {
     ) async {
       _masterPasswordCubit.lockVault();
       await _homeCubit.clearHomeAccounts();
-      currentUser = null;
       emit(UserUnauthenticatedState());
+      currentUser = null;
+      _isAccountJustCreated = false;
     });
   }
 
@@ -144,7 +143,7 @@ class UserCubit extends Cubit<UserState> {
       user: user,
     );
     result.fold(
-      (failure) => emit(USerDetailsUpdateErrorState(failure.message)),
+      (failure) => emit(UserDetailsUpdateErrorState(failure.message)),
       (unit) {
         currentUser = user;
         emit(UserDetailsUpdateSuccessState());

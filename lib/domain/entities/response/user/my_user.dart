@@ -7,6 +7,7 @@ class MyUser extends Equatable {
   final String provider;
   final List<int>? salt;
   final String? passwordVerifier;
+  final String? avatar;
 
   const MyUser({
     required this.id,
@@ -15,6 +16,7 @@ class MyUser extends Equatable {
     required this.provider,
     this.salt,
     this.passwordVerifier,
+    this.avatar,
   });
 
   @override
@@ -25,9 +27,15 @@ class MyUser extends Equatable {
     provider,
     salt,
     passwordVerifier,
+    avatar,
   ];
 
-  MyUser copyWith({String? name, List<int>? salt, String? passwordVerifier}) {
+  MyUser copyWith({
+    String? name,
+    List<int>? salt,
+    String? passwordVerifier,
+    String? avatar,
+  }) {
     return MyUser(
       id: id,
       name: name ?? this.name,
@@ -35,6 +43,7 @@ class MyUser extends Equatable {
       provider: provider,
       salt: salt ?? this.salt,
       passwordVerifier: passwordVerifier ?? this.passwordVerifier,
+      avatar: avatar ?? this.avatar,
     );
   }
 }

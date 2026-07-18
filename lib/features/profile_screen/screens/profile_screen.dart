@@ -12,6 +12,7 @@ import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_routes.dart';
 import '../../../../core/utils/app_styles.dart';
 import '../../../../core/utils/screen_size.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/dialog_utils.dart';
 import '../../../core/utils/snack_bar_utils.dart';
 import '../../../domain/entities/response/user/auth_providers.dart';
@@ -62,7 +63,7 @@ class ProfileScreen extends StatelessWidget {
             spacing: context.width * 0.07,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _builtAvatar(),
+              AvatarWidget._(),
               _builtContainer(
                 children: [
                   _buildInfoCard(
@@ -70,7 +71,7 @@ class ProfileScreen extends StatelessWidget {
                     value: user?.name ?? '---',
                     icon: AppAssets.bnbProfileIcon,
                   ),
-                  _builtDivider(),
+                  const DividerWidget._(),
                   _buildInfoCard(
                     context,
                     value: user?.email ?? '---',
@@ -90,7 +91,7 @@ class ProfileScreen extends StatelessWidget {
                     title: 'language'.tr(),
                     icon: Icons.language,
                   ),
-                  _builtDivider(),
+                  const DividerWidget._(),
                   _buildSettingsTile(
                     trailing: Switch(
                       value: true,
@@ -114,7 +115,7 @@ class ProfileScreen extends StatelessWidget {
                         visible: state.isBiometricSupported,
                         child: Column(
                           children: [
-                            _builtDivider(),
+                            const DividerWidget._(),
                             _buildSettingsTile(
                               trailing: Switch(
                                 value: state.isBiometricEnabled,
@@ -144,23 +145,27 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _builtAvatar() {
-    return const Center(
-      child: CircleAvatar(
-        radius: 60,
-        backgroundColor: AppColors.secondary,
-        child: Icon(Icons.person, size: 70, color: AppColors.backgroundDark),
-      ),
-    );
-  }
-
-  Widget _builtDivider() {
-    return const Divider(
-      color: AppColors.surfaceDark,
-      endIndent: 20,
-      indent: 20,
-    );
-  }
+  // Widget _builtAvatar(BuildContext context) {
+  //   var currentAvatar = context.watch<UserCubit>().currentUser?.avatar;
+  //   var avatars = AppConstants.userAvatars;
+  //   return currentAvatar == ''
+  //       ? Center(
+  //           child: CircleAvatar(
+  //             radius: 60,
+  //             backgroundColor: AppColors.secondary,
+  //             child: Icon(
+  //               Icons.person,
+  //               size: 70,
+  //               color: AppColors.backgroundDark,
+  //             ),
+  //           ),
+  //         )
+  //       : CircleAvatar(
+  //           radius: 60,
+  //           backgroundColor: AppColors.primary,
+  //           child: SvgPicture.asset(avatars[currentAvatar]!),
+  //         );
+  // }
 
   Widget _builtContainer({required List<Widget> children}) {
     return Container(
@@ -294,5 +299,45 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class DividerWidget extends StatelessWidget {
+  const DividerWidget._();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Divider(
+      color: AppColors.surfaceDark,
+      endIndent: 20,
+      indent: 20,
+    );
+  }
+}
+
+class AvatarWidget extends StatelessWidget {
+  const AvatarWidget._();
+
+  @override
+  Widget build(BuildContext context) {
+    var currentAvatar = context.watch<UserCubit>().currentUser?.avatar;
+    var avatars = AppConstants.userAvatars;
+    return currentAvatar == '' && avatars[currentAvatar] != null
+        ? Center(
+            child: CircleAvatar(
+              radius: 60,
+              backgroundColor: AppColors.secondary,
+              child: Icon(
+                Icons.person,
+                size: 70,
+                color: AppColors.backgroundDark,
+              ),
+            ),
+          )
+        : CircleAvatar(
+            radius: 60,
+            backgroundColor: AppColors.primary,
+            child: SvgPicture.asset(avatars[currentAvatar]!),
+          );
   }
 }

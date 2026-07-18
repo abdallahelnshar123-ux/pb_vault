@@ -125,7 +125,6 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
     );
   }
 
-
   Widget _builtUnlockButton() {
     final masterCubit = context.read<MasterPasswordCubit>();
     final authCubit = context.read<UserCubit>();
@@ -135,6 +134,7 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
           onPressed: state is UnlockSuccessState
               ? null
               : () async {
+                  FocusManager.instance.primaryFocus?.unfocus();
                   if (formKey.currentState!.validate()) {
                     {
                       masterCubit.unlockVault(
@@ -151,9 +151,7 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
               ? AppColors.backgroundDark
               : AppColors.primary,
           child: Text(
-            state is UnlockSuccessState
-                ? "unlocked".tr()
-                : "unlock".tr(),
+            state is UnlockSuccessState ? "unlocked".tr() : "unlock".tr(),
             style: AppStyles.robotoBold20White(context),
           ),
         );

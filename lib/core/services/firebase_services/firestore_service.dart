@@ -59,21 +59,19 @@ class FirestoreService {
     var document = collection.doc();
     return document.set(account.copyWith(document.id));
   }
+
   Future<void> updateAccount({
     required PlatformAccountDto account,
     required String uId,
   }) {
     return getAccountsCollection(uId).doc(account.id).set(account);
-
   }
 
   Stream<List<PlatformAccountDto>> getAccountsStream({required String uId}) {
     return getAccountsCollection(uId)
         .orderBy('created_at', descending: true)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.map((doc) => doc.data()).toList(),
-        );
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
   Future<void> deleteAccount({required String uId, required String accountId}) {

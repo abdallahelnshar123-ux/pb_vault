@@ -186,7 +186,12 @@
   "cancelled_by_user" : "تم الالغاء من خلال المستخدم",
   "no_biometric_found" : "لم يتم العثور علي قياسات حيوية",
   "error_while_trying_to_authenticate" : "خطأ اثناء المصادقة",
-  "biometric_unlock" : "القياسات الحيوية"
+  "biometric_unlock" : "القياسات الحيوية",
+  "pick_avatar_for_your_account" : "إختر افاتار لحسابك !",
+  "continue" : "إستمر",
+  "avatar_saved_successfully" : "تم الحفظ بنجاح"
+
+
 
 
 
