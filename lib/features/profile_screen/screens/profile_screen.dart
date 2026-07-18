@@ -24,7 +24,6 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.read<UserCubit>().currentUser;
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
@@ -64,20 +63,28 @@ class ProfileScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               AvatarWidget._(),
-              _builtContainer(
-                children: [
-                  _buildInfoCard(
-                    context,
-                    value: user?.name ?? '---',
-                    icon: AppAssets.bnbProfileIcon,
-                  ),
-                  const DividerWidget._(),
-                  _buildInfoCard(
-                    context,
-                    value: user?.email ?? '---',
-                    icon: AppAssets.emailIcon,
-                  ),
-                ],
+              BlocBuilder<UserCubit, UserState>(
+                buildWhen: (previous, current) =>
+                    current is UserDetailsUpdateSuccessState,
+                builder: (context, state) {
+                  final user = context.read<UserCubit>().currentUser;
+
+                  return _builtContainer(
+                    children: [
+                      _buildInfoCard(
+                        context,
+                        value: user?.name ?? '---',
+                        icon: AppAssets.bnbProfileIcon,
+                      ),
+                      const DividerWidget._(),
+                      _buildInfoCard(
+                        context,
+                        value: user?.email ?? '---',
+                        icon: AppAssets.emailIcon,
+                      ),
+                    ],
+                  );
+                },
               ),
               Text(
                 'settings'.tr(),
@@ -322,7 +329,9 @@ class AvatarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var currentAvatar = context.watch<UserCubit>().currentUser?.avatar;
     var avatars = AppConstants.userAvatars;
-    return currentAvatar == '' && avatars[currentAvatar] != null
+    return (currentAvatar == null ||
+            currentAvatar.isEmpty ||
+            avatars[currentAvatar] == null)
         ? Center(
             child: CircleAvatar(
               radius: 60,

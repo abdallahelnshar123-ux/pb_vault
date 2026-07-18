@@ -154,7 +154,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
           },
-          icon: currentAvatar == '' && avatars[currentAvatar] != null
+          icon: (currentAvatar == null ||
+                  currentAvatar.isEmpty ||
+                  avatars[currentAvatar] == null)
               ? Icon(
                   Icons.account_circle_outlined,
                   size: context.width * 0.1,
