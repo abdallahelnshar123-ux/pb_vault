@@ -10,10 +10,14 @@ import 'custom_text_form_field.dart';
 class PasswordTextFieldWidget extends StatefulWidget {
   final Color? fillColor;
   final TextEditingController? controller;
-  final  void Function(String)? onChanged ;
+  final void Function(String)? onChanged;
 
-
-  const PasswordTextFieldWidget({super.key, this.fillColor,this.onChanged ,this.controller });
+  const PasswordTextFieldWidget({
+    super.key,
+    this.fillColor,
+    this.onChanged,
+    this.controller,
+  });
 
   @override
   State<PasswordTextFieldWidget> createState() =>
@@ -21,7 +25,6 @@ class PasswordTextFieldWidget extends StatefulWidget {
 }
 
 class _PasswordTextFieldWidgetState extends State<PasswordTextFieldWidget> {
-
   final ValueNotifier<bool> isObscure = ValueNotifier(true);
 
   @override
