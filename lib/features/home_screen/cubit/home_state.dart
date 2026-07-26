@@ -8,10 +8,12 @@ class HomeLoading extends HomeState {}
 
 class HomeSuccess extends HomeState {
   final List<PlatformAccount> accounts;
+
   HomeSuccess(this.accounts);
 }
 
 class HomeError extends HomeState {
   final String message;
+
   HomeError(this.message);
 }

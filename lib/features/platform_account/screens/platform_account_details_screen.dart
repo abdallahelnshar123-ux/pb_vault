@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pb_vault/domain/entities/response/user/my_user.dart';
 import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
@@ -86,7 +87,7 @@ class _PlatformAccountDetailsScreenState
         top: false,
         bottom: true,
         child: Scaffold(
-          backgroundColor: AppColors.backgroundDark,
+          // backgroundColor: AppColors.backgroundDark,
           appBar: _builtAppBar(context: context, currentUser: currentUser),
           body: Container(
             margin: EdgeInsets.all(16),
@@ -95,7 +96,10 @@ class _PlatformAccountDetailsScreenState
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: AppColors.secondary,
+              color: context.easyColor(
+                lColor: AppColors.primary,
+                dColor: AppColors.secondary,
+              ),
             ),
             child: SingleChildScrollView(
               child: Column(
@@ -183,7 +187,10 @@ class _PlatformAccountDetailsScreenState
         padding: EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
-          color: AppColors.secondary,
+          color: context.easyColor(
+            lColor: AppColors.primary,
+            dColor: AppColors.secondary,
+          ),
         ),
         child: Row(
           children: [

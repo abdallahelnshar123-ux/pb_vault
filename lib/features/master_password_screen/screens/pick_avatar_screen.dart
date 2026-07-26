@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pb_vault/core/utils/app_routes.dart';
 import 'package:pb_vault/core/utils/app_styles.dart';
@@ -73,7 +74,11 @@ class _PickAvatarScreenState extends State<PickAvatarScreen> {
               },
               child: Text(
                 'skip'.tr(),
-                style: AppStyles.robotoRegular14White(context),
+                style: AppStyles.robotoRegular14(
+                  context,
+                  lColor: AppColors.surfaceDark,
+                  dColor: AppColors.white,
+                ),
               ),
             ),
           ],
@@ -89,13 +94,20 @@ class _PickAvatarScreenState extends State<PickAvatarScreen> {
               SizedBox(height: context.height * 0.005),
               Text(
                 'pick_avatar_for_your_account'.tr(),
-                style: AppStyles.robotoRegular18White(context),
+                style: AppStyles.robotoRegular18(
+                  context,
+                  lColor: AppColors.surfaceDark,
+                  dColor: AppColors.white,
+                ),
                 textAlign: .center,
               ),
               SizedBox(height: 50),
               CircleAvatar(
                 radius: 80,
-                backgroundColor: AppColors.primary,
+                backgroundColor: context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
                 child: SvgPicture.asset(avatars[currentAvatar]!),
               ),
               Expanded(
@@ -110,7 +122,10 @@ class _PickAvatarScreenState extends State<PickAvatarScreen> {
                 ),
               ),
               CustomElevatedButton(
-                backgroundColor: AppColors.primary,
+                backgroundColor: context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
                 onPressed: () async {
                   var userCubit = context.read<UserCubit>();
                   var currentUser = userCubit.currentUser!;
@@ -151,7 +166,7 @@ class AvatarGridView extends StatelessWidget {
       ),
 
       decoration: BoxDecoration(
-        color: AppColors.backgroundDark,
+        color: context.easyColor(lColor: AppColors.backgroundLight, dColor: AppColors.backgroundDark),
         borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
       child: GridView.builder(
@@ -170,14 +185,16 @@ class AvatarGridView extends StatelessWidget {
           child: Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: BoxDecoration(color: AppColors.backgroundDark),
+            decoration: BoxDecoration(color:context.easyColor(lColor: AppColors.backgroundLight, dColor: AppColors.backgroundDark)),
             child: Stack(
               alignment: AlignmentGeometry.bottomRight,
               children: [
                 CircleAvatar(
                   radius: double.infinity,
-                  backgroundColor: AppColors.primary,
-                  child: SvgPicture.asset(
+                  backgroundColor: context.easyColor(
+                    lColor: AppColors.backgroundDark,
+                    dColor: AppColors.primary,
+                  ),                  child: SvgPicture.asset(
                     avatars['profile_avatar_${index + 1}']!,
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/widgets/search_text_field_widget.dart';
 
 import '../../../core/constants/app_constants.dart';
@@ -89,10 +90,21 @@ class _PlatformsBottomSheetState extends State<PlatformsBottomSheet> {
                 padding: EdgeInsets.all(context.width * 0.03),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  border: BoxBorder.all(color: AppColors.secondary),
+                  border: BoxBorder.all(
+                    color: context.easyColor(
+                      dColor: AppColors.backgroundLight,
+                      lColor: AppColors.backgroundDark,
+                    ),
+                  ),
                   color: widget.currentPlatform == platform
-                      ? AppColors.secondary
-                      : AppColors.backgroundDark,
+                      ? context.easyColor(
+                          lColor: AppColors.backgroundDark,
+                          dColor: AppColors.white,
+                        )
+                      : context.easyColor(
+                          lColor: AppColors.primary,
+                          dColor: AppColors.backgroundDark,
+                        ),
                 ),
                 child: Column(
                   mainAxisSize: .min,
@@ -108,8 +120,20 @@ class _PlatformsBottomSheetState extends State<PlatformsBottomSheet> {
                       child: Text(
                         platform.name,
                         style: widget.currentPlatform == platform
-                            ? AppStyles.robotoBold14SurfaceDark(context)
-                            : AppStyles.robotoRegular14White(context),
+                            ? AppStyles.robotoRegular14(
+                                context,
+                                lColor: AppColors.white,
+                                dColor: AppColors.surfaceDark,
+                              )
+                            : AppStyles.robotoRegular14(
+                                context,
+                                lColor: AppColors.surfaceDark,
+                                dColor: AppColors.white,
+                              ),
+
+                        // widget.currentPlatform == platform
+                        //     ? AppStyles.robotoBold14SurfaceDark(context)
+                        //     : AppStyles.robotoRegular14White(context),
                       ),
                     ),
                   ],

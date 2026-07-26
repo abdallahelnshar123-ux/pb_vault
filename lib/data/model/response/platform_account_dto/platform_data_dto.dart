@@ -20,11 +20,7 @@ class PlatformDataDto extends Equatable {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'icon': icon,
-      'website': website,
-    };
+    return {'name': name, 'icon': icon, 'website': website};
   }
 
   @override

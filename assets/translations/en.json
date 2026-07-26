@@ -142,7 +142,7 @@
   "new_password" : "New Password",
   "save_your_new_password_easily" : "Save your new password easily",
   "saved_passwords" : "Saved Passwords",
-  "no_accounts_found" : "No accounts yet",
+  "no_accounts_yet" : "No accounts yet",
   "account_added_successfully" : "Account Added successfully",
   "notes" : "notes",
   "add_new_account" : "Add new account",
@@ -187,7 +187,7 @@
   "biometric_unlock" : "Biometric unlock",
   "pick_avatar_for_your_account" : "Pick avatar for your account !",
   "continue" : "Continue",
-  "avatar_saved_successfully" : "Avatar saved successfully",
+  "avatar_saved_successfully" : "Avatar saved successfully"
 
 
 

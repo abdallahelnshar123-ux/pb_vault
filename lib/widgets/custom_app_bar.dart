@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../core/utils/app_assets.dart';
@@ -17,7 +18,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       toolbarHeight: _toolbarHeight,
       centerTitle: centerTitle ?? true,
       title: SvgPicture.asset(
-        AppAssets.appLogo,
+        context.isDark ? AppAssets.appLogoDark : AppAssets.appLogoLight,
         alignment: Alignment.center,
         fit: .cover,
         height: 90,

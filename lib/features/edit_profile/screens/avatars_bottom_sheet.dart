@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/utils/app_colors.dart';
@@ -25,7 +26,10 @@ class SelectAvatarBottomSheet extends StatelessWidget {
       ),
 
       decoration: BoxDecoration(
-        color: AppColors.backgroundDark,
+        color: context.easyColor(
+          lColor: AppColors.primary,
+          dColor: AppColors.backgroundDark,
+        ),
         borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
       child: GridView.builder(
@@ -45,13 +49,19 @@ class SelectAvatarBottomSheet extends StatelessWidget {
           child: Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: BoxDecoration(color: AppColors.backgroundDark),
+            decoration: BoxDecoration( color: context.easyColor(
+              lColor: AppColors.primary,
+              dColor: AppColors.backgroundDark,
+            ),),
             child: Stack(
               alignment: AlignmentGeometry.bottomRight,
               children: [
                 CircleAvatar(
                   radius: double.infinity,
-                  backgroundColor: AppColors.primary,
+                  backgroundColor:   context.easyColor(
+              lColor:    AppColors.backgroundDark,
+              dColor:AppColors.primary,
+            ),
                   child: SvgPicture.asset(
                     avatars['profile_avatar_${index + 1}']!,
                   ),

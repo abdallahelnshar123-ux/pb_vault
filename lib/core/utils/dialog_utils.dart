@@ -47,7 +47,11 @@ class DialogUtils {
           },
           child: Text(
             context.tr(posActionText),
-            style: AppStyles.robotoRegular16White(context),
+            style: AppStyles.robotoRegular16(
+              context,
+              lColor: AppColors.surfaceDark,
+              dColor: AppColors.white,
+            ),
           ),
         ),
       );
@@ -61,7 +65,11 @@ class DialogUtils {
           },
           child: Text(
             context.tr(negActionText),
-            style: AppStyles.robotoRegular16White(context),
+            style: AppStyles.robotoRegular16(
+              context,
+              lColor: AppColors.surfaceDark,
+              dColor: AppColors.white,
+            ),
           ),
         ),
       );
@@ -73,11 +81,19 @@ class DialogUtils {
         contentPadding: EdgeInsets.all(20),
         content: Text(
           context.tr(message),
-          style: AppStyles.robotoRegular14White(context),
+          style: AppStyles.robotoRegular14(
+            context,
+            lColor: AppColors.surfaceDark,
+            dColor: AppColors.white,
+          ),
         ),
         title: Text(
           context.tr(title),
-          style: AppStyles.robotoRegular14White(context),
+          style: AppStyles.robotoRegular14(
+            context,
+            lColor: AppColors.surfaceDark,
+            dColor: AppColors.white,
+          ),
         ),
         actions: actions,
       ),
@@ -103,7 +119,11 @@ class DialogUtils {
           contentPadding: const EdgeInsets.all(20),
           title: Text(
             context.tr(title),
-            style: AppStyles.robotoRegular16White(context),
+            style: AppStyles.robotoRegular16(
+              context,
+              lColor: AppColors.surfaceDark,
+              dColor: AppColors.white,
+            ),
           ),
           content: Form(
             key: formKey,
@@ -113,7 +133,11 @@ class DialogUtils {
               children: [
                 Text(
                   context.tr(message),
-                  style: AppStyles.robotoRegular14White(context),
+                  style: AppStyles.robotoRegular14(
+                    context,
+                    lColor: AppColors.surfaceDark,
+                    dColor: AppColors.white,
+                  ),
                 ),
                 PasswordTextFieldWidget(
                   controller: passwordController,
@@ -129,7 +153,11 @@ class DialogUtils {
               },
               child: Text(
                 context.tr(cancelText),
-                style: AppStyles.robotoRegular16White(context),
+                style: AppStyles.robotoRegular16(
+                  context,
+                  lColor: AppColors.surfaceDark,
+                  dColor: AppColors.white,
+                ),
               ),
             ),
             TextButton(
@@ -140,7 +168,11 @@ class DialogUtils {
               },
               child: Text(
                 context.tr(confirmText),
-                style: AppStyles.robotoRegular16White(context),
+                style: AppStyles.robotoRegular16(
+                  context,
+                  lColor: AppColors.surfaceDark,
+                  dColor: AppColors.white,
+                ),
               ),
             ),
           ],

@@ -3,7 +3,8 @@ class AppAssets {
   static const String onBoardingImage1 = 'assets/images/onboarding1.png';
   static const String onBoardingImage2 = 'assets/images/onboarding2.png';
   static const String onBoardingImage3 = 'assets/images/onboarding3.png';
-  static const String appLogo = 'assets/icons/logo.svg';
+  static const String appLogoDark = 'assets/icons/logo_dark.svg';
+  static const String appLogoLight = 'assets/icons/logo_light.svg';
 
   static const String forgetPasswordImage =
       'assets/images/forget_password_image.png';

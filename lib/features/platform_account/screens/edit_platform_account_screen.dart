@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/domain/use_cases/vault/decrypt_password_use_case.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_state.dart';
 
@@ -99,7 +100,7 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
         child: GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Scaffold(
-            backgroundColor: AppColors.backgroundDark,
+            // backgroundColor: AppColors.backgroundDark,
             appBar: _builtAppBar(),
             body: SingleChildScrollView(
               padding: EdgeInsets.all(context.width * 0.05),
@@ -140,15 +141,15 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
 
   PreferredSizeWidget _builtAppBar() {
     return AppBar(
-      centerTitle: false,
+      // centerTitle: false,
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
         icon: Icon(Icons.arrow_back_ios_new_rounded),
-        color: AppColors.secondary,
+        // color: AppColors.secondary,
       ),
       title: Text(
         'edit_account'.tr(),
-        style: AppStyles.robotoRegular20Secondary(context),
+        // style: AppStyles.robotoRegular20Secondary(context),
       ),
       elevation: 0,
     );
@@ -161,10 +162,17 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
 
       title: Text(
         widget.account.platform.name,
-        style: AppStyles.robotoRegular18Secondary(context),
+        style: AppStyles.robotoRegular18(
+          context,
+          lColor: AppColors.backgroundDark,
+          dColor: AppColors.secondary,
+        ),
       ),
       leading: CircleAvatar(
-        backgroundColor: AppColors.secondary,
+        backgroundColor: context.easyColor(
+          lColor: AppColors.primary,
+          dColor: AppColors.secondary,
+        ),
         radius: context.width * 0.07,
         child: Image.network(widget.account.platform.icon, width: 24),
       ),
@@ -190,10 +198,20 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
                 .generateStrongPassword();
             passwordController.text = pass;
           },
-          icon: const Icon(Icons.refresh, color: AppColors.secondary),
+          icon: Icon(
+            Icons.refresh,
+            color: context.easyColor(
+              lColor: AppColors.backgroundDark,
+              dColor: AppColors.secondary,
+            ),
+          ),
           label: Text(
             'generate_strong_password'.tr(),
-            style: AppStyles.robotoRegular14Secondary(context),
+            style: AppStyles.robotoRegular14(
+              context,
+              lColor: AppColors.backgroundDark,
+              dColor: AppColors.secondary,
+            ),
           ),
         );
       },
@@ -216,7 +234,10 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
     return Builder(
       builder: (context) {
         return CustomElevatedButton(
-          backgroundColor: AppColors.primary,
+          backgroundColor: context.easyColor(
+            lColor: AppColors.backgroundDark,
+            dColor: AppColors.primary,
+          ),
           onPressed: () {
             if (formKey.currentState!.validate()) {
               final userId = context.read<UserCubit>().currentUser?.id ?? '';

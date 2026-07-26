@@ -243,17 +243,16 @@ class _RegisterTabState extends State<RegisterTab> {
 
   Widget _builtRegisterButton() {
     return CustomElevatedButton(
-      onPressed: ()async {
+      onPressed: () async {
         if (checkBoxValue.value) {
           if (formKey.currentState!.validate()) {
             var userCubit = context.read<UserCubit>();
-           await userCubit.registerWithEmailAndPassword(
+            await userCubit.registerWithEmailAndPassword(
               email: emailController.text,
               password: passwordController.text,
               name: nameController.text,
               avatarIndex: -1,
             );
-           userCubit.isAccountJustCreated = true;
           }
         } else {
           checkBoxError.value = true;

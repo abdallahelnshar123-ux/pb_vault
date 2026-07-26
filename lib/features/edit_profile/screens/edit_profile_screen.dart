@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
 import 'package:pb_vault/widgets/username_text_field_widget.dart';
@@ -108,19 +109,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           appBar: AppBar(
             title: Text(
               "edit_profile".tr(),
-              style: AppStyles.robotoRegular20Secondary(context),
             ),
-            centerTitle: false,
             leading: IconButton(
               onPressed: () => Navigator.pop(context),
               icon: Icon(Icons.arrow_back_ios_new_rounded),
-              color: AppColors.secondary,
             ),
           ),
           bottomNavigationBar: Padding(
             padding: EdgeInsets.all(16),
             child: CustomElevatedButton(
-              backgroundColor: AppColors.primary,
+              backgroundColor: context.easyColor(lColor:  AppColors.backgroundDark, dColor: AppColors.primary),
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   await userCubit.updateUserDetails(
@@ -209,7 +207,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     SizedBox(height: context.height * 0.01),
                     UsernameTextFieldWidget(
                       controller: nameController,
-                      fillColor: AppColors.backgroundLight,
+                      fillColor: AppColors.secondary,
                     ),
                     // CustomTextFormField(
                     //   prefixIcon: Icon(Icons.person, color: AppColors.primary),

@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/features/auth/screens/auth_screen.dart';
 import 'package:pb_vault/features/edit_profile/screens/edit_profile_screen.dart';
 import 'package:pb_vault/features/home_screen/screens/home_screen.dart';
@@ -26,26 +27,33 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  EasyLocalization.ensureInitialized();
+  await Future.wait([
+    EasyLocalization.ensureInitialized(),
+    EasyTheme.ensureInitialized(),
+  ]);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   configureDependencies();
   Bloc.observer = MyBlocObserver();
   // debugPrintRebuildDirtyWidgets = true;
   // debugPrintScheduleBuildForStacks = true;
   runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('en'), Locale('ar')],
-      path: 'assets/translations',
-      fallbackLocale: const Locale('en'),
-      startLocale: Locale('en'),
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (context) => getIt<UserCubit>()),
-          BlocProvider(create: (context) => getIt<HomeCubit>()),
-          BlocProvider(create: (context) => getIt<PlatformAccountCubit>()),
-          BlocProvider(create: (context) => getIt<MasterPasswordCubit>()),
-        ],
-        child: const MyApp(),
+    EasyTheme(
+      darkTheme: AppTheme.darkTheme,
+      lightTheme: AppTheme.lightTheme,
+      child: EasyLocalization(
+        supportedLocales: const [Locale('en'), Locale('ar')],
+        path: 'assets/translations',
+        fallbackLocale: const Locale('en'),
+        startLocale: Locale('en'),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => getIt<UserCubit>()),
+            BlocProvider(create: (context) => getIt<HomeCubit>()),
+            BlocProvider(create: (context) => getIt<PlatformAccountCubit>()),
+            BlocProvider(create: (context) => getIt<MasterPasswordCubit>()),
+          ],
+          child: const MyApp(),
+        ),
       ),
     ),
   );
@@ -76,8 +84,9 @@ class MyApp extends StatelessWidget {
         AppRoutes.biometricsScreen: (context) => const BiometricsScreen(),
         AppRoutes.pickAvatarScreen: (context) => const PickAvatarScreen(),
       },
-      themeMode: ThemeMode.dark,
-      darkTheme: AppTheme.darkTheme,
+      themeMode: context.themeMode,
+      darkTheme: context.darkTheme,
+      theme: context.lightTheme,
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,

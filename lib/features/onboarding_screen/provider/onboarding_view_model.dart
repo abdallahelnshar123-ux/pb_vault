@@ -19,6 +19,7 @@ class OnboardingViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   void onFirstButtonClick() {
     if (currentIndex < onboardingPagesNumber - 1) {
       currentIndex++;
@@ -31,6 +32,7 @@ class OnboardingViewModel extends ChangeNotifier {
   void onSecondButtonClick() {
     _setOnboardingDoneUseCase.setOnboardingDone();
   }
+
   // OnboardingAction onFirstButtonClick() {
   //   if (currentIndex < onboardingPagesNumber - 1) {
   //     currentIndex++;

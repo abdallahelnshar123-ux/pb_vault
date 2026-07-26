@@ -56,15 +56,20 @@ class LocalStorage {
       _sharedPrefs.saveData(key: SharedPrefsKeys.useBiometricKey, value: value);
 
   bool get isBiometricRejected =>
-      _sharedPrefs.getData<bool>(key: SharedPrefsKeys.biometricRejectedKey) ?? false;
+      _sharedPrefs.getData<bool>(key: SharedPrefsKeys.biometricRejectedKey) ??
+      false;
 
-  Future<void> setBiometricRejected(bool value) =>
-      _sharedPrefs.saveData(key: SharedPrefsKeys.biometricRejectedKey, value: value);
+  Future<void> setBiometricRejected(bool value) => _sharedPrefs.saveData(
+    key: SharedPrefsKeys.biometricRejectedKey,
+    value: value,
+  );
 
   Future<void> saveSecretKey(List<int> secretKey) =>
       _secureStorageUtils.writeBytes(SecureStorageKeys.secretKey, secretKey);
 
-  Future<List<int>?> get secretKey => _secureStorageUtils.readBytes(SecureStorageKeys.secretKey);
+  Future<List<int>?> get secretKey =>
+      _secureStorageUtils.readBytes(SecureStorageKeys.secretKey);
 
-  Future<void> deleteSecretKey() => _secureStorageUtils.delete(SecureStorageKeys.secretKey);
+  Future<void> deleteSecretKey() =>
+      _secureStorageUtils.delete(SecureStorageKeys.secretKey);
 }

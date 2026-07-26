@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:pb_vault/core/utils/app_colors.dart';
 import 'package:pb_vault/features/auth/widget/section_switcher.dart';
 import 'package:pb_vault/widgets/custom_app_bar.dart';
 
@@ -21,7 +22,7 @@ class AuthScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: context.height * 0.02),
-              _builtTitle(),
+              _builtTitle(context),
               _builtSubTitle(context),
               Expanded(child: SectionSwitcher()),
             ],
@@ -31,13 +32,17 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
-  Widget _builtTitle() {
+  Widget _builtTitle(BuildContext context) {
     return FittedBox(
       fit: BoxFit.scaleDown,
       child: Text(
         'welcome_to_pb_vault'.tr(),
         textAlign: TextAlign.center,
-        style: AppStyles.interRegular20White,
+        style: AppStyles.interRegular20(
+          context,
+          lColor: AppColors.black,
+          dColor: AppColors.white,
+        ),
       ),
     );
   }
@@ -51,7 +56,11 @@ class AuthScreen extends StatelessWidget {
       child: Text(
         'login_or_sign_up_to_unlock_your_personal_vault'.tr(),
         textAlign: TextAlign.center,
-        style: AppStyles.interExtraLight14BackgroundLight,
+        style: AppStyles.interExtraLight14(
+          context,
+          lColor: AppColors.surfaceDark,
+          dColor: AppColors.backgroundLight,
+        ),
       ),
     );
   }

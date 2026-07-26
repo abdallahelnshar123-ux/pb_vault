@@ -12,7 +12,7 @@ extension AccountMapper on PlatformAccountDto {
       encryptedPassword: encryptedPassword,
       notes: notes,
       createdAt: createdAt,
-      nonce: nonce ,
+      nonce: nonce,
       mac: mac,
     );
   }

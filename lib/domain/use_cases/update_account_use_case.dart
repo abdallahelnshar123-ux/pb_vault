@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+
 import '../entities/response/platform_account/platform_account.dart';
 import '../failure/failure.dart';
 import '../repository/account/account_repository.dart';

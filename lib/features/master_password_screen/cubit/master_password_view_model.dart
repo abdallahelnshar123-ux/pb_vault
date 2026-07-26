@@ -36,7 +36,7 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
     this._isBiometricEnabledUseCase,
     this._isBiometricRejectedUseCase,
     this._biometricUnlockUseCase,
-      this._biometricRejectedUseCase
+    this._biometricRejectedUseCase,
   ) : super(MasterPasswordInitial());
 
   Future<void> setMasterPassword({
@@ -149,7 +149,7 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
     }, (_) => true);
   }
 
-  void rejectBiometric(bool enable){
+  void rejectBiometric(bool enable) {
     _biometricRejectedUseCase.invoke(enable);
   }
 

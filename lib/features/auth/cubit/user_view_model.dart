@@ -46,12 +46,7 @@ class UserCubit extends Cubit<UserState> {
 
   MyUser? currentUser;
 
-   bool _isAccountJustCreated = false;
-
-   set isAccountJustCreated (bool value) {
-     _isAccountJustCreated = false;
-   }
-   bool get isAccountJustCreated => _isAccountJustCreated;
+  bool isAccountJustCreated = false;
 
   Future<void> loginWithEmailAndPassword(String email, String password) async {
     emit(LoginWithEmailPasswordLoadingState());
@@ -87,6 +82,7 @@ class UserCubit extends Cubit<UserState> {
           emit(RegisterWithEmailPasswordErrorState(failure.message.tr())),
       (user) {
         currentUser = user;
+        isAccountJustCreated = true;
         emit(UserAuthenticatedState(user));
       },
     );
@@ -118,7 +114,7 @@ class UserCubit extends Cubit<UserState> {
       await _homeCubit.clearHomeAccounts();
       emit(UserUnauthenticatedState());
       currentUser = null;
-      _isAccountJustCreated = false;
+      isAccountJustCreated = false;
     });
   }
 
