@@ -23,7 +23,6 @@ class SettingsState extends Equatable {
     ThemeMode? themeMode,
     Locale? locale,
     String? errorMessage,
-
   }) {
     return SettingsState(
       isBiometricEnabled: isBiometricEnabled ?? this.isBiometricEnabled,

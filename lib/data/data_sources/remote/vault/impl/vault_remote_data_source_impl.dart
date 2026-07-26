@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+
 import '../../../../../core/services/vault_crypto_service/vault_crypto_service.dart';
 import '../../../../../domain/entities/vault/encrypted_data.dart';
 import '../../../../exceptions/app_exceptions.dart';
@@ -14,7 +15,7 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
   Future<EncryptedData> encrypt(String text) async {
     try {
       return await _vaultCryptoService.encrypt(text);
-    }  catch (e) {
+    } catch (e) {
       throw UnexpectedException(message: e.toString(), statusCode: null);
     }
   }
@@ -23,7 +24,7 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
   Future<String> decrypt(EncryptedData data) async {
     try {
       return await _vaultCryptoService.decrypt(data);
-    }  catch (e) {
+    } catch (e) {
       throw UnexpectedException(message: e.toString(), statusCode: null);
     }
   }

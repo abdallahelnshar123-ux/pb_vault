@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_state.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
@@ -65,36 +66,15 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
     );
   }
 
-  // Widget _buildBiometricButton() {
-  //   return BlocBuilder<MasterPasswordCubit, MasterPasswordState>(
-  //     builder: (context, state) {
-  //       return InkWell(
-  //         onTap: state is MasterPasswordVerifySuccess
-  //             ? null
-  //             : () => context.read<MasterPasswordCubit>().biometricUnlock(),
-  //         child: Container(
-  //           padding: EdgeInsets.all(context.width * 0.03),
-  //           decoration: BoxDecoration(
-  //             color: AppColors.secondary,
-  //             borderRadius: BorderRadius.circular(12),
-  //             border: Border.all(color: AppColors.primary),
-  //           ),
-  //           child: Icon(
-  //             Icons.fingerprint_rounded,
-  //             color: AppColors.primary,
-  //             size: 30,
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
   Widget _builtTitle() {
     return Text(
       'unlock_vault'.tr(),
       textAlign: TextAlign.center,
-      style: AppStyles.interRegular20White,
+      style: AppStyles.interRegular20(
+        context,
+        lColor: AppColors.black,
+        dColor: AppColors.white,
+      ),
     );
   }
 
@@ -104,7 +84,11 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
       child: Text(
         'enter_your_master_password'.tr(),
         textAlign: TextAlign.center,
-        style: AppStyles.interExtraLight14BackgroundLight,
+        style: AppStyles.interExtraLight14(
+          context,
+          lColor: AppColors.surfaceDark,
+          dColor: AppColors.backgroundLight,
+        ),
       ),
     );
   }
@@ -119,7 +103,10 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
           size: 80,
           color: state is UnlockSuccessState
               ? AppColors.success
-              : AppColors.primary,
+              : context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
         );
       },
     );
@@ -146,13 +133,28 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
                     }
                   }
                 },
-          borderSideColor: AppColors.backgroundDark,
+          borderSideColor: context.easyColor(
+            lColor: AppColors.backgroundLight,
+            dColor: AppColors.backgroundDark,
+          ),
           backgroundColor: state is UnlockSuccessState
-              ? AppColors.backgroundDark
-              : AppColors.primary,
+              ? context.easyColor(
+                  dColor: AppColors.backgroundDark,
+                  lColor: AppColors.backgroundLight,
+                )
+              : context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
           child: Text(
             state is UnlockSuccessState ? "unlocked".tr() : "unlock".tr(),
-            style: AppStyles.robotoBold20White(context),
+            style: state is UnlockSuccessState
+                ? AppStyles.robotoBold20(
+                    context,
+                    lColor: AppColors.backgroundDark,
+                    dColor: AppColors.white,
+                  )
+                : AppStyles.robotoBold20White(context),
           ),
         );
       },

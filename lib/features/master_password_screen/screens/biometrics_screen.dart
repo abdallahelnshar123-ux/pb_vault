@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/core/utils/app_routes.dart';
 import 'package:pb_vault/core/utils/dialog_utils.dart';
 import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
@@ -65,7 +66,11 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
           ? 'biometric_authentication_is_now_activated'.tr()
           : 'use_biometric_authentication'.tr(),
       textAlign: TextAlign.center,
-      style: AppStyles.interRegular20White,
+      style: AppStyles.interRegular20(
+        context,
+        lColor: AppColors.black,
+        dColor: AppColors.white,
+      ),
     );
   }
 
@@ -77,7 +82,11 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
             ? 'you_can_turn_it_off_from_sittings'.tr()
             : 'unlock_your_vault_with_your_biometric_credential'.tr(),
         textAlign: TextAlign.center,
-        style: AppStyles.interExtraLight14BackgroundLight,
+        style: AppStyles.interExtraLight14(
+          context,
+          lColor: AppColors.surfaceDark,
+          dColor: AppColors.backgroundLight,
+        ),
       ),
     );
   }
@@ -86,18 +95,27 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
     return Icon(
       Icons.fingerprint_rounded,
       size: 100,
-      color: isBiometricsActivated ? AppColors.success : AppColors.primary,
+      color: isBiometricsActivated
+          ? AppColors.success
+          : context.easyColor(
+              lColor: AppColors.backgroundDark,
+              dColor: AppColors.primary,
+            ),
     );
   }
 
   Widget _buildEnableBiometricButton() {
+    var currentUser = context.read<UserCubit>().currentUser;
     return CustomElevatedButton(
       onPressed: () async {
         if (isBiometricsActivated) {
           if (mounted) {
             Navigator.pushNamedAndRemoveUntil(
               context,
-              AppRoutes.homeRouteName,
+              (currentUser?.avatar == null || currentUser?.avatar == '') &&
+                  context.read<UserCubit>().isAccountJustCreated
+                  ? AppRoutes.pickAvatarScreen
+                  : AppRoutes.homeRouteName,
               (route) => false,
             );
           }
@@ -112,7 +130,10 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
           }
         }
       },
-      borderSideColor: AppColors.backgroundDark,
+      borderSideColor: context.easyColor(
+        lColor: AppColors.backgroundLight,
+        dColor: AppColors.backgroundDark,
+      ),
       backgroundColor: AppColors.primary,
 
       child: Text(
@@ -131,8 +152,8 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
           context.read<MasterPasswordCubit>().rejectBiometric(true);
           Navigator.pushNamedAndRemoveUntil(
             context,
-            currentUser?.avatar == '' &&
-                    context.read<UserCubit>().isAccountJustCreated
+            (currentUser?.avatar == null || currentUser?.avatar == '') &&
+                context.read<UserCubit>().isAccountJustCreated
                 ? AppRoutes.pickAvatarScreen
                 : AppRoutes.homeRouteName,
             (route) => false,

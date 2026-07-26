@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/core/utils/screen_size.dart';
 import 'package:pb_vault/domain/entities/on_boarding/on_boarding_item.dart';
 import 'package:pb_vault/widgets/custom_app_bar.dart';
@@ -57,13 +58,21 @@ class OnboardingScreen extends StatelessWidget {
                 child: Text(
                   onboardingDataList[currentIndex].title.tr(),
                   textAlign: TextAlign.center,
-                  style: AppStyles.interRegular20White,
+                  style: AppStyles.interRegular20(
+                    context,
+                    lColor: AppColors.black,
+                    dColor: AppColors.white,
+                  ),
                 ),
               ),
               Text(
                 onboardingDataList[currentIndex].subtitle.tr(),
                 textAlign: TextAlign.center,
-                style: AppStyles.interExtraLight14BackgroundLight,
+                style: AppStyles.interExtraLight14(
+                  context,
+                  lColor: AppColors.surfaceDark,
+                  dColor: AppColors.backgroundLight,
+                ),
               ),
 
               CustomElevatedButton(
@@ -90,10 +99,17 @@ class OnboardingScreen extends StatelessWidget {
                 //     Navigator.pushReplacementNamed(context, AppRoutes.authScreen);
                 //   }
                 // },
-                backgroundColor: AppColors.primary,
+                backgroundColor: context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
                 child: Text(
                   onboardingDataList[currentIndex].firstButton.tr(),
-                  style: AppStyles.interMedium14BackgroundDark,
+                  style: AppStyles.interMedium14(
+                    context,
+                    lColor: AppColors.white,
+                    dColor: AppColors.backgroundDark,
+                  ),
                 ),
               ),
 
@@ -104,7 +120,10 @@ class OnboardingScreen extends StatelessWidget {
                   Navigator.pushReplacementNamed(context, AppRoutes.authScreen);
                 },
                 backgroundColor: AppColors.backgroundLight,
-                borderSideColor: AppColors.primary,
+                borderSideColor: context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
                 child: Text(
                   onboardingDataList[currentIndex].secondButton.tr(),
                   style: AppStyles.interMedium14BackgroundDark,

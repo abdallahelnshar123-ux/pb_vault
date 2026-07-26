@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+
 import '../../../../../core/data_bases/cache/local_storage.dart';
 import '../../../../exceptions/app_exceptions.dart';
 import '../biometric_local_data_source.dart';
@@ -8,7 +9,7 @@ import '../biometric_local_data_source.dart';
 class BiometricLocalDataSourceImpl implements BiometricLocalDataSource {
   final LocalStorage _localStorage;
 
-  BiometricLocalDataSourceImpl(this._localStorage, );
+  BiometricLocalDataSourceImpl(this._localStorage);
 
   @override
   Future<void> saveSecretKey(List<int> secretKey) async {

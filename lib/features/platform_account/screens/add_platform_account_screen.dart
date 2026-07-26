@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/core/utils/snack_bar_utils.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
 import 'package:pb_vault/widgets/email_text_field_widget.dart';
@@ -73,7 +74,7 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
         child: GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Scaffold(
-            backgroundColor: AppColors.backgroundDark,
+            // backgroundColor: AppColors.backgroundDark,
             appBar: _builtAppBar(),
             body: SingleChildScrollView(
               padding: EdgeInsets.all(context.width * 0.05),
@@ -83,7 +84,7 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   spacing: context.height * 0.02,
                   children: [
-                    _builtChoosePlatform(),
+                    _builtChoosePlatform(context),
                     SizedBox(height: context.height * 0.03),
                     EmailTextFieldWidget(
                       fillColor: AppColors.secondary,
@@ -114,15 +115,15 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
 
   PreferredSizeWidget _builtAppBar() {
     return AppBar(
-      centerTitle: false,
+      // centerTitle: false,
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
         icon: Icon(Icons.arrow_back_ios_new_rounded),
-        color: AppColors.secondary,
+        // color: AppColors.secondary,
       ),
       title: Text(
         'add_new_account'.tr(),
-        style: AppStyles.robotoRegular20Secondary(context),
+        // style: AppStyles.robotoRegular20Secondary(context),
       ),
       elevation: 0,
     );
@@ -136,7 +137,10 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
       enableDrag: false,
       isScrollControlled: true,
       constraints: .tight(Size(double.infinity, context.height - 150)),
-      backgroundColor: AppColors.backgroundDark,
+      backgroundColor: context.easyColor(
+        lColor: AppColors.primary,
+        dColor: AppColors.backgroundDark,
+      ),
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -150,7 +154,7 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
     );
   }
 
-  Widget _builtChoosePlatform() {
+  Widget _builtChoosePlatform(BuildContext context) {
     return ValueListenableBuilder<PlatformData?>(
       valueListenable: currentPlatform,
       builder: (context, value, child) {
@@ -160,12 +164,19 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
             iconAlignment: .start,
             icon: Icon(
               Icons.add,
-              color: AppColors.secondary,
+              color: context.easyColor(
+                lColor: AppColors.backgroundDark,
+                dColor: AppColors.secondary,
+              ),
               size: context.width * 0.08,
             ),
             label: Text(
               'choose_platform'.tr(),
-              style: AppStyles.robotoRegular18Secondary(context),
+              style: AppStyles.robotoRegular18(
+                context,
+                lColor: AppColors.backgroundDark,
+                dColor: AppColors.secondary,
+              ),
             ),
           );
         }
@@ -188,11 +199,18 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
           onTap: () => _showPlatformPicker(context),
           title: Text(
             currentPlatform.value?.name ?? '',
-            style: AppStyles.robotoRegular18Secondary(context),
+            style: AppStyles.robotoRegular18(
+              context,
+              lColor: AppColors.backgroundDark,
+              dColor: AppColors.secondary,
+            ),
           ),
           leading: currentPlatform.value != null
               ? CircleAvatar(
-                  backgroundColor: AppColors.secondary,
+                  backgroundColor: context.easyColor(
+                    lColor: AppColors.primary,
+                    dColor: AppColors.secondary,
+                  ),
                   radius: context.width * 0.07,
                   child: Image.network(currentPlatform.value!.icon, width: 24),
                 )
@@ -221,10 +239,20 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
                 .generateStrongPassword();
             passwordController.text = pass;
           },
-          icon: const Icon(Icons.refresh, color: AppColors.secondary),
+          icon: Icon(
+            Icons.refresh,
+            color: context.easyColor(
+              lColor: AppColors.backgroundDark,
+              dColor: AppColors.secondary,
+            ),
+          ),
           label: Text(
             'generate_strong_password'.tr(),
-            style: AppStyles.robotoRegular14Secondary(context),
+            style: AppStyles.robotoRegular14(
+              context,
+              lColor: AppColors.backgroundDark,
+              dColor: AppColors.secondary,
+            ),
           ),
         );
       },
@@ -247,7 +275,10 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
     return Builder(
       builder: (context) {
         return CustomElevatedButton(
-          backgroundColor: AppColors.primary,
+          backgroundColor: context.easyColor(
+            lColor: AppColors.backgroundDark,
+            dColor: AppColors.primary,
+          ),
           onPressed: () {
             if (formKey.currentState!.validate() &&
                 currentPlatform.value != null) {

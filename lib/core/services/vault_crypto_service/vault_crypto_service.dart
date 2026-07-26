@@ -46,7 +46,7 @@ class VaultCryptoService {
 
   Future<List<int>> getSecretKeyBytes() async {
     if (_secretKey == null) {
-      throw  Exception( 'Vault is locked.');
+      throw Exception('Vault is locked.');
     }
     return await _secretKey!.extractBytes();
   }

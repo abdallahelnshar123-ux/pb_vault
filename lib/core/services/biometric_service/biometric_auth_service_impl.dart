@@ -21,10 +21,10 @@ class BiometricAuthServiceImpl implements BiometricAuthService {
     } on LocalAuthException catch (e) {
       if (e.code == LocalAuthExceptionCode.userCanceled) {
         throw CancelledByUserException();
-      } else if (e.code == LocalAuthExceptionCode.noBiometricsEnrolled || e.code == LocalAuthExceptionCode.noBiometricHardware) {
+      } else if (e.code == LocalAuthExceptionCode.noBiometricsEnrolled ||
+          e.code == LocalAuthExceptionCode.noBiometricHardware) {
         throw BiometricException(message: 'no_biometric_found');
-      }
-      else{
+      } else {
         throw BiometricException(message: 'error_while_trying_to_authenticate');
       }
     }

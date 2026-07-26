@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+
 import '../../../domain/entities/vault/encrypted_data.dart';
 import '../../../domain/failure/failure.dart';
 import '../../../domain/repository/vault/vault_repository.dart';

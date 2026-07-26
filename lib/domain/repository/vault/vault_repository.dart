@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+
 import '../../entities/vault/encrypted_data.dart';
 import '../../failure/failure.dart';
 

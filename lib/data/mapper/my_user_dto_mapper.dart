@@ -10,7 +10,7 @@ extension MyUserDtoMapper on MyUser {
       provider: provider,
       passwordVerifier: passwordVerifier,
       salt: salt,
-      avatar: avatar
+      avatar: avatar,
     );
   }
 }

@@ -61,7 +61,7 @@ class _MasterPasswordScreenState extends State<MasterPasswordScreen> {
               if (context.mounted) {
                 Navigator.pushNamedAndRemoveUntil(
                   context,
-                  AppRoutes.homeRouteName,
+                  AppRoutes.pickAvatarScreen,
                   (route) => false,
                 );
               }
@@ -92,8 +92,7 @@ class _MasterPasswordScreenState extends State<MasterPasswordScreen> {
             });
           }
         }
-        if (state is MasterPasswordSetupError ||
-            state is UnlockErrorState) {
+        if (state is MasterPasswordSetupError || state is UnlockErrorState) {
           DialogUtils.hideLoading(context: context);
           String message = '';
           if (state is MasterPasswordSetupError) message = state.message;
