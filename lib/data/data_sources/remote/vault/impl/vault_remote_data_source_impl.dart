@@ -1,8 +1,9 @@
 import 'package:injectable/injectable.dart';
 
 import '../../../../../core/services/vault_crypto_service/vault_crypto_service.dart';
-import '../../../../../domain/entities/vault/encrypted_data.dart';
+import '../../../../../domain/entities/response/platform_account/encrypted_data.dart';
 import '../../../../exceptions/app_exceptions.dart';
+import '../../../../model/response/platform_account_dto/encrypted_data_dto.dart';
 import '../vault_remote_data_source.dart';
 
 @Injectable(as: VaultRemoteDataSource)
@@ -12,7 +13,7 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
   VaultRemoteDataSourceImpl(this._vaultCryptoService);
 
   @override
-  Future<EncryptedData> encrypt(String text) async {
+  Future<EncryptedDataDto> encrypt(String text) async {
     try {
       return await _vaultCryptoService.encrypt(text);
     } catch (e) {

@@ -1,7 +1,7 @@
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pb_vault/core/services/vault_crypto_service/vault_crypto_service.dart';
-import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 
 void main() {
   late VaultCryptoService vault;

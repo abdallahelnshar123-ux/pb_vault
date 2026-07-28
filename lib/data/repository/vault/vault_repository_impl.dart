@@ -1,7 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:pb_vault/data/mapper/encrypted_data_mapper.dart';
 
-import '../../../domain/entities/vault/encrypted_data.dart';
+import '../../../domain/entities/response/platform_account/encrypted_data.dart';
 import '../../../domain/failure/failure.dart';
 import '../../../domain/repository/vault/vault_repository.dart';
 import '../../data_sources/remote/vault/vault_remote_data_source.dart';
@@ -18,7 +19,7 @@ class VaultRepositoryImpl implements VaultRepository {
   Future<Either<Failure, EncryptedData>> encrypt(String text) async {
     try {
       final result = await _vaultRemoteDataSource.encrypt(text);
-      return Right(result);
+      return Right(result.toEncryptedData());
     } on AppException catch (e) {
       return Left(e.toFailure());
     } catch (e) {

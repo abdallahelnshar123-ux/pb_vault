@@ -113,7 +113,7 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
             Navigator.pushNamedAndRemoveUntil(
               context,
               (currentUser?.avatar == null || currentUser?.avatar == '') &&
-                  context.read<UserCubit>().isAccountJustCreated
+                      context.read<UserCubit>().isAccountJustCreated
                   ? AppRoutes.pickAvatarScreen
                   : AppRoutes.homeRouteName,
               (route) => false,
@@ -153,7 +153,7 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
           Navigator.pushNamedAndRemoveUntil(
             context,
             (currentUser?.avatar == null || currentUser?.avatar == '') &&
-                context.read<UserCubit>().isAccountJustCreated
+                    context.read<UserCubit>().isAccountJustCreated
                 ? AppRoutes.pickAvatarScreen
                 : AppRoutes.homeRouteName,
             (route) => false,

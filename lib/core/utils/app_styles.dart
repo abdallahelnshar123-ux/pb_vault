@@ -52,10 +52,10 @@ class AppStyles {
   );
 
   static TextStyle interMedium14(
-      BuildContext context, {
-        required Color lColor,
-        required Color dColor,
-      }) {
+    BuildContext context, {
+    required Color lColor,
+    required Color dColor,
+  }) {
     return Theme.of(context).textTheme.bodyMedium!.copyWith(
       color: context.easyColor(dColor: dColor, lColor: lColor),
       fontSize: 14,
@@ -63,6 +63,7 @@ class AppStyles {
       fontFamily: GoogleFonts.inter().fontFamily,
     );
   }
+
   static TextStyle interMedium36White = GoogleFonts.inter(
     color: AppColors.white,
     fontSize: 36,
@@ -433,10 +434,10 @@ class AppStyles {
   }
 
   static TextStyle robotoBold20(
-      BuildContext context, {
-        required Color lColor,
-        required Color dColor,
-      }) {
+    BuildContext context, {
+    required Color lColor,
+    required Color dColor,
+  }) {
     return Theme.of(context).textTheme.bodyMedium!.copyWith(
       color: context.easyColor(dColor: dColor, lColor: lColor),
       fontSize: 20,
@@ -490,8 +491,6 @@ class AppStyles {
       fontFamily: GoogleFonts.roboto().fontFamily,
     );
   }
-
-
 
   static TextStyle robotoBold24White(BuildContext context) {
     return Theme.of(context).textTheme.bodyMedium!.copyWith(

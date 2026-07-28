@@ -1,3 +1,5 @@
+import 'package:pb_vault/domain/entities/response/platform_account/login_method.dart';
+
 import '../../domain/entities/on_boarding/on_boarding_item.dart';
 import '../../domain/entities/response/platform_account/platform_data.dart';
 import '../utils/app_assets.dart';
@@ -315,5 +317,17 @@ class AppConstants {
     'profile_avatar_28': 'assets/avatars/profile_avatar_28.svg',
     'profile_avatar_29': 'assets/avatars/profile_avatar_29.svg',
     'profile_avatar_30': 'assets/avatars/profile_avatar_30.svg',
+  };
+  static Map<String, String> loginMethodsIcons = {
+    LoginProvider.password.name : 'assets/icons/password_icon.svg',
+    LoginProvider.apple.name : 'assets/icons/apple_icon.svg',
+    LoginProvider.discord.name : 'assets/icons/discord_icon.svg',
+    LoginProvider.facebook.name : 'assets/icons/facebook_icon.svg',
+    LoginProvider.github.name : 'assets/icons/github_icon.svg',
+    LoginProvider.passkey.name : 'assets/icons/passkey_icon.svg',
+    LoginProvider.google.name : 'assets/icons/google_icon.svg',
+    LoginProvider.linkedin.name : 'assets/icons/linkedin_icon.svg',
+    LoginProvider.x.name : 'assets/icons/x_icon.svg',
+    LoginProvider.microsoft.name : 'assets/icons/microsoft_icon.svg',
   };
 }

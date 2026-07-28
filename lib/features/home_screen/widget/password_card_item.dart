@@ -63,7 +63,7 @@ class PasswordCardItem extends StatelessWidget {
               style: AppStyles.robotoBold16SurfaceDark(context),
             ),
             subtitle: Text(
-              account.emailOrUsername,
+              account.identifier,
               style: AppStyles.robotoELight12SurfaceDark(context),
             ),
             trailing: CopyAccountPasswordButtonWidget(

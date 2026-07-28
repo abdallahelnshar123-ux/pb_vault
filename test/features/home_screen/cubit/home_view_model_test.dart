@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
-import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/use_cases/get_accounts_use_case.dart';
 import 'package:pb_vault/domain/use_cases/vault/decrypt_password_use_case.dart';
@@ -34,19 +34,23 @@ void main() {
   final tAccount1 = PlatformAccount(
     id: '1',
     platform: tPlatformData,
-    emailOrUsername: 'test@example.com',
-    encryptedPassword: [1, 2, 3],
-    mac: [4, 5, 6],
-    nonce: [7, 8, 9],
+    identifier: 'test@example.com',
+    password: const EncryptedData(
+      cipherText: [1, 2, 3],
+      mac: [4, 5, 6],
+      nonce: [7, 8, 9],
+    ),
     createdAt: DateTime.now(),
   );
   final tAccount2 = PlatformAccount(
     id: '2',
     platform: tPlatformData,
-    emailOrUsername: 'test@example.com',
-    encryptedPassword: [1, 55, 3],
-    mac: [4, 88, 6],
-    nonce: [7, 8, 3],
+    identifier: 'test@example.com',
+    password: const EncryptedData(
+      cipherText: [1, 55, 3],
+      mac: [4, 88, 6],
+      nonce: [7, 8, 3],
+    ),
     createdAt: DateTime.now(),
   );
   const tFailure = ServerFailure('error_message');

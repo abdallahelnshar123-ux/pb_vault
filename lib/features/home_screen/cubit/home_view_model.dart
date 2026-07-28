@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/use_cases/vault/decrypt_password_use_case.dart';
 
 import '../../../domain/entities/response/platform_account/platform_account.dart';
@@ -43,18 +43,20 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> copyAccountPassword({required PlatformAccount account}) async {
-    final encryptedData = EncryptedData(
-      cipherText: account.encryptedPassword,
-      mac: account.mac,
-      nonce: account.nonce,
-    );
+    if (account.password == null) return;
 
-    final result = await _decryptPasswordUseCase.invoke(encryptedData);
-    result.fold(
-      (failure) {},
-      (password) async =>
-          await Clipboard.setData(ClipboardData(text: password)),
-    );
+    // final encryptedData = EncryptedData(
+    //   cipherText: account.password!.cipherText,
+    //   mac: account.password!.mac,
+    //   nonce: account.password!.nonce,
+    // );
+    //
+    // final result = await _decryptPasswordUseCase.invoke(encryptedData);
+    // result.fold(
+    //   (failure) {},
+    //   (password) async =>
+    //       await Clipboard.setData(ClipboardData(text: password)),
+    // );
   }
 
   Future<void> clearHomeAccounts() async {

@@ -11,6 +11,7 @@ import 'package:pb_vault/data/model/response/platform_account_dto/platform_data_
 import 'package:pb_vault/data/repository/account/account_repository_impl.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
+import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 
 class MockAccountRemoteDataSource extends Mock
@@ -25,11 +26,8 @@ void main() {
       PlatformAccountDto(
         id: '',
         platform: const PlatformDataDto(name: '', icon: '', website: ''),
-        emailOrUsername: '',
-        encryptedPassword: [],
+        identifier: '',
         createdAt: DateTime.now(),
-        nonce: [],
-        mac: [],
       ),
     );
   });
@@ -48,19 +46,23 @@ void main() {
   final tAccount1 = PlatformAccount(
     id: 'acc123',
     platform: tPlatformData,
-    emailOrUsername: 'test@gmail.com',
-    encryptedPassword: const [1, 2, 3],
-    mac: const [4, 5, 6],
-    nonce: const [7, 8, 9],
+    identifier: 'test@gmail.com',
+    password: const EncryptedData(
+      cipherText: [1, 2, 3],
+      mac: [4, 5, 6],
+      nonce: [7, 8, 9],
+    ),
     createdAt: DateTime(2023, 1, 1),
   );
   final tAccount2 = PlatformAccount(
     id: 'acc1234',
     platform: tPlatformData,
-    emailOrUsername: 'test1@gmail.com',
-    encryptedPassword: const [1, 2, 5],
-    mac: const [4, 11, 6],
-    nonce: const [7, 10, 9],
+    identifier: 'test1@gmail.com',
+    password: const EncryptedData(
+      cipherText: [1, 2, 5],
+      mac: [4, 11, 6],
+      nonce: [7, 10, 9],
+    ),
     createdAt: DateTime(2023, 3, 1),
   );
 

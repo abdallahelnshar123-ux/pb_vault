@@ -49,19 +49,21 @@ class SelectAvatarBottomSheet extends StatelessWidget {
           child: Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: BoxDecoration( color: context.easyColor(
-              lColor: AppColors.primary,
-              dColor: AppColors.backgroundDark,
-            ),),
+            decoration: BoxDecoration(
+              color: context.easyColor(
+                lColor: AppColors.primary,
+                dColor: AppColors.backgroundDark,
+              ),
+            ),
             child: Stack(
               alignment: AlignmentGeometry.bottomRight,
               children: [
                 CircleAvatar(
                   radius: double.infinity,
-                  backgroundColor:   context.easyColor(
-              lColor:    AppColors.backgroundDark,
-              dColor:AppColors.primary,
-            ),
+                  backgroundColor: context.easyColor(
+                    lColor: AppColors.backgroundDark,
+                    dColor: AppColors.primary,
+                  ),
                   child: SvgPicture.asset(
                     avatars['profile_avatar_${index + 1}']!,
                   ),

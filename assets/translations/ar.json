@@ -189,7 +189,9 @@
   "biometric_unlock" : "القياسات الحيوية",
   "pick_avatar_for_your_account" : "إختر افاتار لحسابك !",
   "continue" : "إستمر",
-  "avatar_saved_successfully" : "تم الحفظ بنجاح"
+  "avatar_saved_successfully" : "تم الحفظ بنجاح",
+  "error_while_saving_try_again" : "خطأ اثناء الحفظ. حاول مجددا"
+
 
 
 

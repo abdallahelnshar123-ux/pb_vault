@@ -107,9 +107,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
           appBar: AppBar(
-            title: Text(
-              "edit_profile".tr(),
-            ),
+            title: Text("edit_profile".tr()),
             leading: IconButton(
               onPressed: () => Navigator.pop(context),
               icon: Icon(Icons.arrow_back_ios_new_rounded),
@@ -118,7 +116,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           bottomNavigationBar: Padding(
             padding: EdgeInsets.all(16),
             child: CustomElevatedButton(
-              backgroundColor: context.easyColor(lColor:  AppColors.backgroundDark, dColor: AppColors.primary),
+              backgroundColor: context.easyColor(
+                lColor: AppColors.backgroundDark,
+                dColor: AppColors.primary,
+              ),
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   await userCubit.updateUserDetails(

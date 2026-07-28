@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/core/services/vault_crypto_service/vault_crypto_service.dart';
 import 'package:pb_vault/data/data_sources/remote/vault/impl/vault_remote_data_source_impl.dart';
 import 'package:pb_vault/data/exceptions/app_exceptions.dart';
-import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 
 class MockVaultCryptoService extends Mock implements VaultCryptoService {}
 

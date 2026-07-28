@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/core/services/firebase_services/firestore_service.dart';
 import 'package:pb_vault/data/data_sources/remote/account/impl/account_remote_data_source_impl.dart';
 import 'package:pb_vault/data/exceptions/app_exceptions.dart';
+import 'package:pb_vault/data/model/response/platform_account_dto/encrypted_data_dto.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/platform_account_dto.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/platform_data_dto.dart';
 
@@ -17,13 +18,11 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(
-      PlatformAccountDto(id: '',
+      PlatformAccountDto(
+        id: '',
         platform: const PlatformDataDto(name: '', icon: '', website: ''),
-        emailOrUsername: '',
-        encryptedPassword: [],
+        identifier: '',
         createdAt: DateTime.now(),
-        nonce: [],
-        mac: [],
       ),
     );
   });
@@ -41,10 +40,12 @@ void main() {
       icon: 'icon',
       website: 'google.com',
     ),
-    emailOrUsername: 'test@gmail.com',
-    encryptedPassword: const [1, 2, 3],
-    mac: const [4, 5, 6],
-    nonce: const [7, 8, 9],
+    identifier: 'test@gmail.com',
+    password: const EncryptedDataDto(
+      cipherText: [1, 2, 3],
+      mac: [4, 5, 6],
+      nonce: [7, 8, 9],
+    ),
     createdAt: DateTime(2023, 1, 1),
   );
 
@@ -55,10 +56,12 @@ void main() {
       icon: 'icon',
       website: 'google.com',
     ),
-    emailOrUsername: 'test@gmail.com',
-    encryptedPassword: const [1, 2, 3],
-    mac: const [4, 5, 6],
-    nonce: const [7, 8, 9],
+    identifier: 'test@gmail.com',
+    password: const EncryptedDataDto(
+      cipherText: [1, 2, 3],
+      mac: [4, 5, 6],
+      nonce: [7, 8, 9],
+    ),
     createdAt: DateTime(2023, 1, 1),
   );
 

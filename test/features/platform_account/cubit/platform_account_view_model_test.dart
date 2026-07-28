@@ -4,12 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
-import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/use_cases/add_account_use_case.dart';
 import 'package:pb_vault/domain/use_cases/delete_account_from_vault_use_case.dart';
 import 'package:pb_vault/domain/use_cases/update_account_use_case.dart';
-import 'package:pb_vault/domain/use_cases/vault/encrypt_password_use_case.dart';
+import 'package:pb_vault/domain/use_cases/vault/encrypt_value_use_case.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_state.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
 
@@ -17,7 +17,7 @@ class MockAddPlatformAccountUseCase extends Mock
     implements AddPlatformAccountUseCase {}
 
 class MockEncryptPasswordUseCase extends Mock
-    implements EncryptPasswordUseCase {}
+    implements EncryptValueUseCase {}
 
 class MockUpdatePlatformAccountUseCase extends Mock
     implements UpdatePlatformAccountUseCase {}
@@ -62,11 +62,13 @@ void main() {
   final tAccount = PlatformAccount(
     id: '1',
     platform: tPlatformData,
-    emailOrUsername: 'test@gmail.com',
-    encryptedPassword: const [1, 2, 3],
+    identifier: 'test@gmail.com',
+    password: const EncryptedData(
+      cipherText: [1, 2, 3],
+      mac: [4, 5, 6],
+      nonce: [7, 8, 9],
+    ),
     createdAt: DateTime(2023),
-    mac: const [4, 5, 6],
-    nonce: const [7, 8, 9],
   );
 
   group('generateStrongPassword', () {
@@ -114,7 +116,7 @@ void main() {
       act: (cubit) => cubit.addPlatformAccount(
         userId: tUserId,
         platform: tPlatformData,
-        emailOrUsername: 'test@gmail.com',
+        identifier: 'test@gmail.com',
         password: 'password',
       ),
       expect: () => [
@@ -128,7 +130,7 @@ void main() {
             tUserId,
             any(
               that: isA<PlatformAccount>()
-                  .having((e) => e.emailOrUsername, 'email', 'test@gmail.com')
+                  .having((e) => e.identifier, 'identifier', 'test@gmail.com')
                   .having((e) => e.platform, 'platform', tPlatformData),
             ),
           );
@@ -147,7 +149,7 @@ void main() {
       act: (cubit) => cubit.addPlatformAccount(
         userId: tUserId,
         platform: tPlatformData,
-        emailOrUsername: 'test@gmail.com',
+        identifier: 'test@gmail.com',
         password: 'password',
       ),
       expect: () => [
@@ -174,7 +176,7 @@ void main() {
       act: (cubit) => cubit.addPlatformAccount(
         userId: tUserId,
         platform: tPlatformData,
-        emailOrUsername: 'test@gmail.com',
+        identifier: 'test@gmail.com',
         password: 'password',
       ),
       expect: () => [
@@ -318,20 +320,14 @@ void main() {
     final tAccount1 = PlatformAccount(
       id: '1',
       platform: const PlatformData(name: 'Google', icon: 'i', website: 'w'),
-      emailOrUsername: 'user1',
-      encryptedPassword: const [],
+      identifier: 'user1',
       createdAt: DateTime(2023),
-      mac: const [],
-      nonce: const [],
     );
     final tAccount2 = PlatformAccount(
       id: '2',
       platform: const PlatformData(name: 'Facebook', icon: 'i', website: 'w'),
-      emailOrUsername: 'user2',
-      encryptedPassword: const [],
+      identifier: 'user2',
       createdAt: DateTime(2023),
-      mac: const [],
-      nonce: const [],
     );
     final allAccounts = [tAccount1, tAccount2];
 
@@ -343,7 +339,7 @@ void main() {
       expect(result, allAccounts);
     });
 
-    test('should filter by emailOrUsername (case-insensitive)', () {
+    test('should filter by identifier (case-insensitive)', () {
       final result = cubit.searchPlatformAccounts(
         accountsList: allAccounts,
         searchTerm: 'USER1',

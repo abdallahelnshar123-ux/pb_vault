@@ -166,7 +166,10 @@ class AvatarGridView extends StatelessWidget {
       ),
 
       decoration: BoxDecoration(
-        color: context.easyColor(lColor: AppColors.backgroundLight, dColor: AppColors.backgroundDark),
+        color: context.easyColor(
+          lColor: AppColors.backgroundLight,
+          dColor: AppColors.backgroundDark,
+        ),
         borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
       child: GridView.builder(
@@ -185,7 +188,12 @@ class AvatarGridView extends StatelessWidget {
           child: Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: BoxDecoration(color:context.easyColor(lColor: AppColors.backgroundLight, dColor: AppColors.backgroundDark)),
+            decoration: BoxDecoration(
+              color: context.easyColor(
+                lColor: AppColors.backgroundLight,
+                dColor: AppColors.backgroundDark,
+              ),
+            ),
             child: Stack(
               alignment: AlignmentGeometry.bottomRight,
               children: [
@@ -194,7 +202,8 @@ class AvatarGridView extends StatelessWidget {
                   backgroundColor: context.easyColor(
                     lColor: AppColors.backgroundDark,
                     dColor: AppColors.primary,
-                  ),                  child: SvgPicture.asset(
+                  ),
+                  child: SvgPicture.asset(
                     avatars['profile_avatar_${index + 1}']!,
                   ),
                 ),

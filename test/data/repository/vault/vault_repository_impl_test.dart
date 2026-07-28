@@ -4,7 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/data/data_sources/remote/vault/vault_remote_data_source.dart';
 import 'package:pb_vault/data/exceptions/app_exceptions.dart';
 import 'package:pb_vault/data/repository/vault/vault_repository_impl.dart';
-import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 
 class MockVaultRemoteDataSource extends Mock implements VaultRemoteDataSource {}

@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pb_vault/data/mapper/account_mapper.dart';
+import 'package:pb_vault/data/model/response/platform_account_dto/encrypted_data_dto.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/platform_account_dto.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/platform_data_dto.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
+import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 
 void main() {
   group('AccountMapper', () {
@@ -17,11 +19,17 @@ void main() {
           icon: 'icon',
           website: 'website',
         ),
-        emailOrUsername: 'test@test.com',
-        encryptedPassword: const [1, 2, 3],
-        nonce: const [4, 5, 6],
-        mac: const [7, 8, 9],
-        notes: 'notes',
+        identifier: 'test@test.com',
+        password: const EncryptedDataDto(
+          cipherText: [1, 2, 3],
+          nonce: [4, 5, 6],
+          mac: [7, 8, 9],
+        ),
+        notes: const EncryptedDataDto(
+          cipherText: [10],
+          nonce: [11],
+          mac: [12],
+        ),
         createdAt: date,
       );
 
@@ -32,11 +40,17 @@ void main() {
           icon: 'icon',
           website: 'website',
         ),
-        emailOrUsername: 'test@test.com',
-        encryptedPassword: const [1, 2, 3],
-        nonce: const [4, 5, 6],
-        mac: const [7, 8, 9],
-        notes: 'notes',
+        identifier: 'test@test.com',
+        password: const EncryptedData(
+          cipherText: [1, 2, 3],
+          nonce: [4, 5, 6],
+          mac: [7, 8, 9],
+        ),
+        notes: const EncryptedData(
+          cipherText: [10],
+          nonce: [11],
+          mac: [12],
+        ),
         createdAt: date,
       );
 

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
+import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/repository/account/account_repository.dart';
 import 'package:pb_vault/domain/use_cases/add_account_use_case.dart';
@@ -16,11 +17,8 @@ void main() {
   setUpAll(() {
     registerFallbackValue(PlatformAccount(
       platform: const PlatformData(name: 'name', icon: 'icon', website: 'icon'),
-      emailOrUsername: 'email',
-      encryptedPassword: const [],
+      identifier: 'email',
       createdAt: DateTime.now(),
-      mac: const [],
-      nonce: const [],
     ));
   });
 
@@ -32,11 +30,13 @@ void main() {
   const tUserId = '1';
   final tAccount = PlatformAccount(
     platform: const PlatformData(name: 'name', icon: 'icon', website: 'icon'),
-    emailOrUsername: 'email',
-    encryptedPassword: const [4, 5, 6],
+    identifier: 'email',
+    password: const EncryptedData(
+      cipherText: [4, 5, 6],
+      mac: [3, 6, 9],
+      nonce: [3, 2, 4],
+    ),
     createdAt: DateTime.now(),
-    mac: const [3, 6, 9],
-    nonce: const [3, 2, 4],
   );
 
   test('should call accountRepo.addAccount and return Right<unit>', () async {
@@ -72,7 +72,8 @@ void main() {
 // import 'package:dartz/dartz.dart';
 // import 'package:flutter_test/flutter_test.dart';
 // import 'package:mocktail/mocktail.dart';
-// import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
+// import 'package:pb_vault/domain/entities/response/platform_account/encrypted_value.dart';
+//import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 // import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
 // import 'package:pb_vault/domain/failure/failure.dart';
 // import 'package:pb_vault/domain/repository/account/account_repository.dart';
