@@ -190,7 +190,9 @@
   "pick_avatar_for_your_account" : "إختر افاتار لحسابك !",
   "continue" : "إستمر",
   "avatar_saved_successfully" : "تم الحفظ بنجاح",
-  "error_while_saving_try_again" : "خطأ اثناء الحفظ. حاول مجددا"
+  "error_while_saving_try_again" : "خطأ اثناء الحفظ. حاول مجددا",
+  "login_methods" : "طرق تسجيل الدخول"
+
 
 
 

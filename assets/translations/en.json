@@ -188,7 +188,8 @@
   "pick_avatar_for_your_account" : "Pick avatar for your account !",
   "continue" : "Continue",
   "avatar_saved_successfully" : "Avatar saved successfully",
-  "error_while_saving_try_again" : "Error while saving. try again"
+  "error_while_saving_try_again" : "Error while saving. try again",
+  "login_methods" : "Login methods"
 
 
 

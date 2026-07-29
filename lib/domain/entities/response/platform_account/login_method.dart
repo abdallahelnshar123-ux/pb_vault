@@ -19,7 +19,8 @@ enum LoginProvider {
 }
 
 class LoginMethod extends Equatable {
-  const LoginMethod({required this.provider, this.identifier});
+  const LoginMethod({required this.id, required this.provider, this.identifier});
+  final String id;
 
   final LoginProvider provider;
 
@@ -27,5 +28,5 @@ class LoginMethod extends Equatable {
   final String? identifier;
 
   @override
-  List<Object?> get props => [provider, identifier];
+  List<Object?> get props => [id,provider, identifier];
 }

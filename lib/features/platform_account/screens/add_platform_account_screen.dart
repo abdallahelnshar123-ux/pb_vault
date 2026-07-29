@@ -9,6 +9,7 @@ import 'package:pb_vault/features/platform_account/cubit/platform_account_view_m
 import 'package:pb_vault/features/platform_account/widget/login_methods_widget.dart';
 import 'package:pb_vault/features/platform_account/widget/recovery_codes_widget.dart';
 import 'package:pb_vault/widgets/email_text_field_widget.dart';
+import 'package:pb_vault/widgets/identifier_text_field_widget.dart';
 import 'package:pb_vault/widgets/password_text_field_widget.dart';
 
 import '../../../../core/utils/app_colors.dart';
@@ -39,7 +40,7 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final ValueNotifier<PlatformData?> currentPlatform = ValueNotifier(null);
-  List<LoginProvider> selectedLoginProviders = [];
+  List<LoginMethod> selectedLoginMethods = [];
 
   @override
   void dispose() {
@@ -94,7 +95,7 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
                   children: [
                     _builtChoosePlatform(context),
                     SizedBox(height: context.height * 0.03),
-                    EmailTextFieldWidget(
+                   IdentifierTextFieldWidget(
                       fillColor: AppColors.secondary,
                       controller: identifierController,
                     ),
@@ -108,7 +109,7 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
                         _builtGeneratePassword(),
                       ],
                     ),
-                    LoginMethodsWidget(),
+                    LoginMethodsWidget(newLoginMethod: (value) =>selectedLoginMethods = value ,),
                     _builtNotesTextField(),
                     _builtMoreInformationExpansionTile(),
                     const SizedBox(height: 20),
@@ -386,7 +387,7 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
                 identifier: identifierController.text,
                 password: passwordController.text,
                 notes: notesController.text,
-                loginProviders: selectedLoginProviders,
+                loginMethods: selectedLoginMethods,
                 recoveryCodes: recoveryCodesController.text,
                 passkey: passkeyController.text,
               );

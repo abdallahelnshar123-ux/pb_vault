@@ -51,7 +51,7 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
     String? identifier,
     String? password,
     String? notes,
-    List<LoginProvider>? loginProviders,
+    List<LoginMethod>? loginMethods,
     String? recoveryCodes,
     String? passkey,
   }) async {
@@ -87,9 +87,7 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
       platform: platform,
       identifier: identifier ?? '',
       password: password,
-      loginMethods:
-          loginProviders?.map((p) => LoginMethod(provider: p)).toList() ??
-          const [],
+      loginMethods: loginMethods ?? const [],
       notes: notes,
       recoveryCodes: recoveryCodes,
       passkey: passkey,

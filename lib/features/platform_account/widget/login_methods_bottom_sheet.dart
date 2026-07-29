@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pb_vault/core/utils/app_colors.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/login_method.dart';
 import 'package:pb_vault/widgets/identifier_text_field_widget.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/app_styles.dart';
@@ -107,6 +108,7 @@ class _LoginMethodsBottomSheetState extends State<LoginMethodsBottomSheet> {
             if (globalKey.currentState!.validate()) {
               widget.newLoginMethod(
                 LoginMethod(
+                  id : Uuid().v4().toString(),
                   provider: selectedLoginProvider!,
                   identifier: selectedLoginProvider!.requiresEmail
                       ? controller.text.trim()

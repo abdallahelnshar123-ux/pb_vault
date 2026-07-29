@@ -12,7 +12,9 @@ import '../../../core/utils/screen_size.dart';
 import '../../../widgets/custom_elevated_button.dart';
 
 class LoginMethodsWidget extends StatefulWidget {
-  const LoginMethodsWidget({super.key});
+  const LoginMethodsWidget({super.key, required this.newLoginMethod});
+
+  final ValueChanged<List<LoginMethod>> newLoginMethod;
 
   @override
   State<LoginMethodsWidget> createState() => _LoginMethodsWidgetState();
@@ -27,8 +29,39 @@ class _LoginMethodsWidgetState extends State<LoginMethodsWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        InkWell(
+          splashColor: context.easyColor(
+            lColor: AppColors.surfaceDark,
+            dColor: AppColors.primary,
+          ),
+          onTap: () {
+            _showLoginMethodsBottomSheet(context);
+          },
+          child: Row(
+            mainAxisAlignment: .spaceBetween,
+            children: [
+              Text(
+                'login_methods'.tr(),
+                style: AppStyles.robotoRegular14(
+                  context,
+                  lColor: AppColors.surfaceDark,
+                  dColor: AppColors.backgroundLight,
+                ),
+              ),
+              Icon(
+                Icons.add,
+                size: context.width * 0.07,
+                color: context.easyColor(
+                  lColor: AppColors.surfaceDark,
+                  dColor: AppColors.backgroundLight,
+                ),
+              ),
+            ],
+          ),
+        ),
+
         Column(children: _buildLoginMethodsList(context)),
-        _builtAddButton(),
+        // _builtAddButton(),
       ],
     );
   }
@@ -37,25 +70,72 @@ class _LoginMethodsWidgetState extends State<LoginMethodsWidget> {
     return loginMethodList
         .map(
           (loginMethod) => ListTile(
+            // shape: RoundedRectangleBorder(
+            //   borderRadius: BorderRadiusGeometry.circular(8)
+            // ),
+            // selected: true,
+            // selectedTileColor: AppColors.primary,
+            trailing: Row(
+              spacing: 10,
+              mainAxisSize: .min,
+              children: [
+                IconButton(
+                  style: IconButton.styleFrom(
+                    tapTargetSize: .shrinkWrap,
+                    iconSize: context.width * 0.04,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.zero,
+                  ),
+                  onPressed: () {
+                    final id = loginMethod.id;
+                    _showLoginMethodsBottomSheet(context, id: id);
+                  },
+                  icon: Icon(Icons.edit, color: AppColors.success),
+                ),
+                IconButton(
+                  style: IconButton.styleFrom(
+                    tapTargetSize: .shrinkWrap,
+                    iconSize: context.width * 0.04,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.zero,
+                  ),
+                  onPressed: () {
+                    final id = loginMethod.id;
+
+                    setState(() {
+                      loginMethodList.remove(
+                        loginMethodList
+                            .where((element) => element.id == id)
+                            .first,
+                      );
+                    });
+                  },
+                  icon: Icon(Icons.delete, color: AppColors.error),
+                ),
+              ],
+            ),
             splashColor: AppColors.transparent,
             contentPadding: EdgeInsets.zero,
 
             title: Text(
               loginMethod.provider.name,
-              style: AppStyles.robotoRegular18(
+              style: AppStyles.robotoRegular14(
                 context,
                 lColor: AppColors.backgroundDark,
                 dColor: AppColors.secondary,
               ),
             ),
             leading: CircleAvatar(
-
               backgroundColor: AppColors.white,
-              radius: context.width * 0.07,
+              radius: context.width * 0.04,
               child: SvgPicture.asset(
-
                 loginMethodsIcon[loginMethod.provider.name] ?? '',
                 fit: .fitWidth,
+                width: context.width * 0.06,
               ),
             ),
             subtitle: loginMethod.identifier != null
@@ -63,8 +143,10 @@ class _LoginMethodsWidgetState extends State<LoginMethodsWidget> {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
                       loginMethod.identifier!,
-                      style: AppStyles.robotoRegular12Secondary(
+                      style: AppStyles.robotoRegular10(
                         context,
+                        lColor: AppColors.backgroundDark,
+                        dColor: AppColors.secondary,
                       ).copyWith(color: AppColors.success),
                     ),
                   )
@@ -95,7 +177,7 @@ class _LoginMethodsWidgetState extends State<LoginMethodsWidget> {
     );
   }
 
-  void _showLoginMethodsBottomSheet(BuildContext context) {
+  void _showLoginMethodsBottomSheet(BuildContext context, {String? id}) {
     FocusManager.instance.primaryFocus?.unfocus();
     showModalBottomSheet(
       showDragHandle: true,
@@ -114,6 +196,9 @@ class _LoginMethodsWidgetState extends State<LoginMethodsWidget> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => LoginMethodsBottomSheet(
+        currentLoginMethod: id != null
+            ? loginMethodList.where((element) => element.id == id).first
+            : null,
         newLoginMethod: (LoginMethod value) {
           setState(() {
             loginMethodList.add(value);
