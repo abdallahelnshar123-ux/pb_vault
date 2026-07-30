@@ -191,7 +191,13 @@
   "continue" : "إستمر",
   "avatar_saved_successfully" : "تم الحفظ بنجاح",
   "error_while_saving_try_again" : "خطأ اثناء الحفظ. حاول مجددا",
-  "login_methods" : "طرق تسجيل الدخول"
+  "login_methods" : "طرق تسجيل الدخول",
+  "email_username_phone" : "البريد الالكتروني / اسم المستخدم / الهاتف",
+  "more_information" : "المزيد من المعلومات",
+  "recovery_codes" : "رموز الاسترداد",
+  "pass_key" : "مفتاح المرور"
+
+
 
 
 

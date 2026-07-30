@@ -14,7 +14,7 @@ import '../../../domain/use_cases/logout_use_case.dart';
 import '../../../domain/use_cases/register_with_email_and_password_use_case.dart';
 import '../../../domain/use_cases/reset_password_use_case.dart';
 import '../../../domain/use_cases/sign_in_with_google_use_cases.dart';
-import '../../../domain/use_cases/update_account_details_use_case.dart';
+import '../../../domain/use_cases/update_user_details_use_case.dart';
 import 'user_state.dart';
 
 @lazySingleton

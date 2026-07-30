@@ -34,12 +34,14 @@ class _LoginMethodsBottomSheetState extends State<LoginMethodsBottomSheet> {
     text: widget.currentLoginMethod?.identifier,
   );
   LoginProvider? selectedLoginProvider;
-@override
+
+  @override
   void initState() {
-  selectedLoginProvider =
-      widget.currentLoginMethod?.provider ??
-          LoginProvider.password;    super.initState();
+    selectedLoginProvider =
+        widget.currentLoginMethod?.provider ?? LoginProvider.password;
+    super.initState();
   }
+
   @override
   void dispose() {
     controller.dispose();
@@ -53,9 +55,17 @@ class _LoginMethodsBottomSheetState extends State<LoginMethodsBottomSheet> {
       child: Form(
         key: globalKey,
         child: Column(
-          spacing: context.width * 0.04,
+          spacing: 40,
           children: [
             DropdownMenuFormField(
+              inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: AppColors.backgroundLight,
+              ),
+              menuStyle: MenuStyle(
+                backgroundColor: WidgetStatePropertyAll(AppColors.primary),
+              ),
+              width: double.infinity,
               selectOnly: true,
               initialSelection: selectedLoginProvider?.name,
               validator: (value) {
@@ -75,10 +85,14 @@ class _LoginMethodsBottomSheetState extends State<LoginMethodsBottomSheet> {
                       label: loginProvider.name,
                       leadingIcon: CircleAvatar(
                         backgroundColor: AppColors.white,
-                        radius: 30,
+                        radius: context.width * 0.04,
                         child: SvgPicture.asset(
                           loginMethodsIcon[loginProvider.name]!,
                           fit: .cover,
+                          width: context.width * 0.05,
+                          colorFilter: loginProvider == LoginProvider.password
+                              ? ColorFilter.mode(AppColors.black, .srcIn)
+                              : null,
                         ),
                       ),
                     ),
@@ -87,8 +101,12 @@ class _LoginMethodsBottomSheetState extends State<LoginMethodsBottomSheet> {
             ),
             Visibility(
               visible: selectedLoginProvider!.requiresEmail,
-              child: IdentifierTextFieldWidget(controller: controller),
+              child: IdentifierTextFieldWidget(
+                controller: controller,
+                fillColor: AppColors.secondary,
+              ),
             ),
+            Spacer(),
             _builtAddButton(),
           ],
         ),
@@ -100,6 +118,7 @@ class _LoginMethodsBottomSheetState extends State<LoginMethodsBottomSheet> {
     return Builder(
       builder: (context) {
         return CustomElevatedButton(
+          buttonWidth: double.infinity,
           backgroundColor: context.easyColor(
             lColor: AppColors.backgroundDark,
             dColor: AppColors.primary,
@@ -108,7 +127,7 @@ class _LoginMethodsBottomSheetState extends State<LoginMethodsBottomSheet> {
             if (globalKey.currentState!.validate()) {
               widget.newLoginMethod(
                 LoginMethod(
-                  id : Uuid().v4().toString(),
+                  id: Uuid().v4().toString(),
                   provider: selectedLoginProvider!,
                   identifier: selectedLoginProvider!.requiresEmail
                       ? controller.text.trim()

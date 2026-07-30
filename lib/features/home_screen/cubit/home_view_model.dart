@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/use_cases/vault/decrypt_password_use_case.dart';
 
 import '../../../domain/entities/response/platform_account/platform_account.dart';

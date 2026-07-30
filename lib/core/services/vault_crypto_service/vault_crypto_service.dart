@@ -104,7 +104,7 @@ class VaultCryptoService {
     );
   }
 
-  Future<String> decrypt(EncryptedData data) async {
+  Future<String> decrypt(EncryptedDataDto data) async {
     if (_secretKey == null) {
       throw Exception('Vault is locked. Unlock it first.');
     }

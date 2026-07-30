@@ -22,7 +22,7 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
   }
 
   @override
-  Future<String> decrypt(EncryptedData data) async {
+  Future<String> decrypt(EncryptedDataDto data) async {
     try {
       return await _vaultCryptoService.decrypt(data);
     } catch (e) {

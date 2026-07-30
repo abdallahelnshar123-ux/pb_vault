@@ -72,7 +72,7 @@ class PlatformAccountDto extends Equatable {
           .map((e) => LoginMethodDto.fromMap(e))
           .toList(),
       recoveryCodes: data['recovery_codes'] != null
-          ? EncryptedDataDto.fromMap(data['password'])
+          ? EncryptedDataDto.fromMap(data['recovery_codes'])
           : null,
       passkey: data['passkey'] != null
           ? EncryptedDataDto.fromMap(data['passkey'])

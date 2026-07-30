@@ -134,8 +134,11 @@ class _LoginMethodsWidgetState extends State<LoginMethodsWidget> {
               radius: context.width * 0.04,
               child: SvgPicture.asset(
                 loginMethodsIcon[loginMethod.provider.name] ?? '',
-                fit: .fitWidth,
-                width: context.width * 0.06,
+                fit: .cover,
+                width: context.width * 0.05,
+                colorFilter: loginMethod.provider == LoginProvider.password
+                    ? ColorFilter.mode(AppColors.black, .srcIn)
+                    : null,
               ),
             ),
             subtitle: loginMethod.identifier != null
@@ -184,8 +187,10 @@ class _LoginMethodsWidgetState extends State<LoginMethodsWidget> {
       useSafeArea: true,
       enableDrag: false,
       isScrollControlled: true,
-      constraints: BoxConstraints.tight(
-        Size(double.infinity, context.height - 150),
+
+      constraints: BoxConstraints.expand(
+        width: context.width,
+        height: context.height * 0.6,
       ),
       backgroundColor: context.easyColor(
         lColor: AppColors.primary,
@@ -202,6 +207,7 @@ class _LoginMethodsWidgetState extends State<LoginMethodsWidget> {
         newLoginMethod: (LoginMethod value) {
           setState(() {
             loginMethodList.add(value);
+            widget.newLoginMethod(loginMethodList);
           });
         },
       ),

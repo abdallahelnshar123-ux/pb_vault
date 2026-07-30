@@ -31,11 +31,7 @@ void main() {
   final tAccount = PlatformAccount(
     platform: const PlatformData(name: 'name', icon: 'icon', website: 'icon'),
     identifier: 'email',
-    password: const EncryptedData(
-      cipherText: [4, 5, 6],
-      mac: [3, 6, 9],
-      nonce: [3, 2, 4],
-    ),
+    password: 'testPassword',
     createdAt: DateTime.now(),
   );
 

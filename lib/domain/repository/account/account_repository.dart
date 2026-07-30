@@ -17,4 +17,9 @@ abstract class AccountRepository {
     String userId,
     PlatformAccount account,
   );
+
+  Future<Either<Failure, PlatformAccount>> getAccountById(
+    String userId,
+    String accountId,
+  );
 }

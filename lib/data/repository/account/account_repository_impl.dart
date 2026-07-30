@@ -2,7 +2,9 @@ import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pb_vault/data/data_sources/remote/vault/vault_remote_data_source.dart';
 import 'package:pb_vault/data/mapper/custom_field_dto_mapper.dart';
+import 'package:pb_vault/data/mapper/custom_field_mapper.dart';
 import 'package:pb_vault/data/mapper/login_method_dto_mapper.dart';
+import 'package:pb_vault/data/mapper/login_method_mapper.dart';
 import 'package:pb_vault/data/mapper/platform_data_dto_mapper.dart';
 import 'package:pb_vault/data/mapper/platform_data_mapper.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/platform_account_dto.dart';
@@ -100,6 +102,7 @@ class AccountRepositoryImpl implements AccountRepository {
         final accounts = accountDto
             .map(
               (dto) => PlatformAccount(
+                id: dto.id,
                 platform: dto.platform.toPlatformData(),
                 identifier: dto.identifier,
                 createdAt: dto.createdAt,
@@ -121,6 +124,35 @@ class AccountRepositoryImpl implements AccountRepository {
     PlatformAccount account,
   ) async {
     try {
+      final results = await Future.wait([
+        _encryptIfNotEmpty(account.password),
+        _encryptIfNotEmpty(account.notes),
+        _encryptIfNotEmpty(account.recoveryCodes),
+        _encryptIfNotEmpty(account.passkey),
+        _encryptIfNotEmpty(account.twoFactorSecret),
+      ]);
+
+      await _accountRemoteDataSource.updateAccount(
+        account: PlatformAccountDto(
+          id: account.id,
+          platform: account.platform.toPlatformDataDto(),
+          identifier: account.identifier,
+          createdAt: account.createdAt,
+          password: results[0],
+          notes: results[1],
+          recoveryCodes: results[2],
+          passkey: results[3],
+          twoFactorSecret: results[4],
+          customFields: account.customFields
+              .map((customField) => customField.toCustomFieldDto())
+              .toList(),
+          loginMethods: account.loginMethods
+              .map((loginMethode) => loginMethode.toLoginMethodDto())
+              .toList(),
+        ),
+        uId: userId,
+      );
+
       // await _accountRemoteDataSource.updateAccount(
       //   uId: userId,
       //   account: account,
@@ -155,5 +187,52 @@ class AccountRepositoryImpl implements AccountRepository {
     if (value == null || value.trim().isEmpty) return null;
 
     return await _vaultRemoteDataSource.encrypt(value);
+  }
+
+  Future<String?> _decryptIfNotEmpty(EncryptedDataDto? value) async {
+    if (value == null) return null;
+
+    return await _vaultRemoteDataSource.decrypt(value);
+  }
+
+  @override
+  Future<Either<Failure, PlatformAccount>> getAccountById(
+    String userId,
+    String accountId,
+  ) async {
+    try {
+      var dto = await _accountRemoteDataSource.getAccountById(
+        uId: userId,
+        accountId: accountId,
+      );
+      final results = await Future.wait([
+        _decryptIfNotEmpty(dto.password),
+        _decryptIfNotEmpty(dto.notes),
+        _decryptIfNotEmpty(dto.recoveryCodes),
+        _decryptIfNotEmpty(dto.passkey),
+        _decryptIfNotEmpty(dto.twoFactorSecret),
+      ]);
+
+      var account = PlatformAccount(
+        platform: dto.platform.toPlatformData(),
+        identifier: dto.identifier,
+        createdAt: dto.createdAt,
+        id: dto.id,
+        password: results[0],
+        notes: results[1],
+        recoveryCodes: results[2],
+        passkey: results[3],
+        twoFactorSecret: results[4],
+        loginMethods: dto.loginMethods.map((e) => e.toLoginMethod()).toList(),
+        customFields:
+            dto.customFields?.map((e) => e.toCustomField()).toList() ?? [],
+      );
+
+      return Right(account);
+    } on AppException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnexpectedFailure(e.toString()));
+    }
   }
 }

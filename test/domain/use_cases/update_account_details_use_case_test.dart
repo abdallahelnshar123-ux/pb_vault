@@ -4,7 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/domain/entities/response/user/my_user.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/repository/user/user_repository.dart';
-import 'package:pb_vault/domain/use_cases/update_account_details_use_case.dart';
+import 'package:pb_vault/domain/use_cases/update_user_details_use_case.dart';
 
 class MockUserRepository extends Mock implements UserRepository {}
 

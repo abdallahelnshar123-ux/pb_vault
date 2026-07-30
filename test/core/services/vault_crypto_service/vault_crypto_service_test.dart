@@ -1,7 +1,7 @@
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pb_vault/core/services/vault_crypto_service/vault_crypto_service.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
+import 'package:pb_vault/data/model/response/platform_account_dto/encrypted_data_dto.dart';
 
 void main() {
   late VaultCryptoService vault;
@@ -153,7 +153,7 @@ void main() {
       final encrypted = await vault.encrypt('Hello World');
 
       // Assert
-      expect(encrypted, isA<EncryptedData>());
+      expect(encrypted, isA<EncryptedDataDto>());
       expect(encrypted.cipherText, isNotEmpty);
       expect(encrypted.mac, isNotEmpty);
       expect(encrypted.nonce, hasLength(12));
@@ -180,7 +180,7 @@ void main() {
   group('decrypt', () {
     test('should throw exception when vault is locked', () async {
       // Arrange
-      final encryptedData = EncryptedData(
+      final encryptedData = EncryptedDataDto(
         cipherText: [1, 2, 3],
         mac: [4, 5, 6],
         nonce: List.filled(12, 0),

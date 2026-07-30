@@ -78,7 +78,13 @@ class FirestoreService {
     return getAccountsCollection(uId).doc(accountId).delete();
   }
 
-  // Future<void> updateAccount({required String uId, required AccountDto platform_account}) {
-  //   return getAccountsCollection(uId).doc(platform_account.id).update(platform_account.toFireStore());
-  // }
+  Future<PlatformAccountDto?> getAccountById({
+    required String accountId,
+    required String uId,
+  }) async {
+    var documentSnapshot = await getAccountsCollection(
+      uId,
+    ).doc(accountId).get();
+    return documentSnapshot.data();
+  }
 }
