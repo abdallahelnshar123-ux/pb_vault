@@ -35,31 +35,8 @@ class _PlatformAccountDetailsScreenState
     extends State<PlatformAccountDetailsScreen> {
   final ValueNotifier<bool> isObscure = ValueNotifier(true);
 
-  // String plainPassword = '';
-
-  // late final currentUser = context.read<UserCubit>().currentUser!;
-
   @override
   void initState() {
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   if (widget.account.password != null) {
-    //     final encryptedData = EncryptedData(
-    //       cipherText: widget.account.password!.cipherText,
-    //       mac: widget.account.password!.mac,
-    //       nonce: widget.account.password!.nonce,
-    //     );
-    //     final result = await getIt<DecryptPasswordUseCase>().invoke(
-    //       encryptedData,
-    //     );
-    //     if (mounted) {
-    //       result.fold((failure) {}, (password) {
-    //         setState(() {
-    //           plainPassword = password;
-    //         });
-    //       });
-    //     }
-    //   }
-    // });
     super.initState();
   }
 
@@ -86,22 +63,6 @@ class _PlatformAccountDetailsScreenState
           Navigator.pop(context);
           DialogUtils.showMessage(context: context, message: state.message);
         }
-        // else if (state is GetPlatformAccountLoadingState) {
-        //   DialogUtils.showLoading(context: context);
-        // } else if (state is GetPlatformAccountSuccessState) {
-        //   DialogUtils.hideLoading(context: context);
-        // } else if (state is GetPlatformAccountErrorState) {
-        //   DialogUtils.hideLoading(context: context);
-        //   DialogUtils.showMessage(
-        //     context: context,
-        //     message: state.message,
-        //     title: 'error',
-        //     posAction: () {
-        //       Navigator.pop(context);
-        //     },
-        //     posActionText: 'ok',
-        //   );
-        // }
       },
       buildWhen: (previous, current) =>
           current is GetPlatformAccountLoadingState ||
@@ -113,7 +74,6 @@ class _PlatformAccountDetailsScreenState
             top: false,
             bottom: true,
             child: Scaffold(
-              // backgroundColor: AppColors.backgroundDark,
               appBar: _builtAppBar(context: context, account: state.account),
               body: Container(
                 margin: EdgeInsets.all(16),
@@ -260,50 +220,48 @@ class _PlatformAccountDetailsScreenState
           'login_methods'.tr(),
           style: AppStyles.robotoRegular12Primary(context),
         ),
-        ...loginMethodList.map(
-          (loginMethod) => ListTile(
-            minVerticalPadding: 0,
-            dense: false,
-            visualDensity: .compact,
-            // shape: RoundedRectangleBorder(
-            //   borderRadius: BorderRadiusGeometry.circular(8)
-            // ),
-            // selected: true,
-            // selectedTileColor: AppColors.primary,
-            splashColor: AppColors.transparent,
-            contentPadding: EdgeInsets.zero,
+        if (loginMethodList.isEmpty)
+          Text('-', style: AppStyles.robotoBold16Secondary(context))
+        else
+          ...loginMethodList.map(
+            (loginMethod) => ListTile(
+              minVerticalPadding: 0,
+              dense: false,
+              visualDensity: .compact,
+              splashColor: AppColors.transparent,
+              contentPadding: EdgeInsets.zero,
 
-            title: Text(
-              loginMethod.provider.name,
-              style: AppStyles.robotoRegular12Secondary(context),
-            ),
-            leading: CircleAvatar(
-              backgroundColor: AppColors.white,
-              radius: context.width * 0.03,
-              child: SvgPicture.asset(
-                loginMethodsIcon[loginMethod.provider.name] ?? '',
-                fit: .cover,
-                width: context.width * 0.04,
-                colorFilter: loginMethod.provider == LoginProvider.password
-                    ? ColorFilter.mode(AppColors.black, .srcIn)
-                    : null,
+              title: Text(
+                loginMethod.provider.name,
+                style: AppStyles.robotoRegular12Secondary(context),
               ),
+              leading: CircleAvatar(
+                backgroundColor: AppColors.white,
+                radius: context.width * 0.03,
+                child: SvgPicture.asset(
+                  loginMethodsIcon[loginMethod.provider.name] ?? '',
+                  fit: .cover,
+                  width: context.width * 0.04,
+                  colorFilter: loginMethod.provider == LoginProvider.password
+                      ? ColorFilter.mode(AppColors.black, .srcIn)
+                      : null,
+                ),
+              ),
+              subtitle: loginMethod.identifier != null
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        loginMethod.identifier!,
+                        style: AppStyles.robotoRegular10(
+                          context,
+                          lColor: AppColors.backgroundDark,
+                          dColor: AppColors.secondary,
+                        ).copyWith(color: AppColors.success),
+                      ),
+                    )
+                  : null,
             ),
-            subtitle: loginMethod.identifier != null
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(
-                      loginMethod.identifier!,
-                      style: AppStyles.robotoRegular10(
-                        context,
-                        lColor: AppColors.backgroundDark,
-                        dColor: AppColors.secondary,
-                      ).copyWith(color: AppColors.success),
-                    ),
-                  )
-                : null,
           ),
-        ),
       ],
     );
   }
@@ -387,15 +345,15 @@ class _PlatformAccountDetailsScreenState
 
   Widget _builtPlatformIcon({required PlatformAccount account}) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
         color: AppColors.surfaceDark,
         shape: BoxShape.circle,
       ),
       child: Image.network(
         account.platform.icon,
-        width: 80,
-        height: 80,
+        width: context.width * 0.15,
+        height: context.width * 0.15,
         errorBuilder: (_, _, _) =>
             const Icon(Icons.public, size: 80, color: AppColors.primary),
       ),

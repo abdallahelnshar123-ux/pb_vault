@@ -11,7 +11,7 @@ import 'package:pb_vault/features/auth/cubit/user_state.dart';
 import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
 import 'package:pb_vault/widgets/custom_elevated_button.dart';
 
-import '../../../core/constants/app_constants.dart';
+import '../../../core/constants/assets_constants.dart';
 import '../../../core/utils/app_colors.dart';
 
 class PickAvatarScreen extends StatefulWidget {
@@ -22,7 +22,7 @@ class PickAvatarScreen extends StatefulWidget {
 }
 
 class _PickAvatarScreenState extends State<PickAvatarScreen> {
-  static const avatars = AppConstants.userAvatars;
+  static const avatars = userAvatars;
 
   var currentAvatar = 'profile_avatar_1';
 
@@ -158,7 +158,7 @@ class AvatarGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const avatars = AppConstants.userAvatars;
+    const avatars = userAvatars;
     return Container(
       margin: EdgeInsets.symmetric(
         vertical: context.height * 0.03,

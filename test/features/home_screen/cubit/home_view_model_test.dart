@@ -4,26 +4,21 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/use_cases/get_accounts_use_case.dart';
-import 'package:pb_vault/domain/use_cases/vault/decrypt_password_use_case.dart';
 import 'package:pb_vault/features/home_screen/cubit/home_state.dart';
 import 'package:pb_vault/features/home_screen/cubit/home_view_model.dart';
 
 class MockGetAccountsUseCase extends Mock implements GetAccountsUseCase {}
-
-class MockDecryptPasswordUseCase extends Mock
-    implements DecryptPasswordUseCase {}
 
 class FakeEncryptedData extends Fake implements EncryptedData {}
 
 void main() {
   late HomeCubit homeCubit;
   late MockGetAccountsUseCase mockGetAccountsUseCase;
-  late MockDecryptPasswordUseCase mockDecryptPasswordUseCase;
 
   const tUserId = 'user123';
   final tPlatformData = PlatformData(
@@ -42,7 +37,7 @@ void main() {
     id: '2',
     platform: tPlatformData,
     identifier: 'test@example.com',
-    password:'testPassword',
+    password: 'testPassword',
     createdAt: DateTime.now(),
   );
   const tFailure = ServerFailure('error_message');
@@ -53,8 +48,7 @@ void main() {
 
   setUp(() {
     mockGetAccountsUseCase = MockGetAccountsUseCase();
-    mockDecryptPasswordUseCase = MockDecryptPasswordUseCase();
-    homeCubit = HomeCubit(mockGetAccountsUseCase, mockDecryptPasswordUseCase);
+    homeCubit = HomeCubit(mockGetAccountsUseCase);
 
     // Setup Clipboard mock to prevent errors during tests
     TestWidgetsFlutterBinding.ensureInitialized();

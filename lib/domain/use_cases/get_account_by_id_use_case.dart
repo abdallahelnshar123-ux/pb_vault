@@ -6,10 +6,10 @@ import '../failure/failure.dart';
 import '../repository/account/account_repository.dart';
 
 @injectable
-class GetAccountBtIdUseCase {
+class GetAccountByIdUseCase {
   final AccountRepository _repository;
 
-  GetAccountBtIdUseCase(this._repository);
+  GetAccountByIdUseCase(this._repository);
 
   Future<Either<Failure, PlatformAccount>> invoke({
     required String userId,

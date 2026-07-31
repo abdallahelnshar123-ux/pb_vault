@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pb_vault/domain/use_cases/vault/decrypt_password_use_case.dart';
 
 import '../../../domain/entities/response/platform_account/platform_account.dart';
 import '../../../domain/use_cases/get_accounts_use_case.dart';
@@ -11,11 +10,9 @@ import 'home_state.dart';
 @lazySingleton
 class HomeCubit extends Cubit<HomeState> {
   final GetAccountsUseCase _getAccountsUseCase;
-  final DecryptPasswordUseCase _decryptPasswordUseCase;
   StreamSubscription? _subscription;
 
-  HomeCubit(this._getAccountsUseCase, this._decryptPasswordUseCase)
-    : super(HomeInitial());
+  HomeCubit(this._getAccountsUseCase) : super(HomeInitial());
   List<PlatformAccount> accountsList = [];
 
   void getAccounts(String userId) {
@@ -42,19 +39,6 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> copyAccountPassword({required PlatformAccount account}) async {
     if (account.password == null) return;
-
-    // final encryptedData = EncryptedData(
-    //   cipherText: account.password!.cipherText,
-    //   mac: account.password!.mac,
-    //   nonce: account.password!.nonce,
-    // );
-    //
-    // final result = await _decryptPasswordUseCase.invoke(encryptedData);
-    // result.fold(
-    //   (failure) {},
-    //   (password) async =>
-    //       await Clipboard.setData(ClipboardData(text: password)),
-    // );
   }
 
   Future<void> clearHomeAccounts() async {

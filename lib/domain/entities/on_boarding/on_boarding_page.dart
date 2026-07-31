@@ -1,5 +1,5 @@
-class OnBoardingItem {
-  OnBoardingItem({
+class OnBoardingPage {
+  OnBoardingPage({
     required this.image,
     required this.title,
     required this.subtitle,

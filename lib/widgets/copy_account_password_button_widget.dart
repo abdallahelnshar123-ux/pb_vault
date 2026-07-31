@@ -29,15 +29,6 @@ class _CopyAccountPasswordButtonWidgetState
       isSelected: isPasswordCopy,
       selectedIcon: Icon(Icons.check, color: widget.iconColor),
       onPressed: () async {
-        // final encryptedData = EncryptedData(
-        //   cipherText: widget.account.encryptedPassword,
-        //   mac: widget.account.mac,
-        //   nonce: widget.account.nonce,
-        // );
-
-        // final password = await getIt<VaultRepository>().decrypt(encryptedData);
-        //
-        // await Clipboard.setData(ClipboardData(text: password));
         context.read<HomeCubit>().copyAccountPassword(account: widget.account);
         setState(() {
           isPasswordCopy = true;

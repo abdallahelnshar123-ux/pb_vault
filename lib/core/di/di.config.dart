@@ -305,20 +305,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i202.DeletePlatformAccountUseCase>(
       () => _i202.DeletePlatformAccountUseCase(gh<_i406.AccountRepository>()),
     );
-    gh.factory<_i800.GetAccountBtIdUseCase>(
-      () => _i800.GetAccountBtIdUseCase(gh<_i406.AccountRepository>()),
+    gh.factory<_i800.GetAccountByIdUseCase>(
+      () => _i800.GetAccountByIdUseCase(gh<_i406.AccountRepository>()),
     );
     gh.factory<_i941.GetAccountsUseCase>(
       () => _i941.GetAccountsUseCase(gh<_i406.AccountRepository>()),
     );
     gh.factory<_i432.UpdatePlatformAccountUseCase>(
       () => _i432.UpdatePlatformAccountUseCase(gh<_i406.AccountRepository>()),
-    );
-    gh.lazySingleton<_i941.HomeCubit>(
-      () => _i941.HomeCubit(
-        gh<_i941.GetAccountsUseCase>(),
-        gh<_i1001.DecryptPasswordUseCase>(),
-      ),
     );
     gh.lazySingleton<_i884.MasterPasswordCubit>(
       () => _i884.MasterPasswordCubit(
@@ -342,6 +336,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i183.UserRepository>(),
       ),
     );
+    gh.lazySingleton<_i941.HomeCubit>(
+      () => _i941.HomeCubit(gh<_i941.GetAccountsUseCase>()),
+    );
     gh.factory<_i618.SettingsCubit>(
       () => _i618.SettingsCubit(
         gh<_i167.EnableBiometricUseCase>(),
@@ -356,7 +353,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i432.UpdatePlatformAccountUseCase>(),
         gh<_i202.DeletePlatformAccountUseCase>(),
         gh<_i327.AddPlatformAccountUseCase>(),
-        gh<_i800.GetAccountBtIdUseCase>(),
+        gh<_i800.GetAccountByIdUseCase>(),
       ),
     );
     gh.lazySingleton<_i8.UserCubit>(

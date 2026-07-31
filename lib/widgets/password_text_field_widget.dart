@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 
 import '../core/utils/app_colors.dart';
 import '../core/utils/app_styles.dart';
-import '../core/utils/validators.dart';
 import 'custom_text_form_field.dart';
 
 class PasswordTextFieldWidget extends StatefulWidget {

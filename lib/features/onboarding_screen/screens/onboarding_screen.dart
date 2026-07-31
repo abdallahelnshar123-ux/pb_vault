@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/core/utils/screen_size.dart';
-import 'package:pb_vault/domain/entities/on_boarding/on_boarding_item.dart';
+import 'package:pb_vault/domain/entities/on_boarding/on_boarding_page.dart';
 import 'package:pb_vault/widgets/custom_app_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +21,7 @@ class OnboardingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final OnboardingViewModel provider = context.watch<OnboardingViewModel>();
     final int currentIndex = provider.currentIndex;
-    final List<OnBoardingItem> onboardingDataList =
+    final List<OnBoardingPage> onboardingDataList =
         AppConstants.onBoardingPages;
 
     return SafeArea(

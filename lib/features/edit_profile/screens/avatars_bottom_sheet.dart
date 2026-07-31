@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/screen_size.dart';
-import '../../../core/constants/app_constants.dart';
+import '../../../core/constants/assets_constants.dart';
 
 class SelectAvatarBottomSheet extends StatelessWidget {
   final ValueChanged<String> newAvatar;
@@ -18,7 +18,7 @@ class SelectAvatarBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const avatars = AppConstants.userAvatars;
+    const avatars = userAvatars;
     return Container(
       margin: EdgeInsets.symmetric(
         vertical: context.height * 0.03,

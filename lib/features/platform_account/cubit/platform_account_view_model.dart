@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pb_vault/domain/use_cases/get_account_by_id_use_case.dart';
@@ -15,7 +13,7 @@ import 'platform_account_state.dart';
 @lazySingleton
 class PlatformAccountCubit extends Cubit<PlatformAccountState> {
   final AddPlatformAccountUseCase _addPlatformAccountUseCase;
-  final GetAccountBtIdUseCase _getAccountBtIdUseCase;
+  final GetAccountByIdUseCase _getAccountBtIdUseCase;
   final UpdatePlatformAccountUseCase _updatePlatformAccountUseCase;
   final DeletePlatformAccountUseCase _deletePlatformAccountUseCase;
 
@@ -25,25 +23,6 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
     this._addPlatformAccountUseCase,
     this._getAccountBtIdUseCase,
   ) : super(AddPlatformAccountInitialState());
-
-  String generateStrongPassword() {
-    const length = 16;
-    const letterLowerCase = "abcdefghijklmnopqrstuvwxyz";
-    const letterUpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const number = "0123456789";
-    const special = "@#%^&*_-+()[]{}";
-
-    String chars = "";
-    chars += letterLowerCase;
-    chars += letterUpperCase;
-    chars += number;
-    chars += special;
-
-    return List.generate(length, (index) {
-      final indexRandom = Random.secure().nextInt(chars.length);
-      return chars[indexRandom];
-    }).join('');
-  }
 
   Future<void> addPlatformAccount({
     required String userId,
@@ -56,32 +35,6 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
     String? passkey,
   }) async {
     emit(AddPlatformAccountLoadingState());
-
-    // var encryptResult = await _encryptValueUseCase.invoke(
-    //   notes: notes,
-    //   password: password,
-    //   passkey: passkey,
-    //   recoveryCodes: recoveryCodes,
-    // );
-    // var encryptResult = await Future.wait([
-    //   if (password != null && password != '')
-    //     _encryptPasswordUseCase.invoke(password),
-    //   if (notes != null && notes != '') _encryptPasswordUseCase.invoke(notes),
-    //   if (recoveryCodes != null && recoveryCodes != '')
-    //     _encryptPasswordUseCase.invoke(recoveryCodes),
-    //   if (passkey != null && passkey != '')
-    //     _encryptPasswordUseCase.invoke(passkey),
-    // ]);
-    // = await _encryptPasswordUseCase.invoke(password);
-    //
-    // final encryptResultList = encryptResult
-    //     .map(
-    //       (e) => e.fold((l) {
-    //         emit(AddPlatformAccountErrorState('error_while_saving_try_again'.tr()));
-    //         return;
-    //       }, (r) => r),
-    //     )
-    //     .toList();
 
     final account = PlatformAccount(
       platform: platform,
@@ -99,16 +52,12 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
       (failure) => emit(AddPlatformAccountErrorState(failure.message)),
       (_) => emit(AddPlatformAccountSuccessState()),
     );
-
-    // encryptResult.fold(
-    //   (failure) => emit(AddPlatformAccountErrorState(failure.message)),
-    //   (encryptedData) async {
-    //     final account =
-    //   },
-    // );
   }
 
-  Future<void> getAccountById({required String userId, required String accountId}) async {
+  Future<void> getAccountById({
+    required String userId,
+    required String accountId,
+  }) async {
     emit(GetPlatformAccountLoadingState());
     var result = await _getAccountBtIdUseCase.invoke(
       userId: userId,
@@ -123,7 +72,7 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
 
   Future<void> updatePlatformAccount({
     required String userId,
-    required String accountId ,
+    required String accountId,
     required PlatformData platform,
     String? identifier,
     String? password,
@@ -143,8 +92,6 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
       recoveryCodes: recoveryCodes,
       passkey: passkey,
       createdAt: DateTime.now(),
-
-
     );
 
     final result = await _updatePlatformAccountUseCase.invoke(userId, account);
@@ -152,32 +99,6 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
       (failure) => emit(EditPlatformAccountErrorState(failure.message)),
       (_) => emit(EditPlatformAccountSuccessState()),
     );
-    //
-    // final encryptResult = await _encryptPasswordUseCase.invoke(password);
-    // encryptResult.fold(
-    //   (failure) => emit(EditPlatformAccountErrorState(failure.message)),
-    //   (encryptedData) async {
-    //     final updatedAccount = PlatformAccount(
-    //       id: originalAccount.id,
-    //       platform: originalAccount.platform,
-    //       identifier: emailOrUsername,
-    //       password: encryptedData,
-    //       loginMethods:
-    //           loginProviders?.map((p) => LoginMethod(provider: p)).toList() ??
-    //           originalAccount.loginMethods,
-    //       createdAt: originalAccount.createdAt,
-    //     );
-    //
-    //     final result = await _updatePlatformAccountUseCase.invoke(
-    //       userId,
-    //       updatedAccount,
-    //     );
-    //     result.fold(
-    //       (failure) => emit(EditPlatformAccountErrorState(failure.message)),
-    //       (_) => emit(EditPlatformAccountSuccessState()),
-    //     );
-    //   },
-    // );
   }
 
   Future<void> deletePlatformAccount({

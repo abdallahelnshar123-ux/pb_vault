@@ -9,7 +9,6 @@ import 'package:pb_vault/features/platform_account/widget/login_methods_bottom_s
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
-import '../../../widgets/custom_elevated_button.dart';
 
 class LoginMethodsWidget extends StatefulWidget {
   const LoginMethodsWidget({super.key, required this.newLoginMethod});
@@ -157,27 +156,6 @@ class _LoginMethodsWidgetState extends State<LoginMethodsWidget> {
           ),
         )
         .toList();
-  }
-
-  Widget _builtAddButton() {
-    return Builder(
-      builder: (context) {
-        return CustomElevatedButton(
-          backgroundColor: context.easyColor(
-            lColor: AppColors.backgroundDark,
-            dColor: AppColors.primary,
-          ),
-          onPressed: () {
-            _showLoginMethodsBottomSheet(context);
-          },
-
-          child: Text(
-            'add'.tr(),
-            style: AppStyles.robotoRegular16White(context),
-          ),
-        );
-      },
-    );
   }
 
   void _showLoginMethodsBottomSheet(BuildContext context, {String? id}) {

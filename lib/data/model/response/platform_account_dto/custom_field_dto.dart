@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/constants/firestore_constants.dart';
 
 class CustomFieldDto extends Equatable {
   final String title;
@@ -13,14 +14,18 @@ class CustomFieldDto extends Equatable {
 
   factory CustomFieldDto.fromMap(Map<String, dynamic> map) {
     return CustomFieldDto(
-      title: map['title'] ?? '',
-      value: map['value'] ?? '',
-      isSensitive: map['is_sensitive'] ?? false,
+      title: map[FirestoreConstants.title] ?? '',
+      value: map[FirestoreConstants.value] ?? '',
+      isSensitive: map[FirestoreConstants.isSensitive] ?? false,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {'title': title, 'value': value, 'is_sensitive': isSensitive};
+    return {
+      FirestoreConstants.title: title,
+      FirestoreConstants.value: value,
+      FirestoreConstants.isSensitive: isSensitive
+    };
   }
 
   @override

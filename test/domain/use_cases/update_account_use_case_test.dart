@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/repository/account/account_repository.dart';
 import 'package:pb_vault/domain/use_cases/update_account_use_case.dart';

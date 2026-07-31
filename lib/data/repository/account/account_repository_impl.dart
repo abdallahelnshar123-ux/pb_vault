@@ -33,29 +33,6 @@ class AccountRepositoryImpl implements AccountRepository {
     PlatformAccount account,
   ) async {
     try {
-      // final passwordFuture =
-      // account.password?.isNotEmpty == true
-      //     ? _vaultRemoteDataSource.encrypt(account.password!)
-      //     : null;
-      //
-      // final notesFuture =
-      // account.notes?.isNotEmpty == true
-      //     ? _vaultRemoteDataSource.encrypt(account.notes!)
-      //     : null;
-      // final recoveryCodesFuture =
-      // account.recoveryCodes?.isNotEmpty == true
-      //     ? _vaultRemoteDataSource.encrypt(account.recoveryCodes!)
-      //     : null;
-      // final passKeyFuture =
-      // account.passkey?.isNotEmpty == true
-      //     ? _vaultRemoteDataSource.encrypt(account.passkey!)
-      //     : null;
-      //
-      // final twoFactorSecretFuture =
-      // account.twoFactorSecret?.isNotEmpty == true
-      //     ? _vaultRemoteDataSource.encrypt(account.twoFactorSecret!)
-      //     : null;
-
       final results = await Future.wait([
         _encryptIfNotEmpty(account.password),
         _encryptIfNotEmpty(account.notes),
@@ -152,11 +129,6 @@ class AccountRepositoryImpl implements AccountRepository {
         ),
         uId: userId,
       );
-
-      // await _accountRemoteDataSource.updateAccount(
-      //   uId: userId,
-      //   account: account,
-      // );
       return const Right(unit);
     } on AppException catch (e) {
       return Left(e.toFailure());

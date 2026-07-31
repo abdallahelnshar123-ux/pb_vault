@@ -14,7 +14,7 @@ import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_routes.dart';
 import '../../../../core/utils/app_styles.dart';
 import '../../../../core/utils/screen_size.dart';
-import '../../../core/constants/app_constants.dart';
+import '../../../core/constants/assets_constants.dart';
 import '../../../core/utils/dialog_utils.dart';
 import '../../../core/utils/snack_bar_utils.dart';
 import '../../../domain/entities/response/user/auth_providers.dart';
@@ -337,7 +337,7 @@ class AvatarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var currentAvatar = context.watch<UserCubit>().currentUser?.avatar;
-    var avatars = AppConstants.userAvatars;
+    var avatars = userAvatars;
     return (currentAvatar == null ||
             currentAvatar.isEmpty ||
             avatars[currentAvatar] == null)

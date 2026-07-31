@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:cryptography/cryptography.dart';
 import 'package:cryptography/helpers.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 
 import '../../../data/model/response/platform_account_dto/encrypted_data_dto.dart';
 

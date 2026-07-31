@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/constants/firestore_constants.dart';
 
 class PlatformDataDto extends Equatable {
   final String name;
@@ -13,14 +14,18 @@ class PlatformDataDto extends Equatable {
 
   factory PlatformDataDto.fromMap(Map<String, dynamic> map) {
     return PlatformDataDto(
-      name: map['name'] ?? '',
-      icon: map['icon'] ?? '',
-      website: map['website'] ?? '',
+      name: map[FirestoreConstants.name] ?? '',
+      icon: map[FirestoreConstants.icon] ?? '',
+      website: map[FirestoreConstants.website] ?? '',
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {'name': name, 'icon': icon, 'website': website};
+    return {
+      FirestoreConstants.name: name,
+      FirestoreConstants.icon: icon,
+      FirestoreConstants.website: website
+    };
   }
 
   @override

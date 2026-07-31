@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:pb_vault/core/constants/firestore_constants.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/custom_field_dto.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/encrypted_data_dto.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/login_method_dto.dart';
@@ -62,47 +63,47 @@ class PlatformAccountDto extends Equatable {
 
   factory PlatformAccountDto.fromFireStore(Map<String, dynamic> data) {
     return PlatformAccountDto(
-      id: data['id'],
-      platform: PlatformDataDto.fromMap(data['platform'] ?? {}),
-      identifier: data['identifier'] ?? '',
-      password: data['password'] != null
-          ? EncryptedDataDto.fromMap(data['password'])
+      id: data[FirestoreConstants.id],
+      platform: PlatformDataDto.fromMap(data[FirestoreConstants.platform] ?? {}),
+      identifier: data[FirestoreConstants.identifier] ?? '',
+      password: data[FirestoreConstants.password] != null
+          ? EncryptedDataDto.fromMap(data[FirestoreConstants.password])
           : null,
-      loginMethods: (data['login_methods'] as List? ?? [])
+      loginMethods: (data[FirestoreConstants.loginMethods] as List? ?? [])
           .map((e) => LoginMethodDto.fromMap(e))
           .toList(),
-      recoveryCodes: data['recovery_codes'] != null
-          ? EncryptedDataDto.fromMap(data['recovery_codes'])
+      recoveryCodes: data[FirestoreConstants.recoveryCodes] != null
+          ? EncryptedDataDto.fromMap(data[FirestoreConstants.recoveryCodes])
           : null,
-      passkey: data['passkey'] != null
-          ? EncryptedDataDto.fromMap(data['passkey'])
+      passkey: data[FirestoreConstants.passkey] != null
+          ? EncryptedDataDto.fromMap(data[FirestoreConstants.passkey])
           : null,
-      twoFactorSecret: data['two_factor_secret'] != null
-          ? EncryptedDataDto.fromMap(data['two_factor_secret'])
+      twoFactorSecret: data[FirestoreConstants.twoFactorSecret] != null
+          ? EncryptedDataDto.fromMap(data[FirestoreConstants.twoFactorSecret])
           : null,
-      notes: data['notes'] != null
-          ? EncryptedDataDto.fromMap(data['notes'])
+      notes: data[FirestoreConstants.notes] != null
+          ? EncryptedDataDto.fromMap(data[FirestoreConstants.notes])
           : null,
-      customFields: (data['custom_fields'] as List? ?? [])
+      customFields: (data[FirestoreConstants.customFields] as List? ?? [])
           .map((e) => CustomFieldDto.fromMap(e))
           .toList(),
-      createdAt: (data['created_at'] as Timestamp).toDate(),
+      createdAt: (data[FirestoreConstants.createdAt] as Timestamp).toDate(),
     );
   }
 
   Map<String, dynamic> toFireStore() {
     return {
-      'id': id,
-      'platform': platform.toMap(),
-      'identifier': identifier,
-      'password': password?.toMap(),
-      'login_methods': loginMethods.map((e) => e.toMap()).toList(),
-      'recovery_codes': recoveryCodes?.toMap(),
-      'passkey': passkey?.toMap(),
-      'two_factor_secret': twoFactorSecret?.toMap(),
-      'notes': notes?.toMap(),
-      'custom_fields': customFields?.map((e) => e.toMap()).toList(),
-      'created_at': Timestamp.fromDate(createdAt),
+      FirestoreConstants.id: id,
+      FirestoreConstants.platform: platform.toMap(),
+      FirestoreConstants.identifier: identifier,
+      FirestoreConstants.password: password?.toMap(),
+      FirestoreConstants.loginMethods: loginMethods.map((e) => e.toMap()).toList(),
+      FirestoreConstants.recoveryCodes: recoveryCodes?.toMap(),
+      FirestoreConstants.passkey: passkey?.toMap(),
+      FirestoreConstants.twoFactorSecret: twoFactorSecret?.toMap(),
+      FirestoreConstants.notes: notes?.toMap(),
+      FirestoreConstants.customFields: customFields?.map((e) => e.toMap()).toList(),
+      FirestoreConstants.createdAt: Timestamp.fromDate(createdAt),
     };
   }
 

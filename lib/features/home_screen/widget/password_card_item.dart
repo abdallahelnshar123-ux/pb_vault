@@ -4,7 +4,6 @@ import 'package:pb_vault/domain/entities/response/platform_account/platform_acco
 import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
 import 'package:pb_vault/features/platform_account/screens/platform_account_details_screen.dart';
-import 'package:pb_vault/widgets/copy_account_password_button_widget.dart';
 
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
@@ -76,9 +75,10 @@ class PasswordCardItem extends StatelessWidget {
               account.identifier,
               style: AppStyles.robotoELight12SurfaceDark(context),
             ),
-            trailing: CopyAccountPasswordButtonWidget(
-              account: account,
-              iconColor: AppColors.surfaceDark,
+            trailing: Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: AppColors.backgroundDark,
+              size: context.width *0.06,
             ),
           ),
         );

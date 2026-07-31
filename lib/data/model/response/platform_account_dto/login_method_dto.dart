@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/constants/firestore_constants.dart';
 
 class LoginMethodDto extends Equatable {
   final String id;
@@ -9,14 +10,18 @@ class LoginMethodDto extends Equatable {
 
   factory LoginMethodDto.fromMap(Map<String, dynamic> map) {
     return LoginMethodDto(
-      id: map['id']??'',
-      provider: map['provider'] ?? '',
-      identifier: map['identifier'],
+      id: map[FirestoreConstants.id] ?? '',
+      provider: map[FirestoreConstants.provider] ?? '',
+      identifier: map[FirestoreConstants.identifier],
     );
   }
 
   Map<String, dynamic> toMap() {
-    return { 'id': id, 'provider': provider, 'identifier': identifier};
+    return {
+      FirestoreConstants.id: id,
+      FirestoreConstants.provider: provider,
+      FirestoreConstants.identifier: identifier
+    };
   }
 
   @override

@@ -21,7 +21,7 @@ class MockUpdatePlatformAccountUseCase extends Mock
 class MockDeletePlatformAccountUseCase extends Mock
     implements DeletePlatformAccountUseCase {}
 
-class MockGetAccountBtIdUseCase extends Mock implements GetAccountBtIdUseCase {}
+class MockGetAccountBtIdUseCase extends Mock implements GetAccountByIdUseCase {}
 
 class FakePlatformAccount extends Fake implements PlatformAccount {}
 

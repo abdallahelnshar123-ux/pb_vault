@@ -6,7 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
 import 'package:pb_vault/widgets/username_text_field_widget.dart';
 
-import '../../../core/constants/app_constants.dart';
+import '../../../core/constants/assets_constants.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_routes.dart';
 import '../../../core/utils/app_styles.dart';
@@ -31,10 +31,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController nameController = TextEditingController(
     text: currentUser.name,
   );
-
-  // late final TextEditingController phoneController = TextEditingController(
-  //   text: currentUser.phone,
-  // );
   final _formKey = GlobalKey<FormState>();
   late final ValueNotifier<String> avatar = ValueNotifier(
     currentUser.avatar ?? 'profile_avatar_1',
@@ -159,7 +155,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             builder:
                                 (BuildContext context, value, Widget? child) {
                                   var avatarPath =
-                                      AppConstants.userAvatars[value];
+                                      userAvatars[value];
                                   return Container(
                                     width: context.width * 0.3,
                                     height: context.width * 0.3,

@@ -34,8 +34,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   configureDependencies();
   Bloc.observer = MyBlocObserver();
-  // debugPrintRebuildDirtyWidgets = true;
-  // debugPrintScheduleBuildForStacks = true;
   runApp(
     EasyTheme(
       darkTheme: AppTheme.darkTheme,

@@ -10,12 +10,12 @@ import 'package:pb_vault/domain/use_cases/get_account_by_id_use_case.dart';
 class MockAccountRepository extends Mock implements AccountRepository {}
 
 void main() {
-  late GetAccountBtIdUseCase useCase;
+  late GetAccountByIdUseCase useCase;
   late MockAccountRepository mockRepository;
 
   setUp(() {
     mockRepository = MockAccountRepository();
-    useCase = GetAccountBtIdUseCase(mockRepository);
+    useCase = GetAccountByIdUseCase(mockRepository);
   });
 
   const tUserId = 'user_123';

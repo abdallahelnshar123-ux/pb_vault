@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easy_theme/flutter_easy_theme.dart';
+import 'package:pb_vault/core/utils/password_utils.dart';
 import 'package:pb_vault/core/utils/snack_bar_utils.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/login_method.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
 import 'package:pb_vault/features/platform_account/widget/login_methods_widget.dart';
 import 'package:pb_vault/features/platform_account/widget/more_information_expansion_rile_widget.dart';
@@ -31,24 +31,11 @@ class AddPlatformAccountScreen extends StatefulWidget {
 }
 
 class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
-  // final TextEditingController identifierController = TextEditingController();
-  // final TextEditingController passwordController = TextEditingController();
-  // final TextEditingController notesController = TextEditingController();
-  // final TextEditingController recoveryCodesController = TextEditingController();
-  // final TextEditingController passkeyController = TextEditingController();
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  // final ValueNotifier<PlatformData?> currentPlatform = ValueNotifier(null);
-  // List<LoginMethod> selectedLoginMethods = [];
   late final controller = PlatformAccountController();
+
   @override
   void dispose() {
-    // identifierController.dispose();
-    // passwordController.dispose();
-    // notesController.dispose();
-    // recoveryCodesController.dispose();
-    // passkeyController.dispose();
-    // currentPlatform.dispose();
     controller.dispose();
     super.dispose();
   }
@@ -111,7 +98,8 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
                     ),
 
                     LoginMethodsWidget(
-                      newLoginMethod: (value) => controller.loginMethods = value,
+                      newLoginMethod: (value) =>
+                          controller.loginMethods = value,
                     ),
                     Divider(
                       color: context.easyColor(
@@ -136,106 +124,6 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
       ),
     );
   }
-
-  // Widget _builtMultiSelectLoginProvider() {
-  //
-  //
-  //
-  //   // return DropdownMenuFormField(
-  //   //   dropdownMenuEntries: LoginProvider.values
-  //   //       .map(
-  //   //         (provider) => DropdownMenuEntry(
-  //   //           value: provider.name,
-  //   //           label: provider.name.toString(),
-  //   //         ),
-  //   //       )
-  //   //       .toList(),
-  //   //   selectOnly: true,
-  //   //
-  //   //
-  //   // );
-  //   // return Column(
-  //   //   crossAxisAlignment: CrossAxisAlignment.start,
-  //   //   children: [
-  //   //     Text('login_provider'.tr(), style: AppStyles.robotoBold14gray(context)),
-  //   //     const SizedBox(height: 8),
-  //   //     Wrap(
-  //   //       spacing: 8,
-  //   //       children: LoginProvider.values.map((provider) {
-  //   //         final isSelected = selectedLoginProviders.contains(provider);
-  //   //         return FilterChip(
-  //   //           label: Text(
-  //   //             provider.name.tr(),
-  //   //             style: AppStyles.robotoRegular14White(context).copyWith(
-  //   //               color: isSelected ? Colors.white : AppColors.surfaceDark,
-  //   //             ),
-  //   //           ),
-  //   //           selected: isSelected,
-  //   //           onSelected: (bool selected) {
-  //   //             setState(() {
-  //   //               if (selected) {
-  //   //                 selectedLoginProviders.add(provider);
-  //   //               } else {
-  //   //                 selectedLoginProviders.remove(provider);
-  //   //               }
-  //   //             });
-  //   //           },
-  //   //           selectedColor: AppColors.primary,
-  //   //           checkmarkColor: Colors.white,
-  //   //         );
-  //   //       }).toList(),
-  //   //     ),
-  //   //   ],
-  //   // );
-  // }
-
-  // Widget _builtMoreInformationExpansionTile() {
-  //   return ExpansionTile(
-  //     title: Text(
-  //       'more_information'.tr(),
-  //       style: AppStyles.robotoRegular14(
-  //         context,
-  //         lColor: AppColors.surfaceDark,
-  //         dColor: AppColors.secondary,
-  //       ),
-  //     ),
-  //     splashColor: AppColors.transparent,
-  //     collapsedIconColor: context.easyColor(
-  //       lColor: AppColors.backgroundDark,
-  //       dColor: AppColors.backgroundLight,
-  //     ),
-  //     tilePadding: EdgeInsets.zero,
-  //     shape: Border.all(width: 0, color: AppColors.transparent),
-  //     maintainState: true,
-  //     collapsedShape: Border.all(width: 0, color: AppColors.transparent),
-  //     iconColor: context.easyColor(
-  //       lColor: AppColors.backgroundDark,
-  //       dColor: AppColors.backgroundLight,
-  //     ),
-  //     children: [
-  //       TextFieldContainerWidget(
-  //         text: 'notes'.tr(),
-  //         style: AppStyles.robotoRegular12SurfaceDark(context),
-  //         child: _builtNotesTextField(),
-  //       ),
-  //       SizedBox(height: context.height * 0.02),
-  //       RecoveryCodesWidget(controller: recoveryCodesController),
-  //       SizedBox(height: context.height * 0.02),
-  //       TextFieldContainerWidget(
-  //         text: 'pass_key'.tr(),
-  //         style: AppStyles.robotoRegular12SurfaceDark(context),
-  //         child: CustomTextFormField(
-  //           // labelText: 'pass_key'.tr(),
-  //           // labelStyle: AppStyles.robotoBold14gray(context),
-  //           controller: passkeyController,
-  //           style: AppStyles.robotoBold16SurfaceDark(context),
-  //           filled: true,
-  //           fillColor: AppColors.secondary,
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 
   PreferredSizeWidget _builtAppBar() {
     return AppBar(
@@ -266,13 +154,12 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) =>
-          PlatformsBottomSheet(
-            currentPlatform: controller.currentPlatform.value,
-            newPlatform: (platform) {
-              controller.currentPlatform.value = platform;
-            },
-          ),
+      builder: (context) => PlatformsBottomSheet(
+        currentPlatform: controller.currentPlatform.value,
+        newPlatform: (platform) {
+          controller.currentPlatform.value = platform;
+        },
+      ),
     );
   }
 
@@ -329,13 +216,16 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
           ),
           leading: controller.currentPlatform.value != null
               ? CircleAvatar(
-            backgroundColor: context.easyColor(
-              lColor: AppColors.primary,
-              dColor: AppColors.secondary,
-            ),
-            radius: context.width * 0.07,
-            child: Image.network(controller.currentPlatform.value!.icon, width: 24),
-          )
+                  backgroundColor: context.easyColor(
+                    lColor: AppColors.primary,
+                    dColor: AppColors.secondary,
+                  ),
+                  radius: context.width * 0.07,
+                  child: Image.network(
+                    controller.currentPlatform.value!.icon,
+                    width: 24,
+                  ),
+                )
               : const Icon(Icons.category, color: AppColors.black),
           subtitle: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -356,9 +246,7 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
       builder: (context) {
         return TextButton.icon(
           onPressed: () {
-            final pass = context
-                .read<PlatformAccountCubit>()
-                .generateStrongPassword();
+            final pass = PasswordUtils.generateStrongPassword();
             controller.password.text = pass;
           },
           icon: Icon(
@@ -390,30 +278,6 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
             dColor: AppColors.primary,
           ),
           onPressed: _submit,
-          //     () {
-          //   if (formKey.currentState!.validate() &&
-          //       controller.currentPlatform.value != null) {
-          //     final userId = context
-          //         .read<UserCubit>()
-          //         .currentUser
-          //         ?.id ?? '';
-          //     context.read<PlatformAccountCubit>().addPlatformAccount(
-          //       userId: userId,
-          //       platform: controller.currentPlatform.value!,
-          //       identifier: controller.identifier.text.trim(),
-          //       password: controller.password.text.tr(),
-          //       notes: controller.notes.text.tr(),
-          //       loginMethods: controller.loginMethods,
-          //       recoveryCodes: controller.recoveryCodes.text.tr(),
-          //       passkey: controller.passkey.text.tr(),
-          //     );
-          //   } else if (controller.currentPlatform.value == null) {
-          //     SnackBarUtils.showInfoSnackBar(
-          //       context: context,
-          //       message: 'please_select_platform'.tr(),
-          //     );
-          //   }
-          // },
           child: Text(
             'add'.tr(),
             style: AppStyles.robotoRegular16White(context),
@@ -423,31 +287,25 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
     );
   }
 
-  void _submit(){
-
-      if (formKey.currentState!.validate() &&
-          controller.currentPlatform.value != null) {
-        final userId = context
-            .read<UserCubit>()
-            .currentUser
-            ?.id ?? '';
-        context.read<PlatformAccountCubit>().addPlatformAccount(
-          userId: userId,
-          platform: controller.currentPlatform.value!,
-          identifier: controller.identifier.text.trim(),
-          password: controller.password.text.tr(),
-          notes: controller.notes.text.tr(),
-          loginMethods: controller.loginMethods,
-          recoveryCodes: controller.recoveryCodes.text.tr(),
-          passkey: controller.passkey.text.tr(),
-        );
-      } else if (controller.currentPlatform.value == null) {
-        SnackBarUtils.showInfoSnackBar(
-          context: context,
-          message: 'please_select_platform'.tr(),
-        );
-      }
-
-
+  void _submit() {
+    if (formKey.currentState!.validate() &&
+        controller.currentPlatform.value != null) {
+      final userId = context.read<UserCubit>().currentUser?.id ?? '';
+      context.read<PlatformAccountCubit>().addPlatformAccount(
+        userId: userId,
+        platform: controller.currentPlatform.value!,
+        identifier: controller.identifier.text.trim(),
+        password: controller.password.text.trim(),
+        notes: controller.notes.text.trim(),
+        loginMethods: controller.loginMethods,
+        recoveryCodes: controller.recoveryCodes.text.trim(),
+        passkey: controller.passkey.text.trim(),
+      );
+    } else if (controller.currentPlatform.value == null) {
+      SnackBarUtils.showInfoSnackBar(
+        context: context,
+        message: 'please_select_platform'.tr(),
+      );
+    }
   }
 }

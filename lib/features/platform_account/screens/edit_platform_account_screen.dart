@@ -14,6 +14,7 @@ import 'package:pb_vault/widgets/password_text_field_widget.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/dialog_utils.dart';
+import '../../../core/utils/password_utils.dart';
 import '../../../core/utils/screen_size.dart';
 import '../../../domain/entities/response/platform_account/platform_account.dart';
 import '../../../domain/entities/response/platform_account/platform_data.dart';
@@ -242,7 +243,6 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
                   child: Image.network(
                     controller.currentPlatform.value!.icon,
                     width: context.width * 0.06,
-
                   ),
                 )
               : const Icon(Icons.category, color: AppColors.black),
@@ -265,9 +265,7 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
       builder: (context) {
         return TextButton.icon(
           onPressed: () {
-            final pass = context
-                .read<PlatformAccountCubit>()
-                .generateStrongPassword();
+            final pass = PasswordUtils.generateStrongPassword();
             controller.password.text = pass;
           },
           icon: Icon(

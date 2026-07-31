@@ -1,7 +1,6 @@
 import 'package:injectable/injectable.dart';
 
 import '../../../../../core/services/vault_crypto_service/vault_crypto_service.dart';
-import '../../../../../domain/entities/response/platform_account/encrypted_data.dart';
 import '../../../../exceptions/app_exceptions.dart';
 import '../../../../model/response/platform_account_dto/encrypted_data_dto.dart';
 import '../vault_remote_data_source.dart';
