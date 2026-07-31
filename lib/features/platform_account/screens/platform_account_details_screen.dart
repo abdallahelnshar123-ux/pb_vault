@@ -219,7 +219,7 @@ class _PlatformAccountDetailsScreenState
                           ),
                           _buildDetailsCard(
                             context,
-                            title: 'recovery_codes'.tr(),
+                            title: 'pass_key'.tr(),
                             subTitle: state.account.passkey == null
                                 ? '-'
                                 : state
@@ -366,6 +366,7 @@ class _PlatformAccountDetailsScreenState
               onPressed: () async {
                 DialogUtils.showMessage(
                   context: context,
+                  title: 'confirmation'.tr(),
                   message: 'are_you_sure_you_want_to_delete_account',
                   posActionText: 'yes',
                   negActionText: 'no',

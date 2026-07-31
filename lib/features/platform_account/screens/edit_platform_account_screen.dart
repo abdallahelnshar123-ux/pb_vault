@@ -241,7 +241,8 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
                   radius: context.width * 0.07,
                   child: Image.network(
                     controller.currentPlatform.value!.icon,
-                    width: 24,
+                    width: context.width * 0.06,
+
                   ),
                 )
               : const Icon(Icons.category, color: AppColors.black),
