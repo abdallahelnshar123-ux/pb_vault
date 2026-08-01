@@ -1,0 +1,18 @@
+enum PlatformCategory {
+  social,
+  email,
+  banking,
+  shopping,
+  gaming,
+  development,
+  cloud,
+  finance,
+  streaming,
+  communication,
+  productivity,
+  education,
+  travel,
+  crypto,
+  ai,
+  other,
+}
