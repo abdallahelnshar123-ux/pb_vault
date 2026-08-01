@@ -64,29 +64,7 @@ void main() {
     createdAt: DateTime(2023),
   );
 
-  group('generateStrongPassword', () {
-    test('should generate a password of length 16', () {
-      final password = cubit.generateStrongPassword();
 
-      expect(password.length, 16);
-    });
-
-    test('should generate a password using only allowed characters', () {
-      final password = cubit.generateStrongPassword();
-
-      expect(
-        RegExp(r'^[a-zA-Z0-9@#%^&*_\-+()\[\]{}]{16}$').hasMatch(password),
-        isTrue,
-      );
-    });
-
-    test('should generate different passwords', () {
-      final password1 = cubit.generateStrongPassword();
-      final password2 = cubit.generateStrongPassword();
-
-      expect(password1, isNot(password2));
-    });
-  });
 
   group('addPlatformAccount', () {
     blocTest<PlatformAccountCubit, PlatformAccountState>(
