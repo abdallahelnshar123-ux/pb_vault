@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/widgets/search_text_field_widget.dart';
 
-import '../../../core/constants/app_constants.dart';
+import '../../../core/constants/platforms_constants.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
@@ -26,7 +26,7 @@ class PlatformsBottomSheet extends StatefulWidget {
 
 class _PlatformsBottomSheetState extends State<PlatformsBottomSheet> {
   final ValueNotifier<List<PlatformData>> _filteredPlatforms = ValueNotifier(
-    AppConstants.popularPlatforms,
+    popularPlatforms,
   );
   Timer? _debounce;
 
@@ -54,7 +54,7 @@ class _PlatformsBottomSheetState extends State<PlatformsBottomSheet> {
   void _searchPlatform(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      _filteredPlatforms.value = AppConstants.popularPlatforms
+      _filteredPlatforms.value = popularPlatforms
           .where(
             (platform) => platform.name.toLowerCase().contains(
               value.toLowerCase().trim(),

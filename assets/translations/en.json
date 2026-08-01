@@ -144,7 +144,7 @@
   "saved_passwords" : "Saved Passwords",
   "no_accounts_yet" : "No accounts yet",
   "account_added_successfully" : "Account Added successfully",
-  "notes" : "notes",
+  "notes" : "Notes",
   "add_new_account" : "Add new account",
   "choose_platform" : "Choose platform",
   "generate_strong_password" : "Generate strong password",
@@ -187,7 +187,13 @@
   "biometric_unlock" : "Biometric unlock",
   "pick_avatar_for_your_account" : "Pick avatar for your account !",
   "continue" : "Continue",
-  "avatar_saved_successfully" : "Avatar saved successfully"
+  "avatar_saved_successfully" : "Avatar saved successfully",
+  "error_while_saving_try_again" : "Error while saving. try again",
+  "login_methods" : "Login methods",
+  "email_username_phone" : "Email / Username / Phone",
+  "more_information" : "More information",
+  "recovery_codes" : "Recovery codes",
+  "pass_key" : "Pass key"
 
 
 

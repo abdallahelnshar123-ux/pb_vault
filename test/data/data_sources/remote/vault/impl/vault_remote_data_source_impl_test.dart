@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/core/services/vault_crypto_service/vault_crypto_service.dart';
 import 'package:pb_vault/data/data_sources/remote/vault/impl/vault_remote_data_source_impl.dart';
 import 'package:pb_vault/data/exceptions/app_exceptions.dart';
-import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+import 'package:pb_vault/data/model/response/platform_account_dto/encrypted_data_dto.dart';
 
 class MockVaultCryptoService extends Mock implements VaultCryptoService {}
 
@@ -13,7 +13,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(
-      const EncryptedData(cipherText: [], mac: [], nonce: []),
+      const EncryptedDataDto(cipherText: [], mac: [], nonce: []),
     );
   });
 
@@ -27,7 +27,7 @@ void main() {
     const tPassword = 'password123';
     const tSalt = [1, 2, 3];
     const tVerifier = 'verifier_hash';
-    const tEncryptedData = EncryptedData(
+    const tEncryptedDataDto = EncryptedDataDto(
       cipherText: [4, 5, 6],
       mac: [7, 8],
       nonce: [9, 10],
@@ -38,13 +38,13 @@ void main() {
       test('should call vaultCryptoService.encrypt and return EncryptedData', () async {
         // arrange
         when(() => mockVaultCryptoService.encrypt(any()))
-            .thenAnswer((_) async => tEncryptedData);
+            .thenAnswer((_) async => tEncryptedDataDto);
 
         // act
         final result = await dataSource.encrypt(tText);
 
         // assert
-        expect(result, tEncryptedData);
+        expect(result, tEncryptedDataDto);
         verify(() => mockVaultCryptoService.encrypt(tText)).called(1);
         verifyNoMoreInteractions(mockVaultCryptoService);
       });
@@ -77,11 +77,11 @@ void main() {
             .thenAnswer((_) async => tText);
 
         // act
-        final result = await dataSource.decrypt(tEncryptedData);
+        final result = await dataSource.decrypt(tEncryptedDataDto);
 
         // assert
         expect(result, equals(tText));
-        verify(() => mockVaultCryptoService.decrypt(tEncryptedData)).called(1);
+        verify(() => mockVaultCryptoService.decrypt(tEncryptedDataDto)).called(1);
       });
 
       test('should throw UnexpectedException when decryption fails', () async {
@@ -93,7 +93,7 @@ void main() {
 
         // assert
         expect(
-          () => call(tEncryptedData),
+          () => call(tEncryptedDataDto),
           throwsA(
             isA<UnexpectedException>().having(
               (e) => e.message,
@@ -216,6 +216,40 @@ void main() {
         // assert
         expect(
           () => call(password: tPassword, salt: tSalt, verifier: tVerifier),
+          throwsA(
+            isA<UnexpectedException>().having(
+              (e) => e.message,
+              'message',
+              contains(tException.toString()),
+            ),
+          ),
+        );
+      });
+    });
+
+    group('unlockWithKey', () {
+      test('should call vaultCryptoService.unlockWithKey', () async {
+        // arrange
+        const tKeyBytes = [1, 2, 3];
+
+        // act
+        await dataSource.unlockWithKey(tKeyBytes);
+
+        // assert
+        verify(() => mockVaultCryptoService.unlockWithKey(tKeyBytes)).called(1);
+      });
+
+      test('should throw UnexpectedException when unlockWithKey throws exception', () async {
+        // arrange
+        const tKeyBytes = [1, 2, 3];
+        when(() => mockVaultCryptoService.unlockWithKey(any())).thenThrow(tException);
+
+        // act
+        final call = dataSource.unlockWithKey;
+
+        // assert
+        expect(
+          () => call(tKeyBytes),
           throwsA(
             isA<UnexpectedException>().having(
               (e) => e.message,

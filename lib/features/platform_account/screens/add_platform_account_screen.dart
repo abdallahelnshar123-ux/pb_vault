@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easy_theme/flutter_easy_theme.dart';
+import 'package:pb_vault/core/utils/password_utils.dart';
 import 'package:pb_vault/core/utils/snack_bar_utils.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
-import 'package:pb_vault/widgets/email_text_field_widget.dart';
+import 'package:pb_vault/features/platform_account/widget/login_methods_widget.dart';
+import 'package:pb_vault/features/platform_account/widget/more_information_expansion_rile_widget.dart';
+import 'package:pb_vault/widgets/identifier_text_field_widget.dart';
 import 'package:pb_vault/widgets/password_text_field_widget.dart';
 
 import '../../../../core/utils/app_colors.dart';
@@ -13,10 +16,10 @@ import '../../../../core/utils/app_styles.dart';
 import '../../../../core/utils/dialog_utils.dart';
 import '../../../../core/utils/screen_size.dart';
 import '../../../../widgets/custom_elevated_button.dart';
-import '../../../../widgets/custom_text_form_field.dart';
 import '../../../domain/entities/response/platform_account/platform_data.dart';
 import '../../auth/cubit/user_view_model.dart';
 import '../cubit/platform_account_state.dart';
+import '../platform_account_controller/platform_account_controller.dart';
 import '../widget/platforms_bottom_sheet.dart';
 
 class AddPlatformAccountScreen extends StatefulWidget {
@@ -28,18 +31,12 @@ class AddPlatformAccountScreen extends StatefulWidget {
 }
 
 class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController notesController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final ValueNotifier<PlatformData?> currentPlatform = ValueNotifier(null);
+  late final controller = PlatformAccountController();
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    notesController.dispose();
-    currentPlatform.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -74,7 +71,6 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
         child: GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Scaffold(
-            // backgroundColor: AppColors.backgroundDark,
             appBar: _builtAppBar(),
             body: SingleChildScrollView(
               padding: EdgeInsets.all(context.width * 0.05),
@@ -86,21 +82,37 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
                   children: [
                     _builtChoosePlatform(context),
                     SizedBox(height: context.height * 0.03),
-                    EmailTextFieldWidget(
+                    IdentifierTextFieldWidget(
                       fillColor: AppColors.secondary,
-                      controller: emailController,
+                      controller: controller.identifier,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         PasswordTextFieldWidget(
                           fillColor: AppColors.secondary,
-                          controller: passwordController,
+                          controller: controller.password,
                         ),
                         _builtGeneratePassword(),
                       ],
                     ),
-                    _builtNotesTextField(),
+
+                    LoginMethodsWidget(
+                      newLoginMethod: (value) =>
+                          controller.loginMethods = value,
+                    ),
+                    Divider(
+                      color: context.easyColor(
+                        lColor: AppColors.backgroundDark,
+                        dColor: AppColors.backgroundLight,
+                      ),
+                      radius: BorderRadius.circular(8),
+                    ),
+                    Moreinformationexpansiontilewidget(
+                      notesController: controller.notes,
+                      passkeyController: controller.passkey,
+                      recoveryCodesController: controller.recoveryCodes,
+                    ),
                     const SizedBox(height: 20),
                     _builtAddButton(),
                   ],
@@ -115,16 +127,11 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
 
   PreferredSizeWidget _builtAppBar() {
     return AppBar(
-      // centerTitle: false,
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
-        icon: Icon(Icons.arrow_back_ios_new_rounded),
-        // color: AppColors.secondary,
+        icon: const Icon(Icons.arrow_back_ios_new_rounded),
       ),
-      title: Text(
-        'add_new_account'.tr(),
-        // style: AppStyles.robotoRegular20Secondary(context),
-      ),
+      title: Text('add_new_account'.tr()),
       elevation: 0,
     );
   }
@@ -136,7 +143,9 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
       useSafeArea: true,
       enableDrag: false,
       isScrollControlled: true,
-      constraints: .tight(Size(double.infinity, context.height - 150)),
+      constraints: BoxConstraints.tight(
+        Size(double.infinity, context.height - 150),
+      ),
       backgroundColor: context.easyColor(
         lColor: AppColors.primary,
         dColor: AppColors.backgroundDark,
@@ -146,9 +155,9 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => PlatformsBottomSheet(
-        currentPlatform: currentPlatform.value,
+        currentPlatform: controller.currentPlatform.value,
         newPlatform: (platform) {
-          currentPlatform.value = platform;
+          controller.currentPlatform.value = platform;
         },
       ),
     );
@@ -156,12 +165,12 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
 
   Widget _builtChoosePlatform(BuildContext context) {
     return ValueListenableBuilder<PlatformData?>(
-      valueListenable: currentPlatform,
+      valueListenable: controller.currentPlatform,
       builder: (context, value, child) {
         if (value == null) {
           return TextButton.icon(
             onPressed: () => _showPlatformPicker(context),
-            iconAlignment: .start,
+            iconAlignment: IconAlignment.start,
             icon: Icon(
               Icons.add,
               color: context.easyColor(
@@ -184,9 +193,9 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
           splashColor: AppColors.transparent,
           contentPadding: EdgeInsets.zero,
           onLongPress: () {
-            if (currentPlatform.value?.website != null) {
+            if (controller.currentPlatform.value?.website != null) {
               Clipboard.setData(
-                ClipboardData(text: currentPlatform.value!.website),
+                ClipboardData(text: controller.currentPlatform.value!.website),
               ).then((_) {
                 if (!context.mounted) return;
                 SnackBarUtils.showSuccessSnackBar(
@@ -198,27 +207,30 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
           },
           onTap: () => _showPlatformPicker(context),
           title: Text(
-            currentPlatform.value?.name ?? '',
+            controller.currentPlatform.value?.name ?? '',
             style: AppStyles.robotoRegular18(
               context,
               lColor: AppColors.backgroundDark,
               dColor: AppColors.secondary,
             ),
           ),
-          leading: currentPlatform.value != null
+          leading: controller.currentPlatform.value != null
               ? CircleAvatar(
                   backgroundColor: context.easyColor(
                     lColor: AppColors.primary,
                     dColor: AppColors.secondary,
                   ),
                   radius: context.width * 0.07,
-                  child: Image.network(currentPlatform.value!.icon, width: 24),
+                  child: Image.network(
+                    controller.currentPlatform.value!.icon,
+                    width: 24,
+                  ),
                 )
               : const Icon(Icons.category, color: AppColors.black),
           subtitle: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
-              currentPlatform.value!.website,
+              controller.currentPlatform.value!.website,
               style: AppStyles.robotoRegular12Secondary(
                 context,
               ).copyWith(color: AppColors.success),
@@ -234,10 +246,8 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
       builder: (context) {
         return TextButton.icon(
           onPressed: () {
-            final pass = context
-                .read<PlatformAccountCubit>()
-                .generateStrongPassword();
-            passwordController.text = pass;
+            final pass = PasswordUtils.generateStrongPassword();
+            controller.password.text = pass;
           },
           icon: Icon(
             Icons.refresh,
@@ -259,18 +269,6 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
     );
   }
 
-  Widget _builtNotesTextField() {
-    return CustomTextFormField(
-      controller: notesController,
-      hintText: 'notes'.tr(),
-      maxLines: 3,
-      hintStyle: AppStyles.robotoBold14gray(context),
-      style: AppStyles.robotoBold16SurfaceDark(context),
-      filled: true,
-      fillColor: AppColors.secondary,
-    );
-  }
-
   Widget _builtAddButton() {
     return Builder(
       builder: (context) {
@@ -279,24 +277,7 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
             lColor: AppColors.backgroundDark,
             dColor: AppColors.primary,
           ),
-          onPressed: () {
-            if (formKey.currentState!.validate() &&
-                currentPlatform.value != null) {
-              final userId = context.read<UserCubit>().currentUser?.id ?? '';
-              context.read<PlatformAccountCubit>().addPlatformAccount(
-                userId: userId,
-                platform: currentPlatform.value!,
-                emailOrUsername: emailController.text,
-                password: passwordController.text,
-                notes: notesController.text,
-              );
-            } else if (currentPlatform.value == null) {
-              SnackBarUtils.showInfoSnackBar(
-                context: context,
-                message: 'please_select_platform'.tr(),
-              );
-            }
-          },
+          onPressed: _submit,
           child: Text(
             'add'.tr(),
             style: AppStyles.robotoRegular16White(context),
@@ -304,5 +285,27 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
         );
       },
     );
+  }
+
+  void _submit() {
+    if (formKey.currentState!.validate() &&
+        controller.currentPlatform.value != null) {
+      final userId = context.read<UserCubit>().currentUser?.id ?? '';
+      context.read<PlatformAccountCubit>().addPlatformAccount(
+        userId: userId,
+        platform: controller.currentPlatform.value!,
+        identifier: controller.identifier.text.trim(),
+        password: controller.password.text.trim(),
+        notes: controller.notes.text.trim(),
+        loginMethods: controller.loginMethods,
+        recoveryCodes: controller.recoveryCodes.text.trim(),
+        passkey: controller.passkey.text.trim(),
+      );
+    } else if (controller.currentPlatform.value == null) {
+      SnackBarUtils.showInfoSnackBar(
+        context: context,
+        message: 'please_select_platform'.tr(),
+      );
+    }
   }
 }

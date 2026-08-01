@@ -4,20 +4,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
-import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/use_cases/add_account_use_case.dart';
 import 'package:pb_vault/domain/use_cases/delete_account_from_vault_use_case.dart';
+import 'package:pb_vault/domain/use_cases/get_account_by_id_use_case.dart';
 import 'package:pb_vault/domain/use_cases/update_account_use_case.dart';
-import 'package:pb_vault/domain/use_cases/vault/encrypt_password_use_case.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_state.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
 
 class MockAddPlatformAccountUseCase extends Mock
     implements AddPlatformAccountUseCase {}
-
-class MockEncryptPasswordUseCase extends Mock
-    implements EncryptPasswordUseCase {}
 
 class MockUpdatePlatformAccountUseCase extends Mock
     implements UpdatePlatformAccountUseCase {}
@@ -25,14 +21,16 @@ class MockUpdatePlatformAccountUseCase extends Mock
 class MockDeletePlatformAccountUseCase extends Mock
     implements DeletePlatformAccountUseCase {}
 
+class MockGetAccountBtIdUseCase extends Mock implements GetAccountByIdUseCase {}
+
 class FakePlatformAccount extends Fake implements PlatformAccount {}
 
 void main() {
   late PlatformAccountCubit cubit;
   late MockAddPlatformAccountUseCase mockAddAccount;
-  late MockEncryptPasswordUseCase mockEncrypt;
   late MockUpdatePlatformAccountUseCase mockUpdateAccount;
   late MockDeletePlatformAccountUseCase mockDeleteAccount;
+  late MockGetAccountBtIdUseCase mockGetAccountById;
 
   setUpAll(() {
     registerFallbackValue(FakePlatformAccount());
@@ -40,16 +38,15 @@ void main() {
 
   setUp(() {
     mockAddAccount = MockAddPlatformAccountUseCase();
-    mockEncrypt = MockEncryptPasswordUseCase();
     mockUpdateAccount = MockUpdatePlatformAccountUseCase();
     mockDeleteAccount = MockDeletePlatformAccountUseCase();
+    mockGetAccountById = MockGetAccountBtIdUseCase();
 
-    // Correct order: update, delete, add, encrypt
     cubit = PlatformAccountCubit(
       mockUpdateAccount,
       mockDeleteAccount,
       mockAddAccount,
-      mockEncrypt,
+      mockGetAccountById,
     );
   });
 
@@ -62,50 +59,17 @@ void main() {
   final tAccount = PlatformAccount(
     id: '1',
     platform: tPlatformData,
-    emailOrUsername: 'test@gmail.com',
-    encryptedPassword: const [1, 2, 3],
+    identifier: 'test@gmail.com',
+    password: 'testPassword',
     createdAt: DateTime(2023),
-    mac: const [4, 5, 6],
-    nonce: const [7, 8, 9],
   );
 
-  group('generateStrongPassword', () {
-    test('should generate a password of length 16', () {
-      final password = cubit.generateStrongPassword();
 
-      expect(password.length, 16);
-    });
-
-    test('should generate a password using only allowed characters', () {
-      final password = cubit.generateStrongPassword();
-
-      expect(
-        RegExp(r'^[a-zA-Z0-9@#%^&*_\-+()\[\]{}]{16}$').hasMatch(password),
-        isTrue,
-      );
-    });
-
-    test('should generate different passwords', () {
-      final password1 = cubit.generateStrongPassword();
-      final password2 = cubit.generateStrongPassword();
-
-      expect(password1, isNot(password2));
-    });
-  });
 
   group('addPlatformAccount', () {
-    final tEncryptedData = EncryptedData(
-      cipherText: [1, 2, 3],
-      mac: [4, 5, 6],
-      nonce: [7, 8, 9],
-    );
-
     blocTest<PlatformAccountCubit, PlatformAccountState>(
       'emits [AddPlatformAccountLoadingState, AddPlatformAccountSuccessState] when success',
       build: () {
-        when(
-          () => mockEncrypt.invoke(any()),
-        ).thenAnswer((_) async => Right(tEncryptedData));
         when(
           () => mockAddAccount.invoke(any(), any()),
         ).thenAnswer((_) async => const Right(unit));
@@ -114,7 +78,7 @@ void main() {
       act: (cubit) => cubit.addPlatformAccount(
         userId: tUserId,
         platform: tPlatformData,
-        emailOrUsername: 'test@gmail.com',
+        identifier: 'test@gmail.com',
         password: 'password',
       ),
       expect: () => [
@@ -122,14 +86,14 @@ void main() {
         isA<AddPlatformAccountSuccessState>(),
       ],
       verify: (_) {
-        verify(() => mockEncrypt.invoke('password')).called(1);
         verify(() {
           mockAddAccount.invoke(
             tUserId,
             any(
               that: isA<PlatformAccount>()
-                  .having((e) => e.emailOrUsername, 'email', 'test@gmail.com')
-                  .having((e) => e.platform, 'platform', tPlatformData),
+                  .having((e) => e.identifier, 'identifier', 'test@gmail.com')
+                  .having((e) => e.platform, 'platform', tPlatformData)
+                  .having((e) => e.password, 'password', 'password'),
             ),
           );
         }).called(1);
@@ -137,35 +101,8 @@ void main() {
     );
 
     blocTest<PlatformAccountCubit, PlatformAccountState>(
-      'emits [AddPlatformAccountLoadingState, AddPlatformAccountErrorState] when encryption fails',
-      build: () {
-        when(
-          () => mockEncrypt.invoke(any()),
-        ).thenAnswer((_) async => Left(UnexpectedFailure('error')));
-        return cubit;
-      },
-      act: (cubit) => cubit.addPlatformAccount(
-        userId: tUserId,
-        platform: tPlatformData,
-        emailOrUsername: 'test@gmail.com',
-        password: 'password',
-      ),
-      expect: () => [
-        isA<AddPlatformAccountLoadingState>(),
-        isA<AddPlatformAccountErrorState>().having(
-          (s) => s.message,
-          'message',
-          'error',
-        ),
-      ],
-    );
-
-    blocTest<PlatformAccountCubit, PlatformAccountState>(
       'emits [AddPlatformAccountLoadingState, AddPlatformAccountErrorState] when add fails',
       build: () {
-        when(
-          () => mockEncrypt.invoke(any()),
-        ).thenAnswer((_) async => Right(tEncryptedData));
         when(
           () => mockAddAccount.invoke(any(), any()),
         ).thenAnswer((_) async => const Left(ServerFailure('Server Error')));
@@ -174,7 +111,7 @@ void main() {
       act: (cubit) => cubit.addPlatformAccount(
         userId: tUserId,
         platform: tPlatformData,
-        emailOrUsername: 'test@gmail.com',
+        identifier: 'test@gmail.com',
         password: 'password',
       ),
       expect: () => [
@@ -188,19 +125,52 @@ void main() {
     );
   });
 
-  group('updatePlatformAccount', () {
-    final tEncryptedData = EncryptedData(
-      cipherText: [1, 2, 3],
-      mac: [4, 5, 6],
-      nonce: [7, 8, 9],
+  group('getAccountById', () {
+    blocTest<PlatformAccountCubit, PlatformAccountState>(
+      'emits [GetPlatformAccountLoadingState, GetPlatformAccountSuccessState] when success',
+      build: () {
+        when(() => mockGetAccountById.invoke(
+              userId: any(named: 'userId'),
+              accountId: any(named: 'accountId'),
+            )).thenAnswer((_) async => Right(tAccount));
+        return cubit;
+      },
+      act: (cubit) => cubit.getAccountById(userId: tUserId, accountId: '1'),
+      expect: () => [
+        isA<GetPlatformAccountLoadingState>(),
+        isA<GetPlatformAccountSuccessState>().having(
+          (s) => s.account,
+          'account',
+          tAccount,
+        ),
+      ],
     );
 
     blocTest<PlatformAccountCubit, PlatformAccountState>(
+      'emits [GetPlatformAccountLoadingState, GetPlatformAccountErrorState] when failure',
+      build: () {
+        when(() => mockGetAccountById.invoke(
+              userId: any(named: 'userId'),
+              accountId: any(named: 'accountId'),
+            )).thenAnswer((_) async => const Left(ServerFailure('Error')));
+        return cubit;
+      },
+      act: (cubit) => cubit.getAccountById(userId: tUserId, accountId: '1'),
+      expect: () => [
+        isA<GetPlatformAccountLoadingState>(),
+        isA<GetPlatformAccountErrorState>().having(
+          (s) => s.message,
+          'message',
+          'Error',
+        ),
+      ],
+    );
+  });
+
+  group('updatePlatformAccount', () {
+    blocTest<PlatformAccountCubit, PlatformAccountState>(
       'emits [EditPlatformAccountLoadingState, EditPlatformAccountSuccessState] when success',
       build: () {
-        when(
-          () => mockEncrypt.invoke(any()),
-        ).thenAnswer((_) async => Right(tEncryptedData));
         when(
           () => mockUpdateAccount.invoke(any(), any()),
         ).thenAnswer((_) async => const Right(unit));
@@ -208,8 +178,9 @@ void main() {
       },
       act: (cubit) => cubit.updatePlatformAccount(
         userId: tUserId,
-        originalAccount: tAccount,
-        emailOrUsername: 'new@gmail.com',
+        accountId: '1',
+        platform: tPlatformData,
+        identifier: 'new@gmail.com',
         password: 'new_password',
       ),
       expect: () => [
@@ -217,9 +188,15 @@ void main() {
         isA<EditPlatformAccountSuccessState>(),
       ],
       verify: (_) {
-        verify(() => mockEncrypt.invoke('new_password')).called(1);
-        verify(() => mockUpdateAccount.invoke(tUserId, any())).called(1);
-        // ابقي اعمل هنا تست اكتر صرامه زي addAccount
+        verify(() => mockUpdateAccount.invoke(
+              tUserId,
+              any(
+                that: isA<PlatformAccount>()
+                    .having((e) => e.id, 'id', '1')
+                    .having((e) => e.identifier, 'identifier', 'new@gmail.com')
+                    .having((e) => e.password, 'password', 'new_password'),
+              ),
+            )).called(1);
       },
     );
 
@@ -227,17 +204,15 @@ void main() {
       'emits [EditPlatformAccountLoadingState, EditPlatformAccountErrorState] when update fails',
       build: () {
         when(
-          () => mockEncrypt.invoke(any()),
-        ).thenAnswer((_) async => Right(tEncryptedData));
-        when(
           () => mockUpdateAccount.invoke(any(), any()),
         ).thenAnswer((_) async => const Left(ServerFailure('Update Error')));
         return cubit;
       },
       act: (cubit) => cubit.updatePlatformAccount(
         userId: tUserId,
-        originalAccount: tAccount,
-        emailOrUsername: 'new@gmail.com',
+        accountId: '1',
+        platform: tPlatformData,
+        identifier: 'new@gmail.com',
         password: 'new_password',
       ),
       expect: () => [
@@ -246,28 +221,6 @@ void main() {
           (s) => s.message,
           'message',
           'Update Error',
-        ),
-      ],
-    );
-
-    blocTest<PlatformAccountCubit, PlatformAccountState>(
-      'emits [EditPlatformAccountLoadingState, EditPlatformAccountErrorState] when encryption fails',
-      build: () {
-        when(() => mockEncrypt.invoke(any())).thenAnswer((_) async => Left(UnexpectedFailure('error')));
-        return cubit;
-      },
-      act: (cubit) => cubit.updatePlatformAccount(
-        userId: tUserId,
-        originalAccount: tAccount,
-        emailOrUsername: 'new@gmail.com',
-        password: 'new_password',
-      ),
-      expect: () => [
-        isA<EditPlatformAccountLoadingState>(),
-        isA<EditPlatformAccountErrorState>().having(
-          (e) => e.message,
-          'message',
-          'error',
         ),
       ],
     );
@@ -318,20 +271,14 @@ void main() {
     final tAccount1 = PlatformAccount(
       id: '1',
       platform: const PlatformData(name: 'Google', icon: 'i', website: 'w'),
-      emailOrUsername: 'user1',
-      encryptedPassword: const [],
+      identifier: 'user1',
       createdAt: DateTime(2023),
-      mac: const [],
-      nonce: const [],
     );
     final tAccount2 = PlatformAccount(
       id: '2',
       platform: const PlatformData(name: 'Facebook', icon: 'i', website: 'w'),
-      emailOrUsername: 'user2',
-      encryptedPassword: const [],
+      identifier: 'user2',
       createdAt: DateTime(2023),
-      mac: const [],
-      nonce: const [],
     );
     final allAccounts = [tAccount1, tAccount2];
 
@@ -343,7 +290,7 @@ void main() {
       expect(result, allAccounts);
     });
 
-    test('should filter by emailOrUsername (case-insensitive)', () {
+    test('should filter by identifier (case-insensitive)', () {
       final result = cubit.searchPlatformAccounts(
         accountsList: allAccounts,
         searchTerm: 'USER1',

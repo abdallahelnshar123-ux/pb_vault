@@ -1,9 +1,9 @@
-import '../../../../domain/entities/vault/encrypted_data.dart';
+import '../../../model/response/platform_account_dto/encrypted_data_dto.dart';
 
 abstract class VaultRemoteDataSource {
-  Future<EncryptedData> encrypt(String text);
+  Future<EncryptedDataDto> encrypt(String text);
 
-  Future<String> decrypt(EncryptedData data);
+  Future<String> decrypt(EncryptedDataDto data);
 
   Future<Map<String, dynamic>> createVerifier(String password);
 

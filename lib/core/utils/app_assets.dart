@@ -57,4 +57,5 @@ class AppAssets {
   static const String wishlistIcon = 'assets/icons/wishlist_icon.svg';
   static const String logoutIcon = 'assets/icons/logout.svg';
   static const String editIcon = 'assets/icons/edit.svg';
+  static const String identifierIcon = 'assets/icons/identifier_icon.svg';
 }

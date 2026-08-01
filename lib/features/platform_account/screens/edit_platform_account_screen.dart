@@ -1,23 +1,28 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easy_theme/flutter_easy_theme.dart';
-import 'package:pb_vault/domain/use_cases/vault/decrypt_password_use_case.dart';
-import 'package:pb_vault/features/platform_account/cubit/platform_account_state.dart';
+import 'package:pb_vault/core/utils/app_routes.dart';
+import 'package:pb_vault/core/utils/snack_bar_utils.dart';
+import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
+import 'package:pb_vault/features/platform_account/widget/login_methods_widget.dart';
+import 'package:pb_vault/features/platform_account/widget/more_information_expansion_rile_widget.dart';
+import 'package:pb_vault/widgets/identifier_text_field_widget.dart';
+import 'package:pb_vault/widgets/password_text_field_widget.dart';
 
-import '../../../../core/utils/app_colors.dart';
-import '../../../../core/utils/app_styles.dart';
-import '../../../../core/utils/dialog_utils.dart';
-import '../../../../core/utils/screen_size.dart';
-import '../../../../widgets/custom_elevated_button.dart';
-import '../../../../widgets/custom_text_form_field.dart';
-import '../../../core/di/di.dart';
+import '../../../core/utils/app_colors.dart';
+import '../../../core/utils/app_styles.dart';
+import '../../../core/utils/dialog_utils.dart';
+import '../../../core/utils/password_utils.dart';
+import '../../../core/utils/screen_size.dart';
 import '../../../domain/entities/response/platform_account/platform_account.dart';
-import '../../../domain/entities/vault/encrypted_data.dart';
-import '../../../widgets/email_text_field_widget.dart';
-import '../../../widgets/password_text_field_widget.dart';
+import '../../../domain/entities/response/platform_account/platform_data.dart';
+import '../../../widgets/custom_elevated_button.dart';
 import '../../auth/cubit/user_view_model.dart';
-import '../cubit/platform_account_view_model.dart';
+import '../cubit/platform_account_state.dart';
+import '../platform_account_controller/platform_account_controller.dart';
+import '../widget/platforms_bottom_sheet.dart';
 
 class EditPlatformAccountScreen extends StatefulWidget {
   const EditPlatformAccountScreen({super.key, required this.account});
@@ -30,42 +35,24 @@ class EditPlatformAccountScreen extends StatefulWidget {
 }
 
 class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
-  late TextEditingController emailController = TextEditingController(
-    text: widget.account.emailOrUsername,
-  );
-  late TextEditingController passwordController = TextEditingController();
-  late TextEditingController notesController = TextEditingController(
-    text: widget.account.notes,
-  );
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  late final controller = PlatformAccountController();
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final encryptedData = EncryptedData(
-        cipherText: widget.account.encryptedPassword,
-        mac: widget.account.mac,
-        nonce: widget.account.nonce,
-      );
-      final result = await getIt<DecryptPasswordUseCase>().invoke(
-        encryptedData,
-      );
-      if (mounted) {
-        result.fold((failure) {}, (password) {
-          setState(() {
-            passwordController.text = password;
-          });
-        });
-      }
-    });
     super.initState();
+    controller.identifier.text = widget.account.identifier;
+    controller.password.text = widget.account.password ?? '';
+    controller.notes.text = widget.account.notes ?? '';
+    controller.recoveryCodes.text = widget.account.recoveryCodes ?? '';
+    controller.passkey.text = widget.account.passkey ?? '';
+    controller.currentPlatform.value = widget.account.platform;
+    controller.loginMethods = widget.account.loginMethods;
   }
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    notesController.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -83,7 +70,10 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
               backgroundColor: AppColors.success,
             ),
           );
-          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.popUntil(
+            context,
+            ModalRoute.withName(AppRoutes.homeRouteName),
+          );
         } else if (state is EditPlatformAccountErrorState) {
           DialogUtils.hideLoading(context: context);
           DialogUtils.showMessage(
@@ -100,7 +90,6 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
         child: GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Scaffold(
-            // backgroundColor: AppColors.backgroundDark,
             appBar: _builtAppBar(),
             body: SingleChildScrollView(
               padding: EdgeInsets.all(context.width * 0.05),
@@ -110,25 +99,41 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   spacing: context.height * 0.02,
                   children: [
-                    _builtPlatformTile(),
+                    _builtChoosePlatform(context),
                     SizedBox(height: context.height * 0.03),
-                    EmailTextFieldWidget(
+                    IdentifierTextFieldWidget(
                       fillColor: AppColors.secondary,
-                      controller: emailController,
+                      controller: controller.identifier,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         PasswordTextFieldWidget(
                           fillColor: AppColors.secondary,
-                          controller: passwordController,
+                          controller: controller.password,
                         ),
                         _builtGeneratePassword(),
                       ],
                     ),
-                    _builtNotesTextField(),
+
+                    LoginMethodsWidget(
+                      newLoginMethod: (value) =>
+                          controller.loginMethods = value,
+                    ),
+                    Divider(
+                      color: context.easyColor(
+                        lColor: AppColors.backgroundDark,
+                        dColor: AppColors.backgroundLight,
+                      ),
+                      radius: BorderRadius.circular(8),
+                    ),
+                    Moreinformationexpansiontilewidget(
+                      notesController: controller.notes,
+                      passkeyController: controller.passkey,
+                      recoveryCodesController: controller.recoveryCodes,
+                    ),
                     const SizedBox(height: 20),
-                    _builtSaveChangesButton(),
+                    _builtSaveButton(),
                   ],
                 ),
               ),
@@ -141,50 +146,117 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
 
   PreferredSizeWidget _builtAppBar() {
     return AppBar(
-      // centerTitle: false,
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
-        icon: Icon(Icons.arrow_back_ios_new_rounded),
-        // color: AppColors.secondary,
+        icon: const Icon(Icons.arrow_back_ios_new_rounded),
       ),
-      title: Text(
-        'edit_account'.tr(),
-        // style: AppStyles.robotoRegular20Secondary(context),
-      ),
+      title: Text('edit_account'.tr()),
       elevation: 0,
     );
   }
 
-  Widget _builtPlatformTile() {
-    return ListTile(
-      splashColor: AppColors.transparent,
-      contentPadding: EdgeInsets.zero,
+  void _showPlatformPicker(BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    showModalBottomSheet(
+      showDragHandle: true,
+      useSafeArea: true,
+      enableDrag: false,
+      isScrollControlled: true,
+      constraints: BoxConstraints.tight(
+        Size(double.infinity, context.height - 150),
+      ),
+      backgroundColor: context.easyColor(
+        lColor: AppColors.primary,
+        dColor: AppColors.backgroundDark,
+      ),
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => PlatformsBottomSheet(
+        currentPlatform: controller.currentPlatform.value,
+        newPlatform: (platform) {
+          controller.currentPlatform.value = platform;
+        },
+      ),
+    );
+  }
 
-      title: Text(
-        widget.account.platform.name,
-        style: AppStyles.robotoRegular18(
-          context,
-          lColor: AppColors.backgroundDark,
-          dColor: AppColors.secondary,
-        ),
-      ),
-      leading: CircleAvatar(
-        backgroundColor: context.easyColor(
-          lColor: AppColors.primary,
-          dColor: AppColors.secondary,
-        ),
-        radius: context.width * 0.07,
-        child: Image.network(widget.account.platform.icon, width: 24),
-      ),
-      subtitle: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Text(
-          widget.account.platform.website,
-          style: AppStyles.robotoRegular12Secondary(
-            context,
-          ).copyWith(color: AppColors.success),
-        ),
-      ),
+  Widget _builtChoosePlatform(BuildContext context) {
+    return ValueListenableBuilder<PlatformData?>(
+      valueListenable: controller.currentPlatform,
+      builder: (context, value, child) {
+        if (value == null) {
+          return TextButton.icon(
+            onPressed: () => _showPlatformPicker(context),
+            iconAlignment: IconAlignment.start,
+            icon: Icon(
+              Icons.add,
+              color: context.easyColor(
+                lColor: AppColors.backgroundDark,
+                dColor: AppColors.secondary,
+              ),
+              size: context.width * 0.08,
+            ),
+            label: Text(
+              'choose_platform'.tr(),
+              style: AppStyles.robotoRegular18(
+                context,
+                lColor: AppColors.backgroundDark,
+                dColor: AppColors.secondary,
+              ),
+            ),
+          );
+        }
+        return ListTile(
+          splashColor: AppColors.transparent,
+          contentPadding: EdgeInsets.zero,
+          onLongPress: () {
+            if (controller.currentPlatform.value?.website != null) {
+              Clipboard.setData(
+                ClipboardData(text: controller.currentPlatform.value!.website),
+              ).then((_) {
+                if (!context.mounted) return;
+                SnackBarUtils.showSuccessSnackBar(
+                  context: context,
+                  message: 'link_copied_to_clipboard'.tr(),
+                );
+              });
+            }
+          },
+          onTap: () => _showPlatformPicker(context),
+          title: Text(
+            controller.currentPlatform.value?.name ?? '',
+            style: AppStyles.robotoRegular18(
+              context,
+              lColor: AppColors.backgroundDark,
+              dColor: AppColors.secondary,
+            ),
+          ),
+          leading: controller.currentPlatform.value != null
+              ? CircleAvatar(
+                  backgroundColor: context.easyColor(
+                    lColor: AppColors.primary,
+                    dColor: AppColors.secondary,
+                  ),
+                  radius: context.width * 0.07,
+                  child: Image.network(
+                    controller.currentPlatform.value!.icon,
+                    width: context.width * 0.06,
+                  ),
+                )
+              : const Icon(Icons.category, color: AppColors.black),
+          subtitle: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              controller.currentPlatform.value!.website,
+              style: AppStyles.robotoRegular12Secondary(
+                context,
+              ).copyWith(color: AppColors.success),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -193,10 +265,8 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
       builder: (context) {
         return TextButton.icon(
           onPressed: () {
-            final pass = context
-                .read<PlatformAccountCubit>()
-                .generateStrongPassword();
-            passwordController.text = pass;
+            final pass = PasswordUtils.generateStrongPassword();
+            controller.password.text = pass;
           },
           icon: Icon(
             Icons.refresh,
@@ -218,19 +288,7 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
     );
   }
 
-  Widget _builtNotesTextField() {
-    return CustomTextFormField(
-      controller: notesController,
-      hintText: 'notes'.tr(),
-      maxLines: 3,
-      hintStyle: AppStyles.robotoBold14gray(context),
-      style: AppStyles.robotoBold16SurfaceDark(context),
-      filled: true,
-      fillColor: AppColors.secondary,
-    );
-  }
-
-  Widget _builtSaveChangesButton() {
+  Widget _builtSaveButton() {
     return Builder(
       builder: (context) {
         return CustomElevatedButton(
@@ -238,18 +296,7 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
             lColor: AppColors.backgroundDark,
             dColor: AppColors.primary,
           ),
-          onPressed: () {
-            if (formKey.currentState!.validate()) {
-              final userId = context.read<UserCubit>().currentUser?.id ?? '';
-              context.read<PlatformAccountCubit>().updatePlatformAccount(
-                userId: userId,
-                emailOrUsername: emailController.text,
-                password: passwordController.text,
-                notes: notesController.text,
-                originalAccount: widget.account,
-              );
-            }
-          },
+          onPressed: _submit,
           child: Text(
             'save_changes'.tr(),
             style: AppStyles.robotoRegular16White(context),
@@ -257,5 +304,28 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
         );
       },
     );
+  }
+
+  void _submit() {
+    if (formKey.currentState!.validate() &&
+        controller.currentPlatform.value != null) {
+      final userId = context.read<UserCubit>().currentUser?.id ?? '';
+      context.read<PlatformAccountCubit>().updatePlatformAccount(
+        accountId: widget.account.id!,
+        userId: userId,
+        identifier: controller.identifier.text.trim(),
+        password: controller.password.text.trim(),
+        notes: controller.notes.text.trim(),
+        loginMethods: controller.loginMethods,
+        recoveryCodes: controller.recoveryCodes.text.trim(),
+        passkey: controller.passkey.text.trim(),
+        platform: controller.currentPlatform.value!,
+      );
+    } else if (controller.currentPlatform.value == null) {
+      SnackBarUtils.showInfoSnackBar(
+        context: context,
+        message: 'please_select_platform'.tr(),
+      );
+    }
   }
 }

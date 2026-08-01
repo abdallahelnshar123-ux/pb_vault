@@ -33,7 +33,6 @@ class _UsernameTextFieldWidgetState extends State<UsernameTextFieldWidget> {
         fit: BoxFit.scaleDown,
         colorFilter: ColorFilter.mode(AppColors.surfaceDark, BlendMode.srcIn),
       ),
-      // prefixIcon: const Icon(size: 30, Icons.person, color: AppColors.black),
       hintText: "username".tr(),
       hintStyle: AppStyles.robotoBold14gray(context),
       filled: true,

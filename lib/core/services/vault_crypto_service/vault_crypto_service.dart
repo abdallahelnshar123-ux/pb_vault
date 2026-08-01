@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:cryptography/cryptography.dart';
 import 'package:cryptography/helpers.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+
+import '../../../data/model/response/platform_account_dto/encrypted_data_dto.dart';
 
 @lazySingleton
 class VaultCryptoService {
@@ -82,7 +83,7 @@ class VaultCryptoService {
     _secretKey = SecretKey(keyBytes);
   }
 
-  Future<EncryptedData> encrypt(String text) async {
+  Future<EncryptedDataDto> encrypt(String text) async {
     if (_secretKey == null) {
       throw Exception('Vault is locked. Unlock it first.');
     }
@@ -95,14 +96,14 @@ class VaultCryptoService {
       nonce: nonce,
     );
 
-    return EncryptedData(
+    return EncryptedDataDto(
       cipherText: encrypted.cipherText,
       mac: encrypted.mac.bytes,
       nonce: encrypted.nonce,
     );
   }
 
-  Future<String> decrypt(EncryptedData data) async {
+  Future<String> decrypt(EncryptedDataDto data) async {
     if (_secretKey == null) {
       throw Exception('Vault is locked. Unlock it first.');
     }

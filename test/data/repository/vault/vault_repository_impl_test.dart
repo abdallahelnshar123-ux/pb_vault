@@ -3,8 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/data/data_sources/remote/vault/vault_remote_data_source.dart';
 import 'package:pb_vault/data/exceptions/app_exceptions.dart';
+import 'package:pb_vault/data/mapper/encrypted_data_dto_mapper.dart';
+import 'package:pb_vault/data/model/response/platform_account_dto/encrypted_data_dto.dart';
 import 'package:pb_vault/data/repository/vault/vault_repository_impl.dart';
-import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
+import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 
 class MockVaultRemoteDataSource extends Mock implements VaultRemoteDataSource {}
@@ -16,6 +18,9 @@ void main() {
   setUpAll(() {
     registerFallbackValue(
       const EncryptedData(cipherText: [], mac: [], nonce: []),
+    );
+    registerFallbackValue(
+      const EncryptedDataDto(cipherText: [], mac: [], nonce: []),
     );
   });
 
@@ -29,6 +34,11 @@ void main() {
     const tPassword = 'password123';
     const tSalt = [1, 2, 3];
     const tVerifier = 'verifier_hash';
+    const tEncryptedDataDto = EncryptedDataDto(
+      cipherText: [4, 5, 6],
+      mac: [7, 8],
+      nonce: [9, 10],
+    );
     const tEncryptedData = EncryptedData(
       cipherText: [4, 5, 6],
       mac: [7, 8],
@@ -42,7 +52,7 @@ void main() {
       test('should return Right(EncryptedData) when data source succeeds', () async {
         // arrange
         when(() => mockVaultRemoteDataSource.encrypt(any()))
-            .thenAnswer((_) async => tEncryptedData);
+            .thenAnswer((_) async => tEncryptedDataDto);
 
         // act
         final result = await repository.encrypt(tText);
@@ -87,7 +97,7 @@ void main() {
 
         // assert
         expect(result, equals(const Right(tText)));
-        verify(() => mockVaultRemoteDataSource.decrypt(tEncryptedData)).called(1);
+        verify(() => mockVaultRemoteDataSource.decrypt(tEncryptedData.toEncryptedDataDto())).called(1);
       });
 
       test('should return Left(UnexpectedFailure) when data source throws AppException', () async {
@@ -195,6 +205,34 @@ void main() {
           salt: tSalt,
           verifier: tVerifier,
         );
+
+        // assert
+        expect(result, const Left(UnexpectedFailure(tMessage)));
+      });
+    });
+
+    group('unlockWithKey', () {
+      test('should return Right(unit) when data source succeeds', () async {
+        // arrange
+        const tKeyBytes = [1, 2, 3];
+        when(() => mockVaultRemoteDataSource.unlockWithKey(any()))
+            .thenAnswer((_) async => Future.value());
+
+        // act
+        final result = await repository.unlockWithKey(tKeyBytes);
+
+        // assert
+        expect(result, const Right(unit));
+        verify(() => mockVaultRemoteDataSource.unlockWithKey(tKeyBytes)).called(1);
+      });
+
+      test('should return Left(UnexpectedFailure) when data source throws AppException', () async {
+        // arrange
+        const tKeyBytes = [1, 2, 3];
+        when(() => mockVaultRemoteDataSource.unlockWithKey(any())).thenThrow(tUnexpectedException);
+
+        // act
+        final result = await repository.unlockWithKey(tKeyBytes);
 
         // assert
         expect(result, const Left(UnexpectedFailure(tMessage)));

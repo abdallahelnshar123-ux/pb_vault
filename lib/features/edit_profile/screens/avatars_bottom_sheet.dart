@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/screen_size.dart';
-import '../../../core/constants/app_constants.dart';
+import '../../../core/constants/assets_constants.dart';
 
 class SelectAvatarBottomSheet extends StatelessWidget {
   final ValueChanged<String> newAvatar;
@@ -18,7 +18,7 @@ class SelectAvatarBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const avatars = AppConstants.userAvatars;
+    const avatars = userAvatars;
     return Container(
       margin: EdgeInsets.symmetric(
         vertical: context.height * 0.03,
@@ -49,19 +49,21 @@ class SelectAvatarBottomSheet extends StatelessWidget {
           child: Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: BoxDecoration( color: context.easyColor(
-              lColor: AppColors.primary,
-              dColor: AppColors.backgroundDark,
-            ),),
+            decoration: BoxDecoration(
+              color: context.easyColor(
+                lColor: AppColors.primary,
+                dColor: AppColors.backgroundDark,
+              ),
+            ),
             child: Stack(
               alignment: AlignmentGeometry.bottomRight,
               children: [
                 CircleAvatar(
                   radius: double.infinity,
-                  backgroundColor:   context.easyColor(
-              lColor:    AppColors.backgroundDark,
-              dColor:AppColors.primary,
-            ),
+                  backgroundColor: context.easyColor(
+                    lColor: AppColors.backgroundDark,
+                    dColor: AppColors.primary,
+                  ),
                   child: SvgPicture.asset(
                     avatars['profile_avatar_${index + 1}']!,
                   ),

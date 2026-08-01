@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:pb_vault/core/constants/app_constants.dart';
 import 'package:pb_vault/core/utils/app_routes.dart';
 import 'package:pb_vault/features/home_screen/widget/password_card_item.dart';
 import 'package:pb_vault/features/platform_account/screens/search_platform_accounts_screen.dart';
@@ -14,6 +13,7 @@ import 'package:pb_vault/widgets/main_loading_widget.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_styles.dart';
 import '../../../../core/utils/screen_size.dart';
+import '../../../core/constants/assets_constants.dart';
 import '../../../core/di/di.dart';
 import '../../auth/cubit/user_view_model.dart';
 import '../../profile_screen/cubit/settings_cubit.dart';
@@ -131,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required BuildContext context,
   }) {
     var currentAvatar = context.watch<UserCubit>().currentUser?.avatar;
-    var avatars = AppConstants.userAvatars;
+    var avatars = userAvatars;
     final size = context.width * 0.15;
     return AppBar(
       toolbarHeight: 115,

@@ -75,4 +75,29 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
       throw UnexpectedException(message: e.toString());
     }
   }
+
+  @override
+  Future<PlatformAccountDto> getAccountById({
+    required String uId,
+    required String accountId,
+  }) async {
+    try {
+      var dto = await _firestoreService.getAccountById(
+        uId: uId,
+        accountId: accountId,
+      );
+      if (dto == null) {
+        throw UnexpectedException(
+          message: 'error_while_getting_account_details',
+        );
+      }
+      return dto;
+    } on FirebaseException catch (e) {
+      throw ServerException(message: e.message ?? 'server_error');
+    } on SocketException {
+      throw NetworkException(message: 'no_internet');
+    } catch (e) {
+      throw UnexpectedException(message: e.toString());
+    }
+  }
 }

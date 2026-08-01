@@ -16,11 +16,8 @@ void main() {
   setUpAll(() {
     registerFallbackValue(PlatformAccount(
       platform: const PlatformData(name: 'name', icon: 'icon', website: 'icon'),
-      emailOrUsername: 'email',
-      encryptedPassword: const [],
+      identifier: 'email',
       createdAt: DateTime.now(),
-      mac: const [],
-      nonce: const [],
     ));
   });
 
@@ -32,11 +29,9 @@ void main() {
   const tUserId = '1';
   final tAccount = PlatformAccount(
     platform: const PlatformData(name: 'name', icon: 'icon', website: 'icon'),
-    emailOrUsername: 'email',
-    encryptedPassword: const [4, 5, 6],
+    identifier: 'email',
+    password: 'testPassword',
     createdAt: DateTime.now(),
-    mac: const [3, 6, 9],
-    nonce: const [3, 2, 4],
   );
 
   test('should call AccountRepository.updateAccount and return Right(unit)', () async {
