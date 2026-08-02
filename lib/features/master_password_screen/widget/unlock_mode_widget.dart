@@ -138,10 +138,7 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
             dColor: AppColors.backgroundDark,
           ),
           backgroundColor: state is UnlockSuccessState
-              ? context.easyColor(
-                  dColor: AppColors.backgroundDark,
-                  lColor: AppColors.backgroundLight,
-                )
+              ? AppColors.transparent
               : context.easyColor(
                   lColor: AppColors.backgroundDark,
                   dColor: AppColors.primary,

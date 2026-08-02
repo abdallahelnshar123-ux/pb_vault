@@ -8,10 +8,8 @@ import 'package:pb_vault/data/data_sources/remote/vault/vault_remote_data_source
 import 'package:pb_vault/data/exceptions/app_exceptions.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/encrypted_data_dto.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/platform_account_dto.dart';
-import 'package:pb_vault/data/model/response/platform_account_dto/platform_data_dto.dart';
 import 'package:pb_vault/data/repository/account/account_repository_impl.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 
 class MockAccountRemoteDataSource extends Mock
@@ -28,7 +26,7 @@ void main() {
     registerFallbackValue(
       PlatformAccountDto(
         id: '',
-        platform: const PlatformDataDto(name: '', icon: '', website: ''),
+        platformId: '',
         identifier: '',
         createdAt: DateTime.now(),
       ),
@@ -48,16 +46,13 @@ void main() {
   });
 
   const tUserId = 'user123';
-  final tPlatformData = const PlatformData(
-    name: 'Google',
-    icon: 'icon',
-    website: 'google.com',
-  );
+  const tPlatformId = 'google_id';
   final tAccount = PlatformAccount(
     id: 'acc123',
-    platform: tPlatformData,
+    platformId: tPlatformId,
     identifier: 'test@gmail.com',
     password: 'testPassword',
+    notes: 'some notes',
     createdAt: DateTime(2023, 1, 1),
   );
 
@@ -69,13 +64,10 @@ void main() {
 
   final tAccountDto = PlatformAccountDto(
     id: 'acc123',
-    platform: const PlatformDataDto(
-      name: 'Google',
-      icon: 'icon',
-      website: 'google.com',
-    ),
+    platformId: tPlatformId,
     identifier: 'test@gmail.com',
     password: tEncryptedDataDto,
+    notes: tEncryptedDataDto,
     createdAt: DateTime(2023, 1, 1),
     customFields: const [],
     loginMethods: const [],
@@ -83,7 +75,7 @@ void main() {
 
   group('addAccount', () {
     test(
-      'should encrypt password and call remoteDataSource.addAccount',
+      'should encrypt password/notes and call remoteDataSource.addAccount when successful',
       () async {
         // Arrange
         when(() => mockVaultRemoteDataSource.encrypt(any()))
@@ -102,17 +94,21 @@ void main() {
         expect(result, const Right(unit));
         verify(() => mockVaultRemoteDataSource.encrypt(tAccount.password!))
             .called(1);
+        verify(() => mockVaultRemoteDataSource.encrypt(tAccount.notes!))
+            .called(1);
         verify(
           () => mockRemoteDataSource.addAccount(
             account: any(named: 'account'),
             uId: tUserId,
           ),
         ).called(1);
+        verifyNoMoreInteractions(mockVaultRemoteDataSource);
+        verifyNoMoreInteractions(mockRemoteDataSource);
       },
     );
 
     test(
-      'should return Left(ServerFailure) when remoteDataSource.addAccount throws AppException',
+      'should return Left(ServerFailure) when remoteDataSource.addAccount throws ServerException',
       () async {
         // Arrange
         when(() => mockVaultRemoteDataSource.encrypt(any()))
@@ -129,12 +125,34 @@ void main() {
 
         // Assert
         expect(result, const Left(ServerFailure('Server Error')));
+        verify(() => mockVaultRemoteDataSource.encrypt(any())).called(2);
+        verify(() => mockRemoteDataSource.addAccount(
+              account: any(named: 'account'),
+              uId: tUserId,
+            )).called(1);
+        verifyNoMoreInteractions(mockRemoteDataSource);
+      },
+    );
+
+    test(
+      'should return Left(UnexpectedFailure) when an unknown exception occurs',
+      () async {
+        // Arrange
+        when(() => mockVaultRemoteDataSource.encrypt(any()))
+            .thenThrow(Exception('Unknown'));
+
+        // Act
+        final result = await repository.addAccount(tUserId, tAccount);
+
+        // Assert
+        expect(result, const Left(UnexpectedFailure('Exception: Unknown')));
+        verifyZeroInteractions(mockRemoteDataSource);
       },
     );
   });
 
   group('getAccounts', () {
-    test('should emit accounts when remote stream emits data', () async {
+    test('should emit Right(List<PlatformAccount>) when remote stream emits data', () async {
       // Arrange
       when(
         () => mockRemoteDataSource.getAccountsStream(uId: any(named: 'uId')),
@@ -146,22 +164,38 @@ void main() {
 
       // Act
       final stream = repository.getAccounts(tUserId);
-
       final actual = await stream.toList();
 
+      // Assert
       expect(actual.length, 1);
-
       actual[0].fold(
         (_) => fail('Expected Right'),
         (accounts) {
           expect(accounts[0].id, tAccount.id);
           expect(accounts[0].identifier, tAccount.identifier);
+          expect(accounts[0].platformId, tAccount.platformId);
         },
       );
 
       verify(
         () => mockRemoteDataSource.getAccountsStream(uId: tUserId),
       ).called(1);
+      verifyNoMoreInteractions(mockRemoteDataSource);
+      verifyZeroInteractions(mockVaultRemoteDataSource);
+    });
+
+    test('should emit Left(ServerFailure) when remote stream throws ServerException', () async {
+      // Arrange
+      when(
+        () => mockRemoteDataSource.getAccountsStream(uId: any(named: 'uId')),
+      ).thenAnswer((_) => Stream.error(const ServerException(message: 'Error')));
+
+      // Act
+      final stream = repository.getAccounts(tUserId);
+      final actual = await stream.toList();
+
+      // Assert
+      expect(actual[0], const Left(ServerFailure('Error')));
     });
   });
 
@@ -192,6 +226,7 @@ void main() {
             uId: tUserId,
           ),
         ).called(1);
+        verifyNoMoreInteractions(mockRemoteDataSource);
       },
     );
   });
@@ -220,6 +255,8 @@ void main() {
             accountId: tAccountId,
           ),
         ).called(1);
+        verifyNoMoreInteractions(mockRemoteDataSource);
+        verifyZeroInteractions(mockVaultRemoteDataSource);
       },
     );
   });
@@ -234,7 +271,7 @@ void main() {
               accountId: any(named: 'accountId'),
             )).thenAnswer((_) async => tAccountDto);
         when(() => mockVaultRemoteDataSource.decrypt(any()))
-            .thenAnswer((_) async => 'testPassword');
+            .thenAnswer((_) async => 'decryptedValue');
 
         // Act
         final result = await repository.getAccountById(tUserId, 'acc123');
@@ -244,16 +281,23 @@ void main() {
           (failure) => fail('Should return Right'),
           (account) {
             expect(account.id, tAccount.id);
-            expect(account.password, 'testPassword');
+            expect(account.password, 'decryptedValue');
+            expect(account.notes, 'decryptedValue');
           },
         );
         verify(() => mockVaultRemoteDataSource.decrypt(tEncryptedDataDto))
-            .called(1);
+            .called(2);
+        verify(() => mockRemoteDataSource.getAccountById(
+              uId: tUserId,
+              accountId: 'acc123',
+            )).called(1);
+        verifyNoMoreInteractions(mockRemoteDataSource);
+        verifyNoMoreInteractions(mockVaultRemoteDataSource);
       },
     );
 
     test(
-      'should return Left(ServerFailure) when data source throws AppException',
+      'should return Left(ServerFailure) when data source throws ServerException',
       () async {
         // Arrange
         when(() => mockRemoteDataSource.getAccountById(
@@ -266,6 +310,11 @@ void main() {
 
         // Assert
         expect(result, const Left(ServerFailure('Not found')));
+        verify(() => mockRemoteDataSource.getAccountById(
+              uId: tUserId,
+              accountId: 'acc123',
+            )).called(1);
+        verifyZeroInteractions(mockVaultRemoteDataSource);
       },
     );
   });

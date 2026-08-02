@@ -21,7 +21,7 @@ class MockUpdatePlatformAccountUseCase extends Mock
 class MockDeletePlatformAccountUseCase extends Mock
     implements DeletePlatformAccountUseCase {}
 
-class MockGetAccountBtIdUseCase extends Mock implements GetAccountByIdUseCase {}
+class MockGetAccountByIdUseCase extends Mock implements GetAccountByIdUseCase {}
 
 class FakePlatformAccount extends Fake implements PlatformAccount {}
 
@@ -30,7 +30,7 @@ void main() {
   late MockAddPlatformAccountUseCase mockAddAccount;
   late MockUpdatePlatformAccountUseCase mockUpdateAccount;
   late MockDeletePlatformAccountUseCase mockDeleteAccount;
-  late MockGetAccountBtIdUseCase mockGetAccountById;
+  late MockGetAccountByIdUseCase mockGetAccountById;
 
   setUpAll(() {
     registerFallbackValue(FakePlatformAccount());
@@ -40,7 +40,7 @@ void main() {
     mockAddAccount = MockAddPlatformAccountUseCase();
     mockUpdateAccount = MockUpdatePlatformAccountUseCase();
     mockDeleteAccount = MockDeletePlatformAccountUseCase();
-    mockGetAccountById = MockGetAccountBtIdUseCase();
+    mockGetAccountById = MockGetAccountByIdUseCase();
 
     cubit = PlatformAccountCubit(
       mockUpdateAccount,
@@ -52,23 +52,22 @@ void main() {
 
   const tUserId = 'user_id';
   const tPlatformData = PlatformData(
+    id: 'google_id',
     name: 'Google',
-    icon: 'icon',
+    iconPath: 'icon',
     website: 'google.com',
   );
   final tAccount = PlatformAccount(
     id: '1',
-    platform: tPlatformData,
+    platformId: tPlatformData.id,
     identifier: 'test@gmail.com',
     password: 'testPassword',
     createdAt: DateTime(2023),
   );
 
-
-
   group('addPlatformAccount', () {
     blocTest<PlatformAccountCubit, PlatformAccountState>(
-      'emits [AddPlatformAccountLoadingState, AddPlatformAccountSuccessState] when success',
+      'should emit [AddPlatformAccountLoadingState, AddPlatformAccountSuccessState] when success',
       build: () {
         when(
           () => mockAddAccount.invoke(any(), any()),
@@ -86,22 +85,24 @@ void main() {
         isA<AddPlatformAccountSuccessState>(),
       ],
       verify: (_) {
-        verify(() {
-          mockAddAccount.invoke(
-            tUserId,
-            any(
-              that: isA<PlatformAccount>()
-                  .having((e) => e.identifier, 'identifier', 'test@gmail.com')
-                  .having((e) => e.platform, 'platform', tPlatformData)
-                  .having((e) => e.password, 'password', 'password'),
-            ),
-          );
-        }).called(1);
+        verify(() => mockAddAccount.invoke(
+              tUserId,
+              any(
+                that: isA<PlatformAccount>()
+                    .having((e) => e.identifier, 'identifier', 'test@gmail.com')
+                    .having((e) => e.platformId, 'platformId', tPlatformData.id)
+                    .having((e) => e.password, 'password', 'password'),
+              ),
+            )).called(1);
+        verifyNoMoreInteractions(mockAddAccount);
+        verifyZeroInteractions(mockUpdateAccount);
+        verifyZeroInteractions(mockDeleteAccount);
+        verifyZeroInteractions(mockGetAccountById);
       },
     );
 
     blocTest<PlatformAccountCubit, PlatformAccountState>(
-      'emits [AddPlatformAccountLoadingState, AddPlatformAccountErrorState] when add fails',
+      'should emit [AddPlatformAccountLoadingState, AddPlatformAccountErrorState] when add fails',
       build: () {
         when(
           () => mockAddAccount.invoke(any(), any()),
@@ -122,12 +123,16 @@ void main() {
           'Server Error',
         ),
       ],
+      verify: (_) {
+        verify(() => mockAddAccount.invoke(any(), any())).called(1);
+        verifyNoMoreInteractions(mockAddAccount);
+      },
     );
   });
 
   group('getAccountById', () {
     blocTest<PlatformAccountCubit, PlatformAccountState>(
-      'emits [GetPlatformAccountLoadingState, GetPlatformAccountSuccessState] when success',
+      'should emit [GetPlatformAccountLoadingState, GetPlatformAccountSuccessState] when success',
       build: () {
         when(() => mockGetAccountById.invoke(
               userId: any(named: 'userId'),
@@ -144,10 +149,17 @@ void main() {
           tAccount,
         ),
       ],
+      verify: (_) {
+        verify(() => mockGetAccountById.invoke(
+              userId: tUserId,
+              accountId: '1',
+            )).called(1);
+        verifyNoMoreInteractions(mockGetAccountById);
+      },
     );
 
     blocTest<PlatformAccountCubit, PlatformAccountState>(
-      'emits [GetPlatformAccountLoadingState, GetPlatformAccountErrorState] when failure',
+      'should emit [GetPlatformAccountLoadingState, GetPlatformAccountErrorState] when failure',
       build: () {
         when(() => mockGetAccountById.invoke(
               userId: any(named: 'userId'),
@@ -164,12 +176,17 @@ void main() {
           'Error',
         ),
       ],
+      verify: (_) {
+        verify(() => mockGetAccountById.invoke(userId: any(named: 'userId'),
+          accountId: any(named: 'accountId'),)).called(1);
+        verifyNoMoreInteractions(mockGetAccountById);
+      },
     );
   });
 
   group('updatePlatformAccount', () {
     blocTest<PlatformAccountCubit, PlatformAccountState>(
-      'emits [EditPlatformAccountLoadingState, EditPlatformAccountSuccessState] when success',
+      'should emit [EditPlatformAccountLoadingState, EditPlatformAccountSuccessState] when success',
       build: () {
         when(
           () => mockUpdateAccount.invoke(any(), any()),
@@ -193,15 +210,17 @@ void main() {
               any(
                 that: isA<PlatformAccount>()
                     .having((e) => e.id, 'id', '1')
+                    .having((e) => e.platformId, 'platformId', tPlatformData.id)
                     .having((e) => e.identifier, 'identifier', 'new@gmail.com')
                     .having((e) => e.password, 'password', 'new_password'),
               ),
             )).called(1);
+        verifyNoMoreInteractions(mockUpdateAccount);
       },
     );
 
     blocTest<PlatformAccountCubit, PlatformAccountState>(
-      'emits [EditPlatformAccountLoadingState, EditPlatformAccountErrorState] when update fails',
+      'should emit [EditPlatformAccountLoadingState, EditPlatformAccountErrorState] when update fails',
       build: () {
         when(
           () => mockUpdateAccount.invoke(any(), any()),
@@ -223,12 +242,16 @@ void main() {
           'Update Error',
         ),
       ],
+      verify: (_) {
+        verify(() => mockUpdateAccount.invoke(any(), any())).called(1);
+        verifyNoMoreInteractions(mockUpdateAccount);
+      },
     );
   });
 
   group('deletePlatformAccount', () {
     blocTest<PlatformAccountCubit, PlatformAccountState>(
-      'emits [DeletePlatformAccountLoadingState, DeletePlatformAccountSuccessState] when success',
+      'should emit [DeletePlatformAccountLoadingState, DeletePlatformAccountSuccessState] when success',
       build: () {
         when(
           () => mockDeleteAccount.invoke(any(), any()),
@@ -243,11 +266,12 @@ void main() {
       ],
       verify: (_) {
         verify(() => mockDeleteAccount.invoke(tUserId, '1')).called(1);
+        verifyNoMoreInteractions(mockDeleteAccount);
       },
     );
 
     blocTest<PlatformAccountCubit, PlatformAccountState>(
-      'emits [DeletePlatformAccountLoadingState, DeletePlatformAccountErrorState] when failure',
+      'should emit [DeletePlatformAccountLoadingState, DeletePlatformAccountErrorState] when failure',
       build: () {
         when(
           () => mockDeleteAccount.invoke(any(), any()),
@@ -264,19 +288,41 @@ void main() {
           'Delete Error',
         ),
       ],
+      verify: (_) {
+        verify(() => mockDeleteAccount.invoke(any(), any())).called(1);
+        verifyNoMoreInteractions(mockDeleteAccount);
+      },
     );
   });
 
   group('searchPlatformAccounts', () {
+    const tPlatformGoogle = PlatformData(
+      id: 'google_id',
+      name: 'Google',
+      iconPath: 'i',
+      website: 'w',
+    );
+    const tPlatformFacebook = PlatformData(
+      id: 'facebook_id',
+      name: 'Facebook',
+      iconPath: 'i',
+      website: 'w',
+    );
+
+    final platformsMap = {
+      tPlatformGoogle.id: tPlatformGoogle,
+      tPlatformFacebook.id: tPlatformFacebook,
+    };
+
     final tAccount1 = PlatformAccount(
       id: '1',
-      platform: const PlatformData(name: 'Google', icon: 'i', website: 'w'),
+      platformId: tPlatformGoogle.id,
       identifier: 'user1',
       createdAt: DateTime(2023),
     );
     final tAccount2 = PlatformAccount(
       id: '2',
-      platform: const PlatformData(name: 'Facebook', icon: 'i', website: 'w'),
+      platformId: tPlatformFacebook.id,
       identifier: 'user2',
       createdAt: DateTime(2023),
     );
@@ -284,6 +330,7 @@ void main() {
 
     test('should return all accounts when query is empty', () {
       final result = cubit.searchPlatformAccounts(
+        platforms: platformsMap,
         accountsList: allAccounts,
         searchTerm: '',
       );
@@ -292,6 +339,7 @@ void main() {
 
     test('should filter by identifier (case-insensitive)', () {
       final result = cubit.searchPlatformAccounts(
+        platforms: platformsMap,
         accountsList: allAccounts,
         searchTerm: 'USER1',
       );
@@ -300,6 +348,7 @@ void main() {
 
     test('should filter by platform name (case-insensitive)', () {
       final result = cubit.searchPlatformAccounts(
+        platforms: platformsMap,
         accountsList: allAccounts,
         searchTerm: 'face',
       );
@@ -308,6 +357,7 @@ void main() {
 
     test('should trim query', () {
       final result = cubit.searchPlatformAccounts(
+        platforms: platformsMap,
         accountsList: allAccounts,
         searchTerm: '  user2  ',
       );
@@ -316,6 +366,7 @@ void main() {
 
     test('should return empty list if no match', () {
       final result = cubit.searchPlatformAccounts(
+        platforms: platformsMap,
         accountsList: allAccounts,
         searchTerm: 'none',
       );

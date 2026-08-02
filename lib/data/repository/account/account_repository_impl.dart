@@ -5,8 +5,6 @@ import 'package:pb_vault/data/mapper/custom_field_dto_mapper.dart';
 import 'package:pb_vault/data/mapper/custom_field_mapper.dart';
 import 'package:pb_vault/data/mapper/login_method_dto_mapper.dart';
 import 'package:pb_vault/data/mapper/login_method_mapper.dart';
-import 'package:pb_vault/data/mapper/platform_data_dto_mapper.dart';
-import 'package:pb_vault/data/mapper/platform_data_mapper.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/platform_account_dto.dart';
 
 import '../../../domain/entities/response/platform_account/platform_account.dart';
@@ -43,7 +41,7 @@ class AccountRepositoryImpl implements AccountRepository {
 
       await _accountRemoteDataSource.addAccount(
         account: PlatformAccountDto(
-          platform: account.platform.toPlatformDataDto(),
+          platformId: account.platformId,
           identifier: account.identifier,
           createdAt: account.createdAt,
           password: results[0],
@@ -80,7 +78,7 @@ class AccountRepositoryImpl implements AccountRepository {
             .map(
               (dto) => PlatformAccount(
                 id: dto.id,
-                platform: dto.platform.toPlatformData(),
+                platformId: dto.platformId,
                 identifier: dto.identifier,
                 createdAt: dto.createdAt,
               ),
@@ -112,7 +110,7 @@ class AccountRepositoryImpl implements AccountRepository {
       await _accountRemoteDataSource.updateAccount(
         account: PlatformAccountDto(
           id: account.id,
-          platform: account.platform.toPlatformDataDto(),
+          platformId: account.platformId,
           identifier: account.identifier,
           createdAt: account.createdAt,
           password: results[0],
@@ -186,7 +184,7 @@ class AccountRepositoryImpl implements AccountRepository {
       ]);
 
       var account = PlatformAccount(
-        platform: dto.platform.toPlatformData(),
+        platformId: dto.platformId,
         identifier: dto.identifier,
         createdAt: dto.createdAt,
         id: dto.id,

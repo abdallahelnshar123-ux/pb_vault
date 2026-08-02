@@ -58,4 +58,14 @@ class AppAssets {
   static const String logoutIcon = 'assets/icons/logout.svg';
   static const String editIcon = 'assets/icons/edit.svg';
   static const String identifierIcon = 'assets/icons/identifier_icon.svg';
+  static const String linkedinIcon = 'assets/icons/linkedin_icon.svg';
+  static const String amazonIcon = 'assets/icons/amazon_icon.svg';
+  static const String microsoftIcon = 'assets/icons/microsoft_icon.svg';
+  static const String adobeIcon = 'assets/icons/adobe_icon.svg';
+  static const String canvaIcon = 'assets/icons/canva_icon.svg';
+  static const String skypeIcon = 'assets/icons/skype_icon.svg';
+  static const String minecraftIcon = 'assets/icons/minecraft_icon.svg';
+  static const String huluIcon = 'assets/icons/hulu_icon.svg';
+  static const String disneyPlusIcon = 'assets/icons/disney_plus_icon.svg';
+  static const String xboxIcon = 'assets/icons/xbox_icon.svg';
 }

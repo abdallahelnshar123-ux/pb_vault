@@ -266,7 +266,7 @@ packages:
     source: hosted
     version: "1.0.9"
   dart_style:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: dart_style
       sha256: a4c1ccfee44c7e75ed80484071a5c142a385345e658fd8bd7c4b5c97e7198f98
@@ -638,7 +638,7 @@ packages:
     source: hosted
     version: "0.15.6"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"

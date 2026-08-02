@@ -10,15 +10,16 @@ import '../../../core/utils/screen_size.dart';
 import '../../../widgets/custom_text_form_field.dart';
 
 class Moreinformationexpansiontilewidget extends StatelessWidget {
-  const Moreinformationexpansiontilewidget({super.key,
+  const Moreinformationexpansiontilewidget({
+    super.key,
     required this.notesController,
     required this.passkeyController,
-    required this.recoveryCodesController});
+    required this.recoveryCodesController,
+  });
 
   final TextEditingController notesController;
   final TextEditingController recoveryCodesController;
   final TextEditingController passkeyController;
-
 
   @override
   Widget build(BuildContext context) {

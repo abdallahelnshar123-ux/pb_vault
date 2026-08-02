@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/repository/account/account_repository.dart';
 import 'package:pb_vault/domain/use_cases/add_account_use_case.dart';
@@ -15,7 +14,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(PlatformAccount(
-      platform: const PlatformData(name: 'name', icon: 'icon', website: 'icon'),
+      platformId: 'platform_id',
       identifier: 'email',
       createdAt: DateTime.now(),
     ));
@@ -28,13 +27,13 @@ void main() {
 
   const tUserId = '1';
   final tAccount = PlatformAccount(
-    platform: const PlatformData(name: 'name', icon: 'icon', website: 'icon'),
+    platformId: 'platform_id',
     identifier: 'email',
     password: 'password123',
     createdAt: DateTime.now(),
   );
 
-  test('should call accountRepo.addAccount and return Right<unit>', () async {
+  test('should call accountRepo.addAccount and return Right(unit) when successful', () async {
     // Arrange
     when(() => mockAccountRepo.addAccount(any(), any()))
         .thenAnswer((_) async => const Right(unit));
@@ -48,7 +47,7 @@ void main() {
     verifyNoMoreInteractions(mockAccountRepo);
   });
 
-  test('should call accountRepo.addAccount and return Left<Failure>', () async {
+  test('should return Left(Failure) when accountRepo.addAccount fails', () async {
     // Arrange
     const tFailure = ServerFailure('Server Error');
     when(() => mockAccountRepo.addAccount(any(), any()))

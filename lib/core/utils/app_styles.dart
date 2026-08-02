@@ -91,6 +91,7 @@ class AppStyles {
       fontFamily: GoogleFonts.roboto().fontFamily,
     );
   }
+
   // static TextStyle robotoRegular12SurfaceDark(BuildContext context) {
   //   return Theme.of(context).textTheme.bodyMedium!.copyWith(
   //     color: AppColors.surfaceDark,
@@ -99,7 +100,6 @@ class AppStyles {
   //     fontFamily: GoogleFonts.roboto().fontFamily,
   //   );
   // }
-
 
   static TextStyle robotoBold16(
     BuildContext context, {

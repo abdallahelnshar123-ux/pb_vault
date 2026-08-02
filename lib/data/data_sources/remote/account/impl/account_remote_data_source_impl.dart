@@ -96,6 +96,8 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
       throw ServerException(message: e.message ?? 'server_error');
     } on SocketException {
       throw NetworkException(message: 'no_internet');
+    } on AppException {
+      rethrow;
     } catch (e) {
       throw UnexpectedException(message: e.toString());
     }

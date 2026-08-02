@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import '../../../../core/constants/firestore_constants.dart';
 
 class EncryptedDataDto extends Equatable {
@@ -24,7 +25,7 @@ class EncryptedDataDto extends Equatable {
     return {
       FirestoreConstants.cipherText: cipherText,
       FirestoreConstants.nonce: nonce,
-      FirestoreConstants.mac: mac
+      FirestoreConstants.mac: mac,
     };
   }
 

@@ -4,12 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pb_vault/core/constants/app_constants.dart';
+import 'package:pb_vault/core/constants/platforms.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/login_method.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_state.dart';
 import 'package:pb_vault/widgets/copy_account_password_button_widget.dart';
 import 'package:pb_vault/widgets/main_error_widget.dart';
 import 'package:pb_vault/widgets/main_loading_widget.dart';
+import 'package:pb_vault/widgets/platform_icon.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_styles.dart';
@@ -70,6 +72,8 @@ class _PlatformAccountDetailsScreenState
           current is GetPlatformAccountErrorState,
       builder: (BuildContext context, PlatformAccountState state) {
         if (state is GetPlatformAccountSuccessState) {
+          var platform = appPlatforms[state.account.platformId];
+
           return SafeArea(
             top: false,
             bottom: true,
@@ -94,7 +98,7 @@ class _PlatformAccountDetailsScreenState
                     children: [
                       _builtPlatformIcon(account: state.account),
                       Text(
-                        state.account.platform.name,
+                        platform?.name ?? '',
                         style: AppStyles.robotoBlack20SurfaceDark(context),
                       ),
                       SizedBox(height: 5),
@@ -157,7 +161,7 @@ class _PlatformAccountDetailsScreenState
                           _buildDetailsCard(
                             context,
                             title: 'website_address'.tr(),
-                            subTitle: state.account.platform.website,
+                            subTitle: platform?.website ?? '',
                           ),
                           _buildDetailsCard(
                             context,
@@ -350,12 +354,9 @@ class _PlatformAccountDetailsScreenState
         color: AppColors.surfaceDark,
         shape: BoxShape.circle,
       ),
-      child: Image.network(
-        account.platform.icon,
-        width: context.width * 0.15,
-        height: context.width * 0.15,
-        errorBuilder: (_, _, _) =>
-            const Icon(Icons.public, size: 80, color: AppColors.primary),
+      child: PlatformIcon(
+        platformId: account.platformId,
+        size: context.width * 0.15,
       ),
     );
   }

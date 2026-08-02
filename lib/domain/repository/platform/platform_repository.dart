@@ -8,7 +8,5 @@ abstract interface class PlatformRepository {
 
   List<PlatformData> search(String query);
 
-  List<PlatformData> getByCategory(
-      PlatformCategory category,
-      );
+  List<PlatformData> getByCategory(PlatformCategory category);
 }

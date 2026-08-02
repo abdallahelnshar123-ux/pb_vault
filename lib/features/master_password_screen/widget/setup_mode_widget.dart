@@ -141,10 +141,7 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
             dColor: AppColors.backgroundDark,
           ),
           backgroundColor: state is MasterPasswordSetupSuccess
-              ? context.easyColor(
-                  dColor: AppColors.backgroundLight,
-                  lColor: AppColors.backgroundDark,
-                )
+              ? AppColors.transparent
               : context.easyColor(
                   lColor: AppColors.backgroundDark,
                   dColor: AppColors.primary,

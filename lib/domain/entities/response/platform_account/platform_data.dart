@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/widgets.dart';
 
 import 'platform_category.dart';
 
@@ -9,13 +10,22 @@ class PlatformData extends Equatable {
 
   final String website;
 
-  final PlatformCategory category;
+  final IconData? icon;
+
+  final Color? color;
+
+  final String? iconPath;
+
+  final PlatformCategory? category;
 
   const PlatformData({
     required this.id,
     required this.name,
     required this.website,
-    required this.category,
+    this.icon,
+    this.color,
+    this.iconPath,
+    this.category,
   });
 
   @override
@@ -23,6 +33,9 @@ class PlatformData extends Equatable {
     id,
     name,
     website,
+    icon,
+    color,
+    iconPath,
     category,
   ];
 }

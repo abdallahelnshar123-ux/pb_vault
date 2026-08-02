@@ -4,11 +4,10 @@ import 'package:pb_vault/core/constants/firestore_constants.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/custom_field_dto.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/encrypted_data_dto.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/login_method_dto.dart';
-import 'package:pb_vault/data/model/response/platform_account_dto/platform_data_dto.dart';
 
 class PlatformAccountDto extends Equatable {
   final String? id;
-  final PlatformDataDto platform;
+  final String platformId;
   final String identifier;
   final EncryptedDataDto? password;
   final List<LoginMethodDto> loginMethods;
@@ -21,11 +20,11 @@ class PlatformAccountDto extends Equatable {
 
   const PlatformAccountDto({
     this.id,
-    required this.platform,
+    required this.platformId,
     required this.identifier,
     this.password,
     this.loginMethods = const [],
-    this.recoveryCodes ,
+    this.recoveryCodes,
     this.passkey,
     this.twoFactorSecret,
     this.notes,
@@ -35,11 +34,11 @@ class PlatformAccountDto extends Equatable {
 
   PlatformAccountDto copyWith({
     String? id,
-    PlatformDataDto? platform,
+    String? platformId,
     String? identifier,
     EncryptedDataDto? password,
     List<LoginMethodDto>? loginMethods,
-   EncryptedDataDto? recoveryCodes,
+    EncryptedDataDto? recoveryCodes,
     EncryptedDataDto? passkey,
     EncryptedDataDto? twoFactorSecret,
     EncryptedDataDto? notes,
@@ -48,7 +47,7 @@ class PlatformAccountDto extends Equatable {
   }) {
     return PlatformAccountDto(
       id: id ?? this.id,
-      platform: platform ?? this.platform,
+      platformId: platformId ?? this.platformId,
       identifier: identifier ?? this.identifier,
       password: password ?? this.password,
       loginMethods: loginMethods ?? this.loginMethods,
@@ -64,7 +63,7 @@ class PlatformAccountDto extends Equatable {
   factory PlatformAccountDto.fromFireStore(Map<String, dynamic> data) {
     return PlatformAccountDto(
       id: data[FirestoreConstants.id],
-      platform: PlatformDataDto.fromMap(data[FirestoreConstants.platform] ?? {}),
+      platformId: data[FirestoreConstants.platformId] ?? '',
       identifier: data[FirestoreConstants.identifier] ?? '',
       password: data[FirestoreConstants.password] != null
           ? EncryptedDataDto.fromMap(data[FirestoreConstants.password])
@@ -94,15 +93,19 @@ class PlatformAccountDto extends Equatable {
   Map<String, dynamic> toFireStore() {
     return {
       FirestoreConstants.id: id,
-      FirestoreConstants.platform: platform.toMap(),
+      FirestoreConstants.platformId: platformId,
       FirestoreConstants.identifier: identifier,
       FirestoreConstants.password: password?.toMap(),
-      FirestoreConstants.loginMethods: loginMethods.map((e) => e.toMap()).toList(),
+      FirestoreConstants.loginMethods: loginMethods
+          .map((e) => e.toMap())
+          .toList(),
       FirestoreConstants.recoveryCodes: recoveryCodes?.toMap(),
       FirestoreConstants.passkey: passkey?.toMap(),
       FirestoreConstants.twoFactorSecret: twoFactorSecret?.toMap(),
       FirestoreConstants.notes: notes?.toMap(),
-      FirestoreConstants.customFields: customFields?.map((e) => e.toMap()).toList(),
+      FirestoreConstants.customFields: customFields
+          ?.map((e) => e.toMap())
+          .toList(),
       FirestoreConstants.createdAt: Timestamp.fromDate(createdAt),
     };
   }
@@ -110,7 +113,7 @@ class PlatformAccountDto extends Equatable {
   @override
   List<Object?> get props => [
     id,
-    platform,
+    platformId,
     identifier,
     password,
     loginMethods,

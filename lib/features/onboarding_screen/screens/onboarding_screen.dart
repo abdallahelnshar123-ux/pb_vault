@@ -91,14 +91,6 @@ class OnboardingScreen extends StatelessWidget {
                     );
                   }
                 },
-                // onPressed: () {
-                //   // provider.onFirstButtonClick(context);
-                //   final action = provider.onFirstButtonClick();
-                //
-                //   if (action == OnboardingAction.navigateToAuth) {
-                //     Navigator.pushReplacementNamed(context, AppRoutes.authScreen);
-                //   }
-                // },
                 backgroundColor: context.easyColor(
                   lColor: AppColors.backgroundDark,
                   dColor: AppColors.primary,

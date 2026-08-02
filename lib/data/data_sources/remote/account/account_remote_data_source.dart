@@ -14,5 +14,9 @@ abstract class AccountRemoteDataSource {
   Stream<List<PlatformAccountDto>> getAccountsStream({required String uId});
 
   Future<void> deleteAccount({required String uId, required String accountId});
-  Future<PlatformAccountDto> getAccountById({required String uId, required String accountId});
+
+  Future<PlatformAccountDto> getAccountById({
+    required String uId,
+    required String accountId,
+  });
 }

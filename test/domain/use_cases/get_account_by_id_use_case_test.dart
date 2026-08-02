@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/repository/account/account_repository.dart';
 import 'package:pb_vault/domain/use_cases/get_account_by_id_use_case.dart';
@@ -22,16 +21,12 @@ void main() {
   const tAccountId = 'acc_456';
   final tPlatformAccount = PlatformAccount(
     id: tAccountId,
-    platform: const PlatformData(
-      name: 'Google',
-      icon: 'google_icon',
-      website: 'google.com',
-    ),
+    platformId: 'google_id',
     identifier: 'user@gmail.com',
     createdAt: DateTime(2023, 1, 1),
   );
 
-  group('GetAccountBtIdUseCase', () {
+  group('GetAccountByIdUseCase', () {
     test(
       'should return Right(PlatformAccount) when repository call is successful',
       () async {
