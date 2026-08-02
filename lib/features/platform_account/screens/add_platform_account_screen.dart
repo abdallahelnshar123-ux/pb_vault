@@ -10,6 +10,7 @@ import 'package:pb_vault/features/platform_account/widget/login_methods_widget.d
 import 'package:pb_vault/features/platform_account/widget/more_information_expansion_rile_widget.dart';
 import 'package:pb_vault/widgets/identifier_text_field_widget.dart';
 import 'package:pb_vault/widgets/password_text_field_widget.dart';
+import 'package:pb_vault/widgets/platform_icon.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_styles.dart';
@@ -221,9 +222,9 @@ class _AddPlatformAccountScreenState extends State<AddPlatformAccountScreen> {
                     dColor: AppColors.secondary,
                   ),
                   radius: context.width * 0.07,
-                  child: Image.network(
-                    controller.currentPlatform.value!.icon,
-                    width: 24,
+                  child: PlatformIcon(
+                    platformId: value.id,
+                    size: context.width * 0.06,
                   ),
                 )
               : const Icon(Icons.category, color: AppColors.black),

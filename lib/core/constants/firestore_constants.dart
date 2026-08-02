@@ -16,7 +16,7 @@ class FirestoreConstants {
   static const String avatar = 'avatar';
 
   // Platform Account Fields
-  static const String platform = 'platform';
+  static const String platformId = 'platform_id';
   static const String identifier = 'identifier';
   static const String password = 'password';
   static const String loginMethods = 'login_methods';
@@ -29,6 +29,7 @@ class FirestoreConstants {
   // Platform Data Fields
   static const String icon = 'icon';
   static const String website = 'website';
+  static const String color = 'color';
 
   // Login Method Fields
   // 'id' and 'provider' are reused

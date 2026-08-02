@@ -1,7 +1,7 @@
 import 'dart:math';
 
 class PasswordUtils {
- static String generateStrongPassword() {
+  static String generateStrongPassword() {
     const length = 16;
     const letterLowerCase = "abcdefghijklmnopqrstuvwxyz";
     const letterUpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -19,5 +19,4 @@ class PasswordUtils {
       return chars[indexRandom];
     }).join('');
   }
-
 }

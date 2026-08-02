@@ -4,12 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/core/utils/app_routes.dart';
+import 'package:pb_vault/core/utils/platform_lookup.dart';
 import 'package:pb_vault/core/utils/snack_bar_utils.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
 import 'package:pb_vault/features/platform_account/widget/login_methods_widget.dart';
 import 'package:pb_vault/features/platform_account/widget/more_information_expansion_rile_widget.dart';
 import 'package:pb_vault/widgets/identifier_text_field_widget.dart';
 import 'package:pb_vault/widgets/password_text_field_widget.dart';
+import 'package:pb_vault/widgets/platform_icon.dart';
 
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
@@ -46,7 +48,7 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
     controller.notes.text = widget.account.notes ?? '';
     controller.recoveryCodes.text = widget.account.recoveryCodes ?? '';
     controller.passkey.text = widget.account.passkey ?? '';
-    controller.currentPlatform.value = widget.account.platform;
+    controller.currentPlatform.value = widget.account.platformId.platform;
     controller.loginMethods = widget.account.loginMethods;
   }
 
@@ -240,9 +242,9 @@ class _EditPlatformAccountScreenState extends State<EditPlatformAccountScreen> {
                     dColor: AppColors.secondary,
                   ),
                   radius: context.width * 0.07,
-                  child: Image.network(
-                    controller.currentPlatform.value!.icon,
-                    width: context.width * 0.06,
+                  child: PlatformIcon(
+                    platformId: value.id,
+                    size: context.width * 0.06,
                   ),
                 )
               : const Icon(Icons.category, color: AppColors.black),

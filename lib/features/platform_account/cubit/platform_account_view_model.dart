@@ -37,7 +37,7 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
     emit(AddPlatformAccountLoadingState());
 
     final account = PlatformAccount(
-      platform: platform,
+      platformId: platform.id,
       identifier: identifier ?? '',
       password: password,
       loginMethods: loginMethods ?? const [],
@@ -84,7 +84,7 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
     emit(EditPlatformAccountLoadingState());
     final account = PlatformAccount(
       id: accountId,
-      platform: platform,
+      platformId: platform.id,
       identifier: identifier ?? '',
       password: password,
       loginMethods: loginMethods ?? const [],
@@ -117,6 +117,7 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
   }
 
   List<PlatformAccount> searchPlatformAccounts({
+    required Map<String, PlatformData> platforms,
     required List<PlatformAccount> accountsList,
     required String searchTerm,
   }) {
@@ -126,7 +127,7 @@ class PlatformAccountCubit extends Cubit<PlatformAccountState> {
               account.identifier.toLowerCase().trim().contains(
                 searchTerm.toLowerCase().trim(),
               ) ||
-              account.platform.name.toLowerCase().trim().contains(
+              platforms[account.platformId]!.name.toLowerCase().trim().contains(
                 searchTerm.toLowerCase().trim(),
               ),
         )

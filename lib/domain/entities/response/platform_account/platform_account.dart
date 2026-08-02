@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
 
 import 'custom_field.dart';
 import 'login_method.dart';
@@ -7,7 +6,7 @@ import 'login_method.dart';
 class PlatformAccount extends Equatable {
   const PlatformAccount({
     this.id,
-    required this.platform,
+    required this.platformId,
 
     required this.identifier,
 
@@ -30,7 +29,7 @@ class PlatformAccount extends Equatable {
 
   final String? id;
 
-  final PlatformData platform;
+  final String platformId;
 
   /// email / username / phone
   final String identifier;
@@ -55,7 +54,7 @@ class PlatformAccount extends Equatable {
   @override
   List<Object?> get props => [
     id,
-    platform,
+    platformId,
     identifier,
     password,
     loginMethods,

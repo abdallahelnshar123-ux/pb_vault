@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pb_vault/widgets/platform_icon.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
 import 'package:pb_vault/features/platform_account/screens/platform_account_details_screen.dart';
 
+import '../../../core/constants/platforms.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
@@ -16,6 +18,8 @@ class PasswordCardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var platformsMain = platformMain;
+    var platformsSecond = platformSecond;
     return ListView.separated(
       itemCount: accountsList.length,
       separatorBuilder: (context, index) =>
@@ -49,26 +53,28 @@ class PasswordCardItem extends StatelessWidget {
             },
             leading: CircleAvatar(
               backgroundColor: AppColors.backgroundDark,
-              child: account.platform.icon.isNotEmpty
-                  ? ClipOval(
-                      child: Image.network(
-                        account.platform.icon,
-                        width: 32,
-                        height: 32,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => Text(
-                          account.platform.name[0].toUpperCase(),
-                          style: AppStyles.interMedium14BackgroundDark,
-                        ),
-                      ),
-                    )
-                  : Text(
-                      account.platform.name[0].toUpperCase(),
-                      style: AppStyles.interMedium14BackgroundDark,
-                    ),
+              child: PlatformIcon(platformId: account.platformId),
+              // ? ClipOval(
+              //     child: Image.network(
+              //       account.platformId.icon,
+              //       width: 32,
+              //       height: 32,
+              //       fit: BoxFit.cover,
+              //       errorBuilder: (_, _, _) => Text(
+              //         account.platformId.name[0].toUpperCase(),
+              //         style: AppStyles.interMedium14BackgroundDark,
+              //       ),
+              //     ),
+              //   )
+              // : Text(
+              //     account.platformId.name[0].toUpperCase(),
+              //     style: AppStyles.interMedium14BackgroundDark,
+              //   ),
             ),
             title: Text(
-              account.platform.name,
+              platformsMain[account.platformId]?.name ??
+                  platformsSecond[account.platformId]?.name ??
+                  '',
               style: AppStyles.robotoBold16SurfaceDark(context),
             ),
             subtitle: Text(
@@ -78,7 +84,7 @@ class PasswordCardItem extends StatelessWidget {
             trailing: Icon(
               Icons.arrow_forward_ios_rounded,
               color: AppColors.backgroundDark,
-              size: context.width *0.06,
+              size: context.width * 0.06,
             ),
           ),
         );

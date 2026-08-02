@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import '../../../../core/constants/firestore_constants.dart';
 
 class CustomFieldDto extends Equatable {
@@ -24,7 +25,7 @@ class CustomFieldDto extends Equatable {
     return {
       FirestoreConstants.title: title,
       FirestoreConstants.value: value,
-      FirestoreConstants.isSensitive: isSensitive
+      FirestoreConstants.isSensitive: isSensitive,
     };
   }
 

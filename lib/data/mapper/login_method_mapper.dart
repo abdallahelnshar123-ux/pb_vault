@@ -9,7 +9,7 @@ extension LoginMethodMapper on LoginMethodDto {
         orElse: () => LoginProvider.password,
       ),
       identifier: identifier,
-      id: id
+      id: id,
     );
   }
 }

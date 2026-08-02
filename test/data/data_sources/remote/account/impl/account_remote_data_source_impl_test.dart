@@ -8,7 +8,6 @@ import 'package:pb_vault/data/data_sources/remote/account/impl/account_remote_da
 import 'package:pb_vault/data/exceptions/app_exceptions.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/encrypted_data_dto.dart';
 import 'package:pb_vault/data/model/response/platform_account_dto/platform_account_dto.dart';
-import 'package:pb_vault/data/model/response/platform_account_dto/platform_data_dto.dart';
 
 class MockFirestoreService extends Mock implements FirestoreService {}
 
@@ -20,7 +19,7 @@ void main() {
     registerFallbackValue(
       PlatformAccountDto(
         id: '',
-        platform: const PlatformDataDto(name: '', icon: '', website: ''),
+        platformId: '',
         identifier: '',
         createdAt: DateTime.now(),
       ),
@@ -35,11 +34,7 @@ void main() {
   const tUid = 'user123';
   final tAccountDto1 = PlatformAccountDto(
     id: 'acc123',
-    platform: const PlatformDataDto(
-      name: 'Google',
-      icon: 'icon',
-      website: 'google.com',
-    ),
+    platformId: 'google_id',
     identifier: 'test@gmail.com',
     password: const EncryptedDataDto(
       cipherText: [1, 2, 3],
@@ -50,13 +45,9 @@ void main() {
   );
 
   final tAccountDto2 = PlatformAccountDto(
-    id: 'acc123',
-    platform: const PlatformDataDto(
-      name: 'Google',
-      icon: 'icon',
-      website: 'google.com',
-    ),
-    identifier: 'test@gmail.com',
+    id: 'acc456',
+    platformId: 'facebook_id',
+    identifier: 'test2@gmail.com',
     password: const EncryptedDataDto(
       cipherText: [1, 2, 3],
       mac: [4, 5, 6],
@@ -118,8 +109,9 @@ void main() {
         verifyNoMoreInteractions(mockFirestoreService);
       },
     );
+
     test(
-      'should throw ServerException with correct message when FirebaseException occurs with null  message ',
+      'should throw ServerException with server_error when FirebaseException occurs with null message',
       () async {
         // Arrange
         when(
@@ -177,6 +169,34 @@ void main() {
 
       verifyNoMoreInteractions(mockFirestoreService);
     });
+
+    test('should throw UnexpectedException when an unknown error occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.addAccount(
+          account: any(named: 'account'),
+          uId: any(named: 'uId'),
+        ),
+      ).thenThrow(Exception('Unknown error'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.addAccount(account: tAccountDto1, uId: tUid),
+        throwsA(
+          isA<UnexpectedException>().having(
+            (e) => e.message,
+            'message',
+            'Exception: Unknown error',
+          ),
+        ),
+      );
+
+      verify(
+        () => mockFirestoreService.addAccount(account: tAccountDto1, uId: tUid),
+      ).called(1);
+
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
   });
 
   group('updateAccount', () {
@@ -198,6 +218,69 @@ void main() {
           account: tAccountDto1,
           uId: tUid,
         ),
+      ).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw ServerException when FirebaseException occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.updateAccount(
+          account: any(named: 'account'),
+          uId: any(named: 'uId'),
+        ),
+      ).thenThrow(FirebaseException(plugin: 'firestore', message: 'error'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.updateAccount(account: tAccountDto1, uId: tUid),
+        throwsA(isA<ServerException>()),
+      );
+
+      verify(
+        () => mockFirestoreService.updateAccount(account: tAccountDto1, uId: tUid),
+      ).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw NetworkException when SocketException occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.updateAccount(
+          account: any(named: 'account'),
+          uId: any(named: 'uId'),
+        ),
+      ).thenThrow(const SocketException('No internet'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.updateAccount(account: tAccountDto1, uId: tUid),
+        throwsA(isA<NetworkException>()),
+      );
+
+      verify(
+        () => mockFirestoreService.updateAccount(account: tAccountDto1, uId: tUid),
+      ).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw UnexpectedException when an unknown error occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.updateAccount(
+          account: any(named: 'account'),
+          uId: any(named: 'uId'),
+        ),
+      ).thenThrow(Exception('Unknown error'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.updateAccount(account: tAccountDto1, uId: tUid),
+        throwsA(isA<UnexpectedException>()),
+      );
+
+      verify(
+        () => mockFirestoreService.updateAccount(account: tAccountDto1, uId: tUid),
       ).called(1);
       verifyNoMoreInteractions(mockFirestoreService);
     });
@@ -256,6 +339,11 @@ void main() {
             ),
           ),
         );
+
+        verify(
+          () => mockFirestoreService.getAccountsStream(uId: tUid),
+        ).called(1);
+        verifyNoMoreInteractions(mockFirestoreService);
       },
     );
 
@@ -265,7 +353,7 @@ void main() {
         // Arrange
         when(
           () => mockFirestoreService.getAccountsStream(uId: any(named: 'uId')),
-        ).thenAnswer((_) => Stream.error(SocketException('no internet')));
+        ).thenAnswer((_) => Stream.error(const SocketException('no internet')));
 
         // Assert
         await expectLater(
@@ -278,14 +366,46 @@ void main() {
             ),
           ),
         );
+
+        verify(
+          () => mockFirestoreService.getAccountsStream(uId: tUid),
+        ).called(1);
+        verifyNoMoreInteractions(mockFirestoreService);
+      },
+    );
+
+    test(
+      'should throw UnexpectedException when stream emits an unknown error',
+      () async {
+        // Arrange
+        when(
+          () => mockFirestoreService.getAccountsStream(uId: any(named: 'uId')),
+        ).thenAnswer((_) => Stream.error(Exception('Unknown error')));
+
+        // Assert
+        await expectLater(
+          dataSource.getAccountsStream(uId: tUid).toList(),
+          throwsA(
+            isA<UnexpectedException>().having(
+              (e) => e.message,
+              'message',
+              'Exception: Unknown error',
+            ),
+          ),
+        );
+
+        verify(
+          () => mockFirestoreService.getAccountsStream(uId: tUid),
+        ).called(1);
+        verifyNoMoreInteractions(mockFirestoreService);
       },
     );
   });
 
   group('deleteAccount', () {
+    const tAccountId = 'acc123';
     test('should call _firestoreService.deleteAccount', () async {
       // Arrange
-      const tAccountId = 'acc123';
       when(
         () => mockFirestoreService.deleteAccount(
           uId: any(named: 'uId'),
@@ -302,6 +422,188 @@ void main() {
           uId: tUid,
           accountId: tAccountId,
         ),
+      ).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw ServerException when FirebaseException occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.deleteAccount(
+          uId: any(named: 'uId'),
+          accountId: any(named: 'accountId'),
+        ),
+      ).thenThrow(FirebaseException(plugin: 'firestore', message: 'error'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.deleteAccount(uId: tUid, accountId: tAccountId),
+        throwsA(isA<ServerException>()),
+      );
+
+      verify(
+        () => mockFirestoreService.deleteAccount(uId: tUid, accountId: tAccountId),
+      ).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw NetworkException when SocketException occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.deleteAccount(
+          uId: any(named: 'uId'),
+          accountId: any(named: 'accountId'),
+        ),
+      ).thenThrow(const SocketException('No internet'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.deleteAccount(uId: tUid, accountId: tAccountId),
+        throwsA(isA<NetworkException>()),
+      );
+
+      verify(
+        () => mockFirestoreService.deleteAccount(uId: tUid, accountId: tAccountId),
+      ).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw UnexpectedException when an unknown error occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.deleteAccount(
+          uId: any(named: 'uId'),
+          accountId: any(named: 'accountId'),
+        ),
+      ).thenThrow(Exception('Unknown error'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.deleteAccount(uId: tUid, accountId: tAccountId),
+        throwsA(isA<UnexpectedException>()),
+      );
+
+      verify(
+        () => mockFirestoreService.deleteAccount(uId: tUid, accountId: tAccountId),
+      ).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+  });
+
+  group('getAccountById', () {
+    const tAccountId = 'acc123';
+    test('should call _firestoreService.getAccountById and return PlatformAccountDto', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.getAccountById(
+          uId: any(named: 'uId'),
+          accountId: any(named: 'accountId'),
+        ),
+      ).thenAnswer((_) async => tAccountDto1);
+
+      // Act
+      final result = await dataSource.getAccountById(uId: tUid, accountId: tAccountId);
+
+      // Assert
+      expect(result, tAccountDto1);
+      verify(
+        () => mockFirestoreService.getAccountById(
+          uId: tUid,
+          accountId: tAccountId,
+        ),
+      ).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw UnexpectedException when _firestoreService returns null', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.getAccountById(
+          uId: any(named: 'uId'),
+          accountId: any(named: 'accountId'),
+        ),
+      ).thenAnswer((_) async => null);
+
+      // Act & Assert
+      await expectLater(
+        () =>dataSource.getAccountById(uId: tUid, accountId: tAccountId),
+        throwsA(
+          isA<UnexpectedException>().having(
+            (e) => e.message,
+            'message',
+            'error_while_getting_account_details',
+          ),
+        ),
+      );
+
+      verify(
+        () => mockFirestoreService.getAccountById(
+          uId: tUid,
+          accountId: tAccountId,
+        ),
+      ).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw ServerException when FirebaseException occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.getAccountById(
+          uId: any(named: 'uId'),
+          accountId: any(named: 'accountId'),
+        ),
+      ).thenThrow(FirebaseException(plugin: 'firestore', message: 'error'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.getAccountById(uId: tUid, accountId: tAccountId),
+        throwsA(isA<ServerException>()),
+      );
+
+      verify(
+        () => mockFirestoreService.getAccountById(uId: tUid, accountId: tAccountId),
+      ).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw NetworkException when SocketException occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.getAccountById(
+          uId: any(named: 'uId'),
+          accountId: any(named: 'accountId'),
+        ),
+      ).thenThrow(const SocketException('No internet'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.getAccountById(uId: tUid, accountId: tAccountId),
+        throwsA(isA<NetworkException>()),
+      );
+
+      verify(
+        () => mockFirestoreService.getAccountById(uId: tUid, accountId: tAccountId),
+      ).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw UnexpectedException when an unknown error occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.getAccountById(
+          uId: any(named: 'uId'),
+          accountId: any(named: 'accountId'),
+        ),
+      ).thenThrow(Exception('Unknown error'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.getAccountById(uId: tUid, accountId: tAccountId),
+        throwsA(isA<UnexpectedException>()),
+      );
+
+      verify(
+        () => mockFirestoreService.getAccountById(uId: tUid, accountId: tAccountId),
       ).called(1);
       verifyNoMoreInteractions(mockFirestoreService);
     });

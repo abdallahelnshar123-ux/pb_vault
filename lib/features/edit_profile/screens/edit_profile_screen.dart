@@ -154,8 +154,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             valueListenable: avatar,
                             builder:
                                 (BuildContext context, value, Widget? child) {
-                                  var avatarPath =
-                                      userAvatars[value];
+                                  var avatarPath = userAvatars[value];
                                   return Container(
                                     width: context.width * 0.3,
                                     height: context.width * 0.3,

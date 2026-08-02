@@ -31,15 +31,15 @@ class AppConstants {
   ];
 
   static Map<String, String> loginMethodsIcons = {
-    LoginProvider.password.name : 'assets/icons/password_icon.svg',
-    LoginProvider.apple.name : 'assets/icons/apple_icon.svg',
-    LoginProvider.discord.name : 'assets/icons/discord_icon.svg',
-    LoginProvider.facebook.name : 'assets/icons/facebook_icon.svg',
-    LoginProvider.github.name : 'assets/icons/github_icon.svg',
-    LoginProvider.passkey.name : 'assets/icons/passkey_icon.svg',
-    LoginProvider.google.name : 'assets/icons/google_icon.svg',
-    LoginProvider.linkedin.name : 'assets/icons/linkedin_icon.svg',
-    LoginProvider.x.name : 'assets/icons/x_icon.svg',
-    LoginProvider.microsoft.name : 'assets/icons/microsoft_icon.svg',
+    LoginProvider.password.name: 'assets/icons/password_icon.svg',
+    LoginProvider.apple.name: 'assets/icons/apple_icon.svg',
+    LoginProvider.discord.name: 'assets/icons/discord_icon.svg',
+    LoginProvider.facebook.name: 'assets/icons/facebook_icon.svg',
+    LoginProvider.github.name: 'assets/icons/github_icon.svg',
+    LoginProvider.passkey.name: 'assets/icons/passkey_icon.svg',
+    LoginProvider.google.name: 'assets/icons/google_icon.svg',
+    LoginProvider.linkedin.name: 'assets/icons/linkedin_icon.svg',
+    LoginProvider.x.name: 'assets/icons/x_icon.svg',
+    LoginProvider.microsoft.name: 'assets/icons/microsoft_icon.svg',
   };
 }

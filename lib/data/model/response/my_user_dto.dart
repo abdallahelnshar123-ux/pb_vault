@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import '../../../../core/constants/firestore_constants.dart';
 
 class MyUserDto extends Equatable {
@@ -28,7 +29,9 @@ class MyUserDto extends Equatable {
       provider: data[FirestoreConstants.provider]?.toString() ?? '',
       passwordVerifier: data[FirestoreConstants.passwordVerifier]?.toString(),
       avatar: data[FirestoreConstants.avatar]?.toString() ?? '',
-      salt: data[FirestoreConstants.salt] != null ? List<int>.from(data[FirestoreConstants.salt]) : null,
+      salt: data[FirestoreConstants.salt] != null
+          ? List<int>.from(data[FirestoreConstants.salt])
+          : null,
     );
   }
 

@@ -4,9 +4,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/encrypted_data.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
-import 'package:pb_vault/domain/entities/response/platform_account/platform_data.dart';
 import 'package:pb_vault/domain/failure/failure.dart';
 import 'package:pb_vault/domain/use_cases/get_accounts_use_case.dart';
 import 'package:pb_vault/features/home_screen/cubit/home_state.dart';
@@ -14,57 +12,44 @@ import 'package:pb_vault/features/home_screen/cubit/home_view_model.dart';
 
 class MockGetAccountsUseCase extends Mock implements GetAccountsUseCase {}
 
-class FakeEncryptedData extends Fake implements EncryptedData {}
-
 void main() {
   late HomeCubit homeCubit;
   late MockGetAccountsUseCase mockGetAccountsUseCase;
 
   const tUserId = 'user123';
-  final tPlatformData = PlatformData(
-    name: 'Facebook',
-    icon: 'icon_url',
-    website: 'facebook.com',
-  );
+
   final tAccount1 = PlatformAccount(
     id: '1',
-    platform: tPlatformData,
+    platformId: 'facebook_id',
     identifier: 'test@example.com',
     password: 'testPassword',
-    createdAt: DateTime.now(),
+    createdAt: DateTime(2023, 1, 1),
   );
   final tAccount2 = PlatformAccount(
     id: '2',
-    platform: tPlatformData,
-    identifier: 'test@example.com',
-    password: 'testPassword',
-    createdAt: DateTime.now(),
+    platformId: 'google_id',
+    identifier: 'test2@example.com',
+    password: 'testPassword2',
+    createdAt: DateTime(2023, 1, 1),
   );
   const tFailure = ServerFailure('error_message');
-
-  setUpAll(() {
-    registerFallbackValue(FakeEncryptedData());
-  });
 
   setUp(() {
     mockGetAccountsUseCase = MockGetAccountsUseCase();
     homeCubit = HomeCubit(mockGetAccountsUseCase);
-
-    // Setup Clipboard mock to prevent errors during tests
-    TestWidgetsFlutterBinding.ensureInitialized();
   });
 
   tearDown(() {
     homeCubit.close();
   });
 
-  test('initial state should be HomeInitial', () {
+  test('should have HomeInitial as initial state', () {
     expect(homeCubit.state, isA<HomeInitial>());
   });
 
   group('getAccounts', () {
     blocTest<HomeCubit, HomeState>(
-      'emits [HomeLoading, HomeSuccess] when successful',
+      'should emit [HomeLoading, HomeSuccess] when successful',
       build: () {
         when(
           () => mockGetAccountsUseCase.invoke(tUserId),
@@ -82,11 +67,12 @@ void main() {
       verify: (_) {
         expect(homeCubit.accountsList, [tAccount1, tAccount2]);
         verify(() => mockGetAccountsUseCase.invoke(tUserId)).called(1);
+        verifyNoMoreInteractions(mockGetAccountsUseCase);
       },
     );
 
     blocTest<HomeCubit, HomeState>(
-      'emits [HomeLoading, HomeError] when failure happens',
+      'should emit [HomeLoading, HomeError] when failure happens',
       build: () {
         when(
           () => mockGetAccountsUseCase.invoke(tUserId),
@@ -100,11 +86,12 @@ void main() {
       ],
       verify: (_) {
         verify(() => mockGetAccountsUseCase.invoke(tUserId)).called(1);
+        verifyNoMoreInteractions(mockGetAccountsUseCase);
       },
     );
 
     blocTest<HomeCubit, HomeState>(
-      'emits [HomeLoading] and ignores error if message contains permission-denied',
+      'should emit [HomeLoading] and ignore error if message contains permission-denied',
       build: () {
         when(
           () => mockGetAccountsUseCase.invoke(tUserId),
@@ -115,11 +102,12 @@ void main() {
       expect: () => [isA<HomeLoading>()],
       verify: (_) {
         verify(() => mockGetAccountsUseCase.invoke(tUserId)).called(1);
+        verifyNoMoreInteractions(mockGetAccountsUseCase);
       },
     );
 
     blocTest<HomeCubit, HomeState>(
-      'emits HomeError when stream throws non permission error',
+      'should emit [HomeLoading, HomeError] when stream throws non permission error',
       build: () {
         when(
           () => mockGetAccountsUseCase.invoke(tUserId),
@@ -132,6 +120,10 @@ void main() {
         isA<HomeLoading>(),
         isA<HomeError>().having((e) => e.message, 'message', 'network error'),
       ],
+      verify: (_) {
+        verify(() => mockGetAccountsUseCase.invoke(tUserId)).called(1);
+        verifyNoMoreInteractions(mockGetAccountsUseCase);
+      },
     );
 
     test(
@@ -164,36 +156,9 @@ void main() {
     );
   });
 
-  // group('copyAccountPassword', () {
-  //   test('calls decrypt and copies password to clipboard', () async {
-  //     when(
-  //       () => mockDecryptPasswordUseCase.invoke(any()),
-  //     ).thenAnswer((_) async => Right('decrypted_password'));
-  //
-  //     await homeCubit.copyAccountPassword(account: tAccount1);
-  //
-  //     verify(() => mockDecryptPasswordUseCase.invoke(any())).called(1);
-  //   });
-  //
-  //   test('throws exception when decryption fails', () async {
-  //     // Arrange
-  //     final exception = Exception('decryption_failed');
-  //
-  //     when(() => mockDecryptPasswordUseCase.invoke(any())).thenThrow(exception);
-  //
-  //     // Act & Assert
-  //     await expectLater(
-  //       homeCubit.copyAccountPassword(account: tAccount1),
-  //       throwsA(same(exception)),
-  //     );
-  //
-  //     verify(() => mockDecryptPasswordUseCase.invoke(any())).called(1);
-  //   });
-  // });
-
   group('clearHomeAccounts', () {
     blocTest<HomeCubit, HomeState>(
-      'clears accounts list and emits HomeInitial',
+      'should clear accounts list and emit HomeInitial',
       build: () {
         homeCubit.accountsList = [tAccount1, tAccount2];
         return homeCubit;

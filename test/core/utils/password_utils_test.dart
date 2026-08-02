@@ -2,61 +2,79 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pb_vault/core/utils/password_utils.dart';
 
 void main() {
-  group('PasswordUtils - generateStrongPassword', () {
-    test('should return a password of length 16', () {
-      final password = PasswordUtils.generateStrongPassword();
-      expect(password.length, 16);
+  group('PasswordUtils.generateStrongPassword', () {
+    test('should return a string of length 16 when called', () {
+      // Act
+      final result = PasswordUtils.generateStrongPassword();
+
+      // Assert
+      expect(result, isA<String>());
+      expect(result.length, 16);
     });
 
-    test('should return different passwords on consecutive calls', () {
-      final password1 = PasswordUtils.generateStrongPassword();
-      final password2 = PasswordUtils.generateStrongPassword();
-      expect(password1, isNot(equals(password2)));
+    test('should return unique passwords when called multiple times', () {
+      // Act
+      final first = PasswordUtils.generateStrongPassword();
+      final second = PasswordUtils.generateStrongPassword();
+      final third = PasswordUtils.generateStrongPassword();
+
+      // Assert
+      expect(first, isNot(equals(second)));
+      expect(first, isNot(equals(third)));
+      expect(second, isNot(equals(third)));
     });
 
-    test('should only contain valid characters', () {
+    test('should produce many unique passwords when called in a loop', () {
+      // Arrange
+      final passwords = <String>{};
+      const iterations = 100;
+
+      // Act
+      for (int i = 0; i < iterations; i++) {
+        passwords.add(PasswordUtils.generateStrongPassword());
+      }
+
+      // Assert
+      expect(passwords.length, iterations, 
+        reason: 'Should have generated $iterations unique passwords');
+    });
+
+    test('should only contain allowed characters when generated', () {
+      // Arrange
       const allowedChars = "abcdefghijklmnopqrstuvwxyz"
           "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
           "0123456789"
           "@#%^&*_-+()[]{}";
       
-      final password = PasswordUtils.generateStrongPassword();
+      // Act
+      final result = PasswordUtils.generateStrongPassword();
       
-      for (var i = 0; i < password.length; i++) {
-        expect(allowedChars.contains(password[i]), isTrue, 
-          reason: 'Character ${password[i]} at index $i is not allowed');
+      // Assert
+      for (int i = 0; i < result.length; i++) {
+        expect(allowedChars.contains(result[i]), isTrue, 
+          reason: 'Character ${result[i]} at index $i is not in the allowed set');
       }
     });
 
-    test('should contain at least some variety (probabilistic check)', () {
-      // Since it's random, we can't guarantee all types in one shot, 
-      // but we can check if it's not just one type repeatedly for many generations.
-      bool hasLower = false;
-      bool hasUpper = false;
-      bool hasNumber = false;
-      bool hasSpecial = false;
-
+    test('should contain mixed character types when generated', () {
+      // Act
       final password = PasswordUtils.generateStrongPassword();
       
-      final lowerCase = RegExp(r'[a-z]');
-      final upperCase = RegExp(r'[A-Z]');
-      final numbers = RegExp(r'[0-9]');
-      final special = RegExp(r'[@#%^&*_\-+()\[\]{}]');
+      // Arrange matchers
+      final hasLower = RegExp(r'[a-z]').hasMatch(password);
+      final hasUpper = RegExp(r'[A-Z]').hasMatch(password);
+      final hasNumbers = RegExp(r'[0-9]').hasMatch(password);
+      final hasSpecial = RegExp(r'[@#%^&*_\-+()\[\]{}]').hasMatch(password);
 
-      hasLower = lowerCase.hasMatch(password);
-      hasUpper = upperCase.hasMatch(password);
-      hasNumber = numbers.hasMatch(password);
-      hasSpecial = special.hasMatch(password);
+      // Assert - A 16 char random password is statistically certain to have variety
+      int typesFound = 0;
+      if (hasLower) typesFound++;
+      if (hasUpper) typesFound++;
+      if (hasNumbers) typesFound++;
+      if (hasSpecial) typesFound++;
 
-      // In a 16-char password, it's highly likely to have at least 3 out of 4 types
-      int typesCount = 0;
-      if (hasLower) typesCount++;
-      if (hasUpper) typesCount++;
-      if (hasNumber) typesCount++;
-      if (hasSpecial) typesCount++;
-
-      expect(typesCount, greaterThanOrEqualTo(2), 
-        reason: 'Password $password lacks variety');
+      expect(typesFound, greaterThanOrEqualTo(2), 
+        reason: 'Password "$password" should have at least 2 types of characters for strength');
     });
   });
 }

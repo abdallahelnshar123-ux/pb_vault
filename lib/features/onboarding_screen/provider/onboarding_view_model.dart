@@ -32,31 +32,4 @@ class OnboardingViewModel extends ChangeNotifier {
   void onSecondButtonClick() {
     _setOnboardingDoneUseCase.setOnboardingDone();
   }
-
-  // OnboardingAction onFirstButtonClick() {
-  //   if (currentIndex < onboardingPagesNumber - 1) {
-  //     currentIndex++;
-  //     notifyListeners();
-  //     return OnboardingAction.nextPage;
-  //   }
-  //   _setOnboardingDoneUseCase.setOnboardingDone();
-  //   return OnboardingAction.navigateToAuth;
-  // }
-  //
-  // // void onFirstButtonClick(BuildContext context) {
-  // //   if (currentIndex < onboardingPagesNumber - 1) {
-  // //     currentIndex++;
-  // //     notifyListeners();
-  // //   } else {
-  // //     _setOnboardingDoneUseCase.setOnboardingDone();
-  // //     Navigator.pushReplacementNamed(context, AppRoutes.authScreen);
-  // //   }
-  // // }
-  //
-  // void onSecondButtonClick() {
-  //   _setOnboardingDoneUseCase.setOnboardingDone();
-  //   // return OnboardingAction.navigateToAuth;
-  // }
 }
-
-// enum OnboardingAction { nextPage, navigateToAuth }

@@ -50,24 +50,26 @@ class _RecoveryCodesWidgetState extends State<RecoveryCodesWidget> {
             ? GridView(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  childAspectRatio: 3/1.3
-                    ,crossAxisSpacing: 10
+                  childAspectRatio: 3 / 1.3,
+                  crossAxisSpacing: 10,
                 ),
 
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                children:codesList
-                .map(
-                  (code) => Chip(
-                    label: FittedBox( fit: .scaleDown, child: Text(code)),
-                    labelStyle:AppStyles.robotoRegular12SurfaceDark(context),
-                    backgroundColor: AppColors.primary,
-                    shape: BeveledRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                )
-                .toList(),
+                children: codesList
+                    .map(
+                      (code) => Chip(
+                        label: FittedBox(fit: .scaleDown, child: Text(code)),
+                        labelStyle: AppStyles.robotoRegular12SurfaceDark(
+                          context,
+                        ),
+                        backgroundColor: AppColors.primary,
+                        shape: BeveledRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    )
+                    .toList(),
               )
             // Wrap(
             //         crossAxisAlignment: WrapCrossAlignment.start,
