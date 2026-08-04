@@ -9,7 +9,7 @@ class MasterPasswordInitial extends MasterPasswordState {
   List<Object?> get props => [];
 }
 
-/// ==========================   Master Password Setup states   ===========================
+/// ==================   Master Password Setup states   ====================
 class MasterPasswordSetupLoading extends MasterPasswordState {
   @override
   List<Object?> get props => [];
@@ -34,7 +34,7 @@ class MasterPasswordSetupError extends MasterPasswordState {
   List<Object?> get props => [message];
 }
 
-/// ==========================   Master Password Verify states   ===========================
+/// ==================   Master Password Verify states   ===================
 class UnlockLoadingState extends MasterPasswordState {
   @override
   List<Object?> get props => [];
@@ -64,6 +64,29 @@ class BiometricErrorState extends MasterPasswordState {
   final String message;
 
   BiometricErrorState(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+/// ================   Change Master Password states   ====================
+
+class ChangeMasterPasswordLoading extends MasterPasswordState {
+  @override
+  List<Object?> get props => [];
+}
+
+class ChangeMasterPasswordSuccess extends MasterPasswordState {
+  final MyUser user;
+  ChangeMasterPasswordSuccess(this.user);
+  @override
+  List<Object?> get props => [user];
+}
+
+class ChangeMasterPasswordError extends MasterPasswordState {
+  final String message;
+
+  ChangeMasterPasswordError(this.message);
 
   @override
   List<Object?> get props => [message];

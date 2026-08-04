@@ -151,6 +151,22 @@ class ProfileScreen extends StatelessWidget {
                         );
                       },
                     ),
+                    const DividerWidget._(),
+                    InkWell(
+                      onTap: (){
+                        Navigator.pushNamed(context, AppRoutes.changeMasterPasswordScreen);
+                      },
+                      child: _buildSettingsTile(
+                        trailing: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: AppColors.backgroundDark,
+                          size: context.width * 0.06,
+                        ),
+                        title: 'change_master_password'.tr(),
+                        context,
+                        icon: Icons.lock,
+                      ),
+                    ),
                   ],
                 ),
                 _builtDeleteAccountButton(context: context),
@@ -204,8 +220,8 @@ class ProfileScreen extends StatelessWidget {
   }) {
     return ListTile(
       leading: Icon(icon, color: AppColors.surfaceDark),
-      title: Text(title),
-      titleTextStyle: AppStyles.robotoBold16SurfaceDark(context),
+      title: Text(title , ),
+      titleTextStyle: AppStyles.robotoBold14SurfaceDark(context),
       trailing: trailing,
     );
   }

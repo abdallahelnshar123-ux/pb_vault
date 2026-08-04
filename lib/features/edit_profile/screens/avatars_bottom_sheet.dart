@@ -8,7 +8,7 @@ import '../../../core/constants/assets_constants.dart';
 
 class SelectAvatarBottomSheet extends StatelessWidget {
   final ValueChanged<String> newAvatar;
-  final String currentAvatar;
+  final String? currentAvatar;
 
   const SelectAvatarBottomSheet({
     super.key,

@@ -77,15 +77,23 @@ Utilize `package:test` as the standard testing library for Dart applications.
 
 ### Repositories
 * Coordinate between multiple Data Sources (Local and Remote).
-* **Success Paths**: Verify data flows correctly, including saving to local cache if required.
+* **Success Paths**:
+    * Verify data flows correctly, including saving to local cache if required.
+    * **Sensitive Fields**: Verify encryption/decryption of **ALL** sensitive fields (e.g., password, notes, recovery codes, secrets) if multiple exist in the entity.
+    * **Stream Content**: For streams used in lists, verify they only contain basic info and that sensitive fields are null/empty if they require explicit decryption.
 * **Error Paths**:
-    * Verify `AppException` from Data Source is mapped to the correct `Failure`.
-    * Verify unexpected `Exception` is mapped to `UnexpectedFailure`.
+    * **Specific Mapping**: Verify `AppException` from Data Source is mapped to the correct `Failure` (e.g., `ServerException` -> `ServerFailure`).
+    * **Generic Mapping**: Verify unexpected `Exception` is mapped to `UnexpectedFailure` with the correct string representation.
+    * **Stream Errors**: Verify that exceptions in the source stream are caught and emitted as `Left(Failure)`.
 * **Isolation**: Use `verifyZeroInteractions` for the Local Data Source if the Remote Data Source fails early.
+* **Bulk Data Integrity**: For bulk operations (e.g., `decryptMultiple`), explicitly test scenarios where the result list contains `null` values to ensure the mapping back to entities is handled correctly and doesn't crash or misalign.
 
 ### Use Cases
-* Simple delegation tests to ensure the correct Repository method is called with the correct arguments.
-* Verify success and failure propagation.
+* **Granular Multi-step Testing**: For use cases involving multiple sequential repository calls, write separate tests for the failure of **every single step**.
+* **Failure Propagation & Isolation**: Verify that a failure in any step returns the correct `Left(Failure)` and that subsequent steps are **NOT** executed (use `verifyZeroInteractions`).
+* **Non-blocking Resilience**: If a specific check is non-critical (e.g., a "same-as-old" check that should fail open), verify that the use case **continues** to the next step even if that check returns a `Left`.
+* **Post-Operation Side Effects**: If the main operation succeeds but a necessary post-operation (e.g., updating biometric keys) fails, ensure the failure is propagated as the final result.
+* **Option Handling**: Explicitly test scenarios where a repository returns `Right(None())` for required data, ensuring it's mapped to a suitable `Failure` (e.g., `UnexpectedFailure`).
 
 ### Services (Stateful)
 * For services like `VaultCryptoService` that maintain internal state:
@@ -93,17 +101,23 @@ Utilize `package:test` as the standard testing library for Dart applications.
     * **State Transitions**: Verify that actions (like unlocking) correctly update the internal state.
     * **Constraint Enforcement**: Verify that methods throw exceptions if called while the service is in an invalid state (e.g., `encrypt` while locked).
     * **Resetting State**: Ensure "lock" methods correctly return the service to its restricted initial state.
+    * **Data Integrity**: For cryptographic services, verify that tampering with encrypted data (e.g., changing a single byte of the MAC) results in the appropriate security exception (e.g., `SecretBoxAuthenticationError`).
+    * **Bulk Handling**: When services offer "multiple" or "bulk" operations, explicitly test the handling of `null`, empty strings, and whitespace within the input list.
 
 ### BLoC/Cubit (bloc_test)
 Use `package:bloc_test` for verifying state emissions.
 * **State Matching**: Use `isA<T>().having(...)` in the `expect` block to verify state properties.
 * **Internal Logic**: For methods that don't emit states (e.g., `getInitialRoute`), use standard `test()` functions.
+* **Exhaustive Failure Testing**: For **EVERY** UI action, explicitly test how the BLoC/Cubit handles failures from dependencies (e.g., Use Case returning `Left(Failure)`). Verify that it emits the correct `ErrorState` with the expected message.
 * **Strict Mock Verification**: Perform `verifyNoMoreInteractions` and `verifyZeroInteractions` inside the `verify` callback of `blocTest`.
 * **Dependency Mocking**: When a Cubit depends on another, use `MockCubit<S>`.
 
 ## Testing Randomness and Uniqueness
 * **Property Verification**: Verify the output type and length rather than specific values: `expect(result, hasLength(16))`.
-* **Uniqueness**: Verify that multiple calls produce different results: `expect(first, isNot(equals(second)))`.
+* **Uniqueness**: Verify that multiple calls produce different results (e.g., salts, nonces): `expect(first, isNot(equals(second)))`.
+
+## Testing Determinism
+* **Consistency**: For functions like hashing or verifiers, verify that the same input always produces exactly the same output: `expect(first, equals(second))`.
 
 ## Test Implementation Workflow
 

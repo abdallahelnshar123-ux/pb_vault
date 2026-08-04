@@ -93,6 +93,8 @@ import '../../domain/use_cases/set_onboarding_done_use_case.dart' as _i551;
 import '../../domain/use_cases/sign_in_with_google_use_cases.dart' as _i447;
 import '../../domain/use_cases/update_account_use_case.dart' as _i432;
 import '../../domain/use_cases/update_user_details_use_case.dart' as _i129;
+import '../../domain/use_cases/vault/change_master_password_use_case.dart'
+    as _i475;
 import '../../domain/use_cases/vault/create_vault_verifier_use_case.dart'
     as _i246;
 import '../../domain/use_cases/vault/decrypt_password_use_case.dart' as _i1001;
@@ -203,6 +205,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i638.ResetPasswordUseCase>(
       () => _i638.ResetPasswordUseCase(gh<_i912.AuthRepository>()),
     );
+    gh.factory<_i183.UserRepository>(
+      () => _i1053.UserRepositoryImpl(
+        gh<_i632.UserRemoteDataSource>(),
+        gh<_i996.UserLocalDataSource>(),
+        gh<_i735.VaultRemoteDataSource>(),
+      ),
+    );
     gh.lazySingleton<_i402.VaultRepository>(
       () => _i830.VaultRepositoryImpl(gh<_i735.VaultRemoteDataSource>()),
     );
@@ -223,12 +232,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i381.AccountRepositoryImpl(
         gh<_i629.AccountRemoteDataSource>(),
         gh<_i735.VaultRemoteDataSource>(),
-      ),
-    );
-    gh.factory<_i183.UserRepository>(
-      () => _i1053.UserRepositoryImpl(
-        gh<_i632.UserRemoteDataSource>(),
-        gh<_i996.UserLocalDataSource>(),
       ),
     );
     gh.factory<_i54.OnBoardingLocalDataSource>(
@@ -314,6 +317,25 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i432.UpdatePlatformAccountUseCase>(
       () => _i432.UpdatePlatformAccountUseCase(gh<_i406.AccountRepository>()),
     );
+    gh.factory<_i475.ChangeMasterPasswordUseCase>(
+      () => _i475.ChangeMasterPasswordUseCase(
+        gh<_i183.UserRepository>(),
+        gh<_i406.AccountRepository>(),
+        gh<_i402.VaultRepository>(),
+        gh<_i1053.BiometricRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i458.PlatformAccountCubit>(
+      () => _i458.PlatformAccountCubit(
+        gh<_i432.UpdatePlatformAccountUseCase>(),
+        gh<_i202.DeletePlatformAccountUseCase>(),
+        gh<_i327.AddPlatformAccountUseCase>(),
+        gh<_i800.GetAccountByIdUseCase>(),
+      ),
+    );
+    gh.factory<_i551.SetOnboardingDoneUseCase>(
+      () => _i551.SetOnboardingDoneUseCase(gh<_i977.OnBoardingRepository>()),
+    );
     gh.lazySingleton<_i884.MasterPasswordCubit>(
       () => _i884.MasterPasswordCubit(
         gh<_i756.SetMasterPasswordUseCase>(),
@@ -325,10 +347,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i166.IsBiometricRejectedUseCase>(),
         gh<_i547.BiometricUnlockUseCase>(),
         gh<_i870.SetBiometricRejectedUseCase>(),
+        gh<_i475.ChangeMasterPasswordUseCase>(),
       ),
-    );
-    gh.factory<_i551.SetOnboardingDoneUseCase>(
-      () => _i551.SetOnboardingDoneUseCase(gh<_i977.OnBoardingRepository>()),
     );
     gh.factory<_i543.CheckAppStartupUseCase>(
       () => _i543.CheckAppStartupUseCase(
@@ -347,14 +367,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i926.OnboardingViewModel>(
       () => _i926.OnboardingViewModel(gh<_i551.SetOnboardingDoneUseCase>()),
-    );
-    gh.lazySingleton<_i458.PlatformAccountCubit>(
-      () => _i458.PlatformAccountCubit(
-        gh<_i432.UpdatePlatformAccountUseCase>(),
-        gh<_i202.DeletePlatformAccountUseCase>(),
-        gh<_i327.AddPlatformAccountUseCase>(),
-        gh<_i800.GetAccountByIdUseCase>(),
-      ),
     );
     gh.lazySingleton<_i8.UserCubit>(
       () => _i8.UserCubit(

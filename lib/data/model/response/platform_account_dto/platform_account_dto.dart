@@ -90,7 +90,7 @@ class PlatformAccountDto extends Equatable {
     );
   }
 
-  Map<String, dynamic> toFireStore() {
+  Map<String, Object?> toFireStore() {
     return {
       FirestoreConstants.id: id,
       FirestoreConstants.platformId: platformId,

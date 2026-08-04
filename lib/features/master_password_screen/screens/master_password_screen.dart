@@ -19,17 +19,17 @@ class MasterPasswordScreen extends StatefulWidget {
 }
 
 class _MasterPasswordScreenState extends State<MasterPasswordScreen> {
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final ValueNotifier<bool> isObscure = ValueNotifier(true);
+  // final TextEditingController passwordController = TextEditingController();
+  // final TextEditingController confirmPasswordController =
+  //     TextEditingController();
+  // final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  // final ValueNotifier<bool> isObscure = ValueNotifier(true);
 
   @override
   void dispose() {
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    isObscure.dispose();
+    // passwordController.dispose();
+    // confirmPasswordController.dispose();
+    // isObscure.dispose();
     super.dispose();
   }
 
