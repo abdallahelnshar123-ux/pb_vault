@@ -608,4 +608,70 @@ void main() {
       verifyNoMoreInteractions(mockFirestoreService);
     });
   });
+
+  group('getAllAccounts', () {
+    test('should call _firestoreService.getAllAccountsOnce and return list of PlatformAccountDto', () async {
+      // Arrange
+      final tAccounts = [tAccountDto1, tAccountDto2];
+      when(
+        () => mockFirestoreService.getAllAccountsOnce(uId: any(named: 'uId')),
+      ).thenAnswer((_) async => tAccounts);
+
+      // Act
+      final result = await dataSource.getAllAccounts(uId: tUid);
+
+      // Assert
+      expect(result, equals(tAccounts));
+      verify(() => mockFirestoreService.getAllAccountsOnce(uId: tUid)).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw ServerException when FirebaseException occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.getAllAccountsOnce(uId: any(named: 'uId')),
+      ).thenThrow(FirebaseException(plugin: 'firestore', message: 'error'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.getAllAccounts(uId: tUid),
+        throwsA(isA<ServerException>()),
+      );
+
+      verify(() => mockFirestoreService.getAllAccountsOnce(uId: tUid)).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw NetworkException when SocketException occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.getAllAccountsOnce(uId: any(named: 'uId')),
+      ).thenThrow(const SocketException('No internet'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.getAllAccounts(uId: tUid),
+        throwsA(isA<NetworkException>()),
+      );
+
+      verify(() => mockFirestoreService.getAllAccountsOnce(uId: tUid)).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    test('should throw UnexpectedException when an unknown error occurs', () async {
+      // Arrange
+      when(
+        () => mockFirestoreService.getAllAccountsOnce(uId: any(named: 'uId')),
+      ).thenThrow(Exception('Unknown error'));
+
+      // Act & Assert
+      await expectLater(
+        () => dataSource.getAllAccounts(uId: tUid),
+        throwsA(isA<UnexpectedException>()),
+      );
+
+      verify(() => mockFirestoreService.getAllAccountsOnce(uId: tUid)).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+  });
 }

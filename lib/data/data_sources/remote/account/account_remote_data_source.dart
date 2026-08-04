@@ -19,4 +19,6 @@ abstract class AccountRemoteDataSource {
     required String uId,
     required String accountId,
   });
+
+  Future<List<PlatformAccountDto>> getAllAccounts({required String uId});
 }
