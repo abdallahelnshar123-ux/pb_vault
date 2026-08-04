@@ -173,7 +173,6 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<Either<Failure, Unit>> resetPassword({required String email}) async {
     try {
       await _authRemoteDataSource.resetPassword(email: email);
-
       return Right(unit);
     } on AppException catch (e) {
       return Left(e.toFailure());

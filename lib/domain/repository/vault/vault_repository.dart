@@ -10,6 +10,11 @@ abstract class VaultRepository {
 
   Future<Either<Failure, Map<String, dynamic>>> createVerifier(String password);
 
+  Future<Either<Failure, String>> calculateVerifier({
+    required String password,
+    required List<int> salt,
+  });
+
   Future<Either<Failure, List<int>>> getSecretKeyBytes();
 
   Future<Either<Failure, bool>> unlock({

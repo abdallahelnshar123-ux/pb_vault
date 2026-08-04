@@ -22,4 +22,6 @@ abstract class AccountRepository {
     String userId,
     String accountId,
   );
+
+  Future<Either<Failure, List<PlatformAccount>>> getAllAccounts(String userId);
 }

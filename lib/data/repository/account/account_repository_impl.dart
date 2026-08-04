@@ -205,4 +205,61 @@ class AccountRepositoryImpl implements AccountRepository {
       return Left(UnexpectedFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, List<PlatformAccount>>> getAllAccounts(
+    String userId,
+  ) async {
+    try {
+      final dtos = await _accountRemoteDataSource.getAllAccounts(uId: userId);
+
+      if (dtos.isEmpty) return const Right([]);
+
+      // Flatten sensitive fields for bulk decryption
+      final List<EncryptedDataDto?> flattenedData = [];
+      for (final dto in dtos) {
+        flattenedData.addAll([
+          dto.password,
+          dto.notes,
+          dto.recoveryCodes,
+          dto.passkey,
+          dto.twoFactorSecret,
+        ]);
+      }
+
+      final decryptedValues = await _vaultRemoteDataSource.decryptMultiple(
+        flattenedData,
+      );
+
+      final List<PlatformAccount> accounts = [];
+      for (int i = 0; i < dtos.length; i++) {
+        final dto = dtos[i];
+        final startIndex = i * 5;
+
+        accounts.add(
+          PlatformAccount(
+            platformId: dto.platformId,
+            identifier: dto.identifier,
+            createdAt: dto.createdAt,
+            id: dto.id,
+            password: decryptedValues[startIndex],
+            notes: decryptedValues[startIndex + 1],
+            recoveryCodes: decryptedValues[startIndex + 2],
+            passkey: decryptedValues[startIndex + 3],
+            twoFactorSecret: decryptedValues[startIndex + 4],
+            loginMethods:
+                dto.loginMethods.map((e) => e.toLoginMethod()).toList(),
+            customFields:
+                dto.customFields?.map((e) => e.toCustomField()).toList() ?? [],
+          ),
+        );
+      }
+
+      return Right(accounts);
+    } on AppException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnexpectedFailure(e.toString()));
+    }
+  }
 }
