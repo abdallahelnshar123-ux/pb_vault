@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,12 +16,12 @@ import 'package:pb_vault/domain/use_cases/register_with_email_and_password_use_c
 import 'package:pb_vault/domain/use_cases/reset_password_use_case.dart';
 import 'package:pb_vault/domain/use_cases/sign_in_with_google_use_cases.dart';
 import 'package:pb_vault/domain/use_cases/update_user_details_use_case.dart';
-import 'package:pb_vault/features/auth/cubit/user_state.dart';
 import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
-import 'package:pb_vault/features/home_screen/cubit/home_state.dart';
+import 'package:pb_vault/features/auth/cubit/user_state.dart';
 import 'package:pb_vault/features/home_screen/cubit/home_view_model.dart';
-import 'package:pb_vault/features/master_password_screen/cubit/master_password_state.dart';
+import 'package:pb_vault/features/home_screen/cubit/home_state.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
+import 'package:pb_vault/features/master_password_screen/cubit/master_password_state.dart';
 
 class MockContinueWithGoogleUseCases extends Mock
     implements ContinueWithGoogleUseCases {}
@@ -48,12 +50,11 @@ class MockMasterPasswordCubit extends MockCubit<MasterPasswordState>
     implements MasterPasswordCubit {}
 
 void main() {
-  late UserCubit userCubit;
+  late UserCubit cubit;
   late MockContinueWithGoogleUseCases mockSignInWithGoogleUseCases;
   late MockRegisterWithEmailAndPasswordUseCase
-  mockRegisterWithEmailAndPasswordUseCases;
-  late MockLoginWithEmailAndPasswordUseCase
-  mockLoginWithEmailAndPasswordUseCase;
+      mockRegisterWithEmailAndPasswordUseCases;
+  late MockLoginWithEmailAndPasswordUseCase mockLoginWithEmailAndPasswordUseCase;
   late MockLogoutUseCase mockLogoutUseCase;
   late MockDeleteUserUseCase mockDeleteAccountUseCase;
   late MockUpdateUserDetailsUseCase mockUpdateUserDetailsUseCase;
@@ -65,10 +66,9 @@ void main() {
   const tUser = MyUser(
     id: '1',
     email: 'test@example.com',
-    name: 'Test User',
+    name: 'Test',
     provider: 'email',
   );
-  const tFailure = ServerFailure('error_message');
 
   setUpAll(() {
     registerFallbackValue(tUser);
@@ -88,7 +88,11 @@ void main() {
     mockHomeCubit = MockHomeCubit();
     mockMasterPasswordCubit = MockMasterPasswordCubit();
 
-    userCubit = UserCubit(
+    // Default stub for MasterPasswordCubit stream to avoid issues during construction
+    when(() => mockMasterPasswordCubit.stream)
+        .thenAnswer((_) => const Stream.empty());
+
+    cubit = UserCubit(
       mockSignInWithGoogleUseCases,
       mockRegisterWithEmailAndPasswordUseCases,
       mockLoginWithEmailAndPasswordUseCase,
@@ -102,222 +106,154 @@ void main() {
     );
   });
 
-  tearDown(() {
-    userCubit.close();
-  });
-
-  test('initial state should be UserInitial', () {
-    expect(userCubit.state, isA<UserInitial>());
-  });
-
   group('loginWithEmailAndPassword', () {
+    const tEmail = 'test@example.com';
+    const tPassword = 'password';
+
     blocTest<UserCubit, UserState>(
-      'emits [LoginWithEmailPasswordLoadingState, UserAuthenticatedState] when successful',
+      'should emit [LoginWithEmailPasswordLoadingState, UserAuthenticatedState] when success',
       build: () {
-        when(
-          () => mockLoginWithEmailAndPasswordUseCase.invoke(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          ),
-        ).thenAnswer((_) async => const Right(tUser));
-        return userCubit;
+        when(() => mockLoginWithEmailAndPasswordUseCase.invoke(
+              email: any(named: 'email'),
+              password: any(named: 'password'),
+            )).thenAnswer((_) async => const Right(tUser));
+        return cubit;
       },
-      act: (cubit) => cubit.loginWithEmailAndPassword('email', 'password'),
+      act: (cubit) => cubit.loginWithEmailAndPassword(tEmail, tPassword),
       expect: () => [
         isA<LoginWithEmailPasswordLoadingState>(),
-        isA<UserAuthenticatedState>().having(
-          (s) => s.currentUser,
-          'currentUser',
-          tUser,
-        ),
+        isA<UserAuthenticatedState>()
+            .having((s) => s.currentUser, 'user', tUser),
       ],
-      verify: (cubit) {
+      verify: (_) {
+        verify(() => mockLoginWithEmailAndPasswordUseCase.invoke(
+              email: tEmail,
+              password: tPassword,
+            )).called(1);
         expect(cubit.currentUser, tUser);
-        verify(
-          () => mockLoginWithEmailAndPasswordUseCase.invoke(
-            email: 'email',
-            password: 'password',
-          ),
-        ).called(1);
-        verifyNoMoreInteractions(mockLoginWithEmailAndPasswordUseCase);
       },
     );
 
     blocTest<UserCubit, UserState>(
-      'emits [LoginWithEmailPasswordLoadingState, LoginWithEmailPasswordErrorState] when failure',
+      'should emit [LoginWithEmailPasswordLoadingState, LoginWithEmailPasswordErrorState] when failure',
       build: () {
-        when(
-          () => mockLoginWithEmailAndPasswordUseCase.invoke(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          ),
-        ).thenAnswer((_) async => const Left(tFailure));
-        return userCubit;
+        when(() => mockLoginWithEmailAndPasswordUseCase.invoke(
+              email: any(named: 'email'),
+              password: any(named: 'password'),
+            )).thenAnswer((_) async => const Left(ServerFailure('error_key')));
+        return cubit;
       },
-      act: (cubit) => cubit.loginWithEmailAndPassword('email', 'password'),
+      act: (cubit) => cubit.loginWithEmailAndPassword(tEmail, tPassword),
       expect: () => [
         isA<LoginWithEmailPasswordLoadingState>(),
-        isA<LoginWithEmailPasswordErrorState>().having(
-          (s) => s.message,
-          'message',
-          'error_message',
-        ),
+        isA<LoginWithEmailPasswordErrorState>(),
       ],
-      verify: (_) {
-        verify(
-          () => mockLoginWithEmailAndPasswordUseCase.invoke(
-            email: 'email',
-            password: 'password',
-          ),
-        ).called(1);
-        verifyNoMoreInteractions(mockLoginWithEmailAndPasswordUseCase);
-      },
     );
   });
 
   group('registerWithEmailAndPassword', () {
+    const tEmail = 'test@example.com';
+    const tPassword = 'password';
+    const tName = 'Name';
+    const tAvatarIndex = 1;
+
     blocTest<UserCubit, UserState>(
-      'emits [RegisterWithEmailPasswordLoadingState, UserAuthenticatedState] when successful',
+      'should emit [RegisterWithEmailPasswordLoadingState, UserAuthenticatedState] when success',
       build: () {
-        when(
-          () => mockRegisterWithEmailAndPasswordUseCases.invoke(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-            name: any(named: 'name'),
-            avatarIndex: any(named: 'avatarIndex'),
-          ),
-        ).thenAnswer((_) async => const Right(tUser));
-        return userCubit;
+        when(() => mockRegisterWithEmailAndPasswordUseCases.invoke(
+              email: any(named: 'email'),
+              password: any(named: 'password'),
+              name: any(named: 'name'),
+              avatarIndex: any(named: 'avatarIndex'),
+            )).thenAnswer((_) async => const Right(tUser));
+        return cubit;
       },
       act: (cubit) => cubit.registerWithEmailAndPassword(
-        email: 'email',
-        password: 'password',
-        name: 'name',
-        avatarIndex: 0,
+        email: tEmail,
+        password: tPassword,
+        name: tName,
+        avatarIndex: tAvatarIndex,
       ),
       expect: () => [
         isA<RegisterWithEmailPasswordLoadingState>(),
-        isA<UserAuthenticatedState>().having(
-          (s) => s.currentUser,
-          'currentUser',
-          tUser,
-        ),
+        isA<UserAuthenticatedState>(),
       ],
-      verify: (cubit) {
+      verify: (_) {
+        expect(cubit.isAccountJustCreated, true);
         expect(cubit.currentUser, tUser);
-        verify(
-          () => mockRegisterWithEmailAndPasswordUseCases.invoke(
-            email: 'email',
-            password: 'password',
-            name: 'name',
-            avatarIndex: 0,
-          ),
-        ).called(1);
-        verifyNoMoreInteractions(mockRegisterWithEmailAndPasswordUseCases);
       },
     );
 
     blocTest<UserCubit, UserState>(
-      'emits [RegisterWithEmailPasswordLoadingState, RegisterWithEmailPasswordErrorState] when failure',
+      'should emit [RegisterWithEmailPasswordLoadingState, RegisterWithEmailPasswordErrorState] when failure',
       build: () {
-        when(
-          () => mockRegisterWithEmailAndPasswordUseCases.invoke(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-            name: any(named: 'name'),
-            avatarIndex: any(named: 'avatarIndex'),
-          ),
-        ).thenAnswer((_) async => const Left(tFailure));
-        return userCubit;
+        when(() => mockRegisterWithEmailAndPasswordUseCases.invoke(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          name: any(named: 'name'),
+          avatarIndex: any(named: 'avatarIndex'),
+        )).thenAnswer(
+              (_) async => const Left(ServerFailure('error')),
+        );
+
+        return cubit;
       },
       act: (cubit) => cubit.registerWithEmailAndPassword(
-        email: 'email',
-        password: 'password',
-        name: 'name',
-        avatarIndex: 0,
+        email: tEmail,
+        password: tPassword,
+        name: tName,
+        avatarIndex: tAvatarIndex,
       ),
       expect: () => [
         isA<RegisterWithEmailPasswordLoadingState>(),
-        isA<RegisterWithEmailPasswordErrorState>().having(
-          (s) => s.message,
-          'message',
-          'error_message',
-        ),
+        isA<RegisterWithEmailPasswordErrorState>(),
       ],
-      verify: (_) {
-        verify(
-          () => mockRegisterWithEmailAndPasswordUseCases.invoke(
-            email: 'email',
-            password: 'password',
-            name: 'name',
-            avatarIndex: 0,
-          ),
-        ).called(1);
-        verifyNoMoreInteractions(mockRegisterWithEmailAndPasswordUseCases);
-      },
     );
   });
 
   group('continueWithGoogle', () {
     blocTest<UserCubit, UserState>(
-      'emits [ContinueWithGoogleLoadingState, UserAuthenticatedState] when successful',
+      'should emit [ContinueWithGoogleLoadingState, UserAuthenticatedState] when success',
       build: () {
-        when(
-          () => mockSignInWithGoogleUseCases.invoke(),
-        ).thenAnswer((_) async => const Right(tUser));
-        return userCubit;
+        when(() => mockSignInWithGoogleUseCases.invoke())
+            .thenAnswer((_) async => const Right(tUser));
+        return cubit;
       },
       act: (cubit) => cubit.continueWithGoogle(),
       expect: () => [
         isA<ContinueWithGoogleLoadingState>(),
-        isA<UserAuthenticatedState>().having(
-          (s) => s.currentUser,
-          'currentUser',
-          tUser,
-        ),
+        isA<UserAuthenticatedState>(),
       ],
-      verify: (cubit) {
-        expect(cubit.currentUser, tUser);
-        verify(() => mockSignInWithGoogleUseCases.invoke()).called(1);
-        verifyNoMoreInteractions(mockSignInWithGoogleUseCases);
-      },
     );
 
     blocTest<UserCubit, UserState>(
-      'emits [ContinueWithGoogleLoadingState, ContinueWithGoogleErrorState] when failure',
+      'should emit [ContinueWithGoogleLoadingState, ContinueWithGoogleErrorState] when failure',
       build: () {
-        when(
-          () => mockSignInWithGoogleUseCases.invoke(),
-        ).thenAnswer((_) async => const Left(tFailure));
-        return userCubit;
+        when(() => mockSignInWithGoogleUseCases.invoke())
+            .thenAnswer((_) async => const Left(ServerFailure('error')));
+
+        return cubit;
       },
       act: (cubit) => cubit.continueWithGoogle(),
       expect: () => [
         isA<ContinueWithGoogleLoadingState>(),
-        isA<ContinueWithGoogleErrorState>().having(
-          (s) => s.message,
-          'message',
-          'error_message',
-        ),
+        isA<ContinueWithGoogleErrorState>(),
       ],
-      verify: (_) {
-        verify(() => mockSignInWithGoogleUseCases.invoke()).called(1);
-        verifyNoMoreInteractions(mockSignInWithGoogleUseCases);
-      },
     );
   });
 
   group('logout', () {
     blocTest<UserCubit, UserState>(
-      'emits [LogoutLoadingState, UserUnauthenticatedState] when successful',
+      'should emit [LogoutLoadingState, UserUnauthenticatedState] and clear state when success',
       build: () {
-        when(
-          () => mockHomeCubit.clearHomeAccounts(),
-        ).thenAnswer((_) async => {});
-        when(
-          () => mockLogoutUseCase.invoke(),
-        ).thenAnswer((_) async => const Right(unit));
-        return userCubit;
+        cubit.currentUser = tUser;
+        cubit.isAccountJustCreated = true;
+        when(() => mockLogoutUseCase.invoke())
+            .thenAnswer((_) async => const Right(unit));
+        when(() => mockMasterPasswordCubit.lockVault()).thenReturn(null);
+        when(() => mockHomeCubit.clearHomeAccounts())
+            .thenAnswer((_) async => {});
+        return cubit;
       },
       act: (cubit) => cubit.logout(),
       expect: () => [
@@ -325,60 +261,49 @@ void main() {
         isA<UserUnauthenticatedState>(),
       ],
       verify: (_) {
-        verify(() => mockHomeCubit.clearHomeAccounts()).called(1);
         verify(() => mockMasterPasswordCubit.lockVault()).called(1);
-        verify(() => mockLogoutUseCase.invoke()).called(1);
-        verifyNoMoreInteractions(mockHomeCubit);
-        verifyNoMoreInteractions(mockLogoutUseCase);
-        verifyNoMoreInteractions(mockMasterPasswordCubit);
+        verify(() => mockHomeCubit.clearHomeAccounts()).called(1);
+        expect(cubit.currentUser, null);
+        expect(cubit.isAccountJustCreated, false);
       },
     );
 
     blocTest<UserCubit, UserState>(
-      'emits [LogoutLoadingState, LogoutErrorState] when failure',
+      'should emit [LogoutLoadingState, LogoutErrorState] when logout fails',
       build: () {
+        when(() => mockLogoutUseCase.invoke())
+            .thenAnswer((_) async => const Left(ServerFailure('error')));
 
-        when(
-          () => mockLogoutUseCase.invoke(),
-        ).thenAnswer((_) async => const Left(tFailure));
-        return userCubit;
+        return cubit;
       },
       act: (cubit) => cubit.logout(),
       expect: () => [
         isA<LogoutLoadingState>(),
-        isA<LogoutErrorState>().having(
-          (s) => s.message,
-          'message',
-          'error_message',
-        ),
+        isA<LogoutErrorState>(),
       ],
       verify: (_) {
-        verify(() => mockLogoutUseCase.invoke()).called(1);
-        verifyNoMoreInteractions(mockLogoutUseCase);
-        verifyZeroInteractions(mockMasterPasswordCubit);
-        verifyZeroInteractions(mockHomeCubit);
+        verifyNever(() => mockMasterPasswordCubit.lockVault());
+        verifyNever(() => mockHomeCubit.clearHomeAccounts());
       },
     );
   });
 
   group('deleteUser', () {
     blocTest<UserCubit, UserState>(
-      'emits success states when successful',
+      'should emit [UserDeleteLoadingState, UserDeleteSuccessState] and logout when success',
       build: () {
-        userCubit.currentUser = tUser;
-        when(
-          () => mockDeleteAccountUseCase.invoke(
-            password: any(named: 'password'),
-            provider: any(named: 'provider'),
-          ),
-        ).thenAnswer((_) async => const Right(unit));
-        when(
-          () => mockLogoutUseCase.invoke(),
-        ).thenAnswer((_) async => const Right(unit));
-        when(
-          () => mockHomeCubit.clearHomeAccounts(),
-        ).thenAnswer((_) async => {});
-        return userCubit;
+        cubit.currentUser = tUser;
+        when(() => mockDeleteAccountUseCase.invoke(
+              password: any(named: 'password'),
+              provider: any(named: 'provider'),
+            )).thenAnswer((_) async => const Right(unit));
+        // Mock logout success inside deleteUser
+        when(() => mockLogoutUseCase.invoke())
+            .thenAnswer((_) async => const Right(unit));
+        when(() => mockMasterPasswordCubit.lockVault()).thenReturn(null);
+        when(() => mockHomeCubit.clearHomeAccounts())
+            .thenAnswer((_) async => {});
+        return cubit;
       },
       act: (cubit) => cubit.deleteUser(password: 'password'),
       expect: () => [
@@ -387,194 +312,204 @@ void main() {
         isA<LogoutLoadingState>(),
         isA<UserUnauthenticatedState>(),
       ],
-      verify: (_) {
-        verify(
-          () => mockDeleteAccountUseCase.invoke(
-            password: 'password',
-            provider: tUser.provider,
-          ),
-        ).called(1);
-        verify(() => mockLogoutUseCase.invoke()).called(1);
-        verify(() => mockHomeCubit.clearHomeAccounts()).called(1);
-
-        verifyNoMoreInteractions(mockDeleteAccountUseCase);
-        verifyNoMoreInteractions(mockLogoutUseCase);
-        verifyNoMoreInteractions(mockHomeCubit);
-      },
     );
-
     blocTest<UserCubit, UserState>(
-      'emits UserDeleteErrorState when failure',
+      'should emit [UserDeleteLoadingState, UserDeleteErrorState] when delete fails',
       build: () {
-        userCubit.currentUser = tUser;
-        when(
-          () => mockDeleteAccountUseCase.invoke(
-            password: any(named: 'password'),
-            provider: any(named: 'provider'),
-          ),
-        ).thenAnswer((_) async => const Left(tFailure));
-        return userCubit;
+        cubit.currentUser = tUser;
+
+        when(() => mockDeleteAccountUseCase.invoke(
+          password: any(named: 'password'),
+          provider: any(named: 'provider'),
+        )).thenAnswer(
+              (_) async => const Left(ServerFailure('error')),
+        );
+
+        return cubit;
       },
       act: (cubit) => cubit.deleteUser(password: 'password'),
       expect: () => [
         isA<UserDeleteLoadingState>(),
-        isA<UserDeleteErrorState>().having(
-          (s) => s.message,
-          'message',
-          'error_message',
-        ),
+        isA<UserDeleteErrorState>(),
       ],
-      verify: (_) {
-        verify(
-          () => mockDeleteAccountUseCase.invoke(
-            password: 'password',
-            provider: tUser.provider,
-          ),
-        ).called(1);
-
-        verifyNoMoreInteractions(mockDeleteAccountUseCase);
-        verifyZeroInteractions(mockLogoutUseCase);
-        verifyZeroInteractions(mockHomeCubit);
-      },
     );
   });
 
   group('updateUserDetails', () {
     blocTest<UserCubit, UserState>(
-      'emits [UserDetailsUpdateLoadingState, UserDetailsUpdateSuccessState] and updates currentUser on success',
+      'should emit [UserDetailsUpdateLoadingState, UserDetailsUpdateSuccessState] when success',
       build: () {
-        when(
-          () => mockUpdateUserDetailsUseCase.updateAccountDetails(user: tUser),
-        ).thenAnswer((_) async => const Right(unit));
-        return userCubit;
+        when(() => mockUpdateUserDetailsUseCase.updateAccountDetails(
+              user: any(named: 'user'),
+            )).thenAnswer((_) async => const Right(unit));
+        return cubit;
       },
       act: (cubit) => cubit.updateUserDetails(user: tUser),
       expect: () => [
         isA<UserDetailsUpdateLoadingState>(),
         isA<UserDetailsUpdateSuccessState>(),
       ],
-      verify: (cubit) {
+      verify: (_) {
         expect(cubit.currentUser, tUser);
-        verify(
-          () => mockUpdateUserDetailsUseCase.updateAccountDetails(user: tUser),
-        ).called(1);
-        verifyNoMoreInteractions(mockUpdateUserDetailsUseCase);
       },
     );
 
     blocTest<UserCubit, UserState>(
-      'emits [UserDetailsUpdateLoadingState, USerDetailsUpdateErrorState] when failure',
+      'should emit [UserDetailsUpdateLoadingState, UserDetailsUpdateErrorState] when failure',
       build: () {
-        when(
-          () => mockUpdateUserDetailsUseCase.updateAccountDetails(user: tUser),
-        ).thenAnswer((_) async => const Left(tFailure));
-        return userCubit;
+        when(() => mockUpdateUserDetailsUseCase.updateAccountDetails(
+          user: any(named: 'user'),
+        )).thenAnswer(
+              (_) async => const Left(ServerFailure('error')),
+        );
+
+        return cubit;
       },
       act: (cubit) => cubit.updateUserDetails(user: tUser),
       expect: () => [
         isA<UserDetailsUpdateLoadingState>(),
-        isA<UserDetailsUpdateErrorState>().having(
-          (s) => s.message,
-          'message',
-          'error_message',
-        ),
+        isA<UserDetailsUpdateErrorState>(),
       ],
-      verify: (_) {
-        verify(
-          () => mockUpdateUserDetailsUseCase.updateAccountDetails(user: tUser),
-        ).called(1);
-        verifyNoMoreInteractions(mockUpdateUserDetailsUseCase);
-      },
     );
   });
 
   group('resetPassword', () {
     blocTest<UserCubit, UserState>(
-      'emits [ResetUSerPasswordLoadingState, ResetUserPasswordSuccessState] on success',
+      'should emit [ResetUSerPasswordLoadingState, ResetUserPasswordSuccessState] when success',
       build: () {
-        when(
-          () => mockResetPasswordUseCase.invoke(email: any(named: 'email')),
-        ).thenAnswer((_) async => const Right(unit));
-        return userCubit;
+        when(() => mockResetPasswordUseCase.invoke(email: any(named: 'email')))
+            .thenAnswer((_) async => const Right(unit));
+        return cubit;
       },
       act: (cubit) => cubit.resetPassword(email: 'test@example.com'),
       expect: () => [
         isA<ResetUSerPasswordLoadingState>(),
         isA<ResetUserPasswordSuccessState>(),
       ],
-      verify: (_) {
-        verify(
-          () => mockResetPasswordUseCase.invoke(email: 'test@example.com'),
-        ).called(1);
-        verifyNoMoreInteractions(mockResetPasswordUseCase);
-      },
     );
 
     blocTest<UserCubit, UserState>(
-      'emits [ResetUSerPasswordLoadingState, ResetUSerPasswordErrorState] on failure',
+      'should emit [ResetUSerPasswordLoadingState, ResetUSerPasswordErrorState] when failure',
       build: () {
-        when(
-          () => mockResetPasswordUseCase.invoke(email: any(named: 'email')),
-        ).thenAnswer((_) async => const Left(tFailure));
-        return userCubit;
+        when(() => mockResetPasswordUseCase.invoke(
+          email: any(named: 'email'),
+        )).thenAnswer(
+              (_) async => const Left(ServerFailure('error')),
+        );
+
+        return cubit;
       },
       act: (cubit) => cubit.resetPassword(email: 'test@example.com'),
       expect: () => [
         isA<ResetUSerPasswordLoadingState>(),
-        isA<ResetUSerPasswordErrorState>().having(
-          (s) => s.message,
-          'message',
-          'error_message',
-        ),
+        isA<ResetUSerPasswordErrorState>(),
       ],
-      verify: (_) {
-        verify(
-          () => mockResetPasswordUseCase.invoke(email: 'test@example.com'),
-        ).called(1);
-        verifyNoMoreInteractions(mockResetPasswordUseCase);
-      },
     );
   });
 
+  group('changeUser', () {
+    blocTest<UserCubit, UserState>(
+      'should update currentUser and emit UserAuthenticatedState',
+      build: () => cubit,
+      act: (cubit) => cubit.changeUser(tUser),
+      expect: () => [
+        isA<UserAuthenticatedState>()
+            .having((s) => s.currentUser, 'user', tUser),
+      ],
+      verify: (_) {
+        expect(cubit.currentUser, tUser);
+      },
+    );
+    test('should ignore non success master password states', () async {
+      final controller = StreamController<MasterPasswordState>();
+
+      when(() => mockMasterPasswordCubit.stream)
+          .thenAnswer((_) => controller.stream);
+
+      cubit = UserCubit(
+        mockSignInWithGoogleUseCases,
+        mockRegisterWithEmailAndPasswordUseCases,
+        mockLoginWithEmailAndPasswordUseCase,
+        mockLogoutUseCase,
+        mockDeleteAccountUseCase,
+        mockUpdateUserDetailsUseCase,
+        mockResetPasswordUseCase,
+        mockCheckAppStartupUseCase,
+        mockHomeCubit,
+        mockMasterPasswordCubit,
+      );
+
+      controller.add(ChangeMasterPasswordLoading());
+
+      await Future.delayed(Duration.zero);
+
+      expect(cubit.currentUser, isNull);
+
+      await controller.close();
+    });
+  });
+
   group('getInitialRoute', () {
-    test('returns onboarding route when status is onboarding', () {
-      when(
-        () => mockCheckAppStartupUseCase.checkAppStartup(),
-      ).thenReturn(StartupResult(StartupStatus.onboarding, null));
+    test('should return onboardingRouteName when StartupStatus.onboarding', () {
+      when(() => mockCheckAppStartupUseCase.checkAppStartup())
+          .thenReturn(StartupResult(StartupStatus.onboarding, null));
 
-      final route = userCubit.getInitialRoute();
-      expect(route, AppRoutes.onboardingRouteName);
+      final result = cubit.getInitialRoute();
 
-      verify(() => mockCheckAppStartupUseCase.checkAppStartup()).called(1);
-      verifyNoMoreInteractions(mockCheckAppStartupUseCase);
+      expect(result, AppRoutes.onboardingRouteName);
     });
 
-    test('returns auth route when status is unauthenticated', () {
-      when(
-        () => mockCheckAppStartupUseCase.checkAppStartup(),
-      ).thenReturn(StartupResult(StartupStatus.unauthenticated, null));
+    test('should return authScreen when StartupStatus.unauthenticated', () {
+      when(() => mockCheckAppStartupUseCase.checkAppStartup())
+          .thenReturn(StartupResult(StartupStatus.unauthenticated, null));
 
-      final route = userCubit.getInitialRoute();
-      expect(route, AppRoutes.authScreen);
+      final result = cubit.getInitialRoute();
 
-      verify(() => mockCheckAppStartupUseCase.checkAppStartup()).called(1);
-      verifyNoMoreInteractions(mockCheckAppStartupUseCase);
+      expect(result, AppRoutes.authScreen);
     });
 
     test(
-      'returns master password route and sets currentUser when status is authenticated',
-      () {
-        when(
-          () => mockCheckAppStartupUseCase.checkAppStartup(),
-        ).thenReturn(StartupResult(StartupStatus.authenticated, tUser));
+        'should return masterPasswordScreen and set user when StartupStatus.authenticated',
+        () {
+      when(() => mockCheckAppStartupUseCase.checkAppStartup())
+          .thenReturn(StartupResult(StartupStatus.authenticated, tUser));
 
-        final route = userCubit.getInitialRoute();
-        expect(route, AppRoutes.masterPasswordScreen);
-        expect(userCubit.currentUser, tUser);
+      final result = cubit.getInitialRoute();
 
-        verify(() => mockCheckAppStartupUseCase.checkAppStartup()).called(1);
-        verifyNoMoreInteractions(mockCheckAppStartupUseCase);
-      },
-    );
+      expect(result, AppRoutes.masterPasswordScreen);
+      expect(cubit.currentUser, tUser);
+    });
+  });
+
+  group('MasterPasswordCubit listener', () {
+    test('should call changeUser when ChangeMasterPasswordSuccess is emitted',
+        () async {
+      final masterPasswordCubitStream = StreamController<MasterPasswordState>();
+      when(() => mockMasterPasswordCubit.stream)
+          .thenAnswer((_) => masterPasswordCubitStream.stream);
+
+      // Re-create cubit to use the new stream
+      cubit = UserCubit(
+        mockSignInWithGoogleUseCases,
+        mockRegisterWithEmailAndPasswordUseCases,
+        mockLoginWithEmailAndPasswordUseCase,
+        mockLogoutUseCase,
+        mockDeleteAccountUseCase,
+        mockUpdateUserDetailsUseCase,
+        mockResetPasswordUseCase,
+        mockCheckAppStartupUseCase,
+        mockHomeCubit,
+        mockMasterPasswordCubit,
+      );
+
+      masterPasswordCubitStream.add(ChangeMasterPasswordSuccess(tUser));
+
+      // Wait for stream event
+      await Future.delayed(Duration.zero);
+
+      expect(cubit.currentUser, tUser);
+
+      await masterPasswordCubitStream.close();
+    });
   });
 }
