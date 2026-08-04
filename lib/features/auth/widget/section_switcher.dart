@@ -42,7 +42,7 @@ class SectionSwitcher extends StatelessWidget {
               Tab(text: 'register'.tr()),
             ],
           ),
-          Expanded(child: TabBarView(children: [LoginTan(), RegisterTab()])),
+          Expanded(child: TabBarView(children: [LoginTab(), RegisterTab()])),
         ],
       ),
     );

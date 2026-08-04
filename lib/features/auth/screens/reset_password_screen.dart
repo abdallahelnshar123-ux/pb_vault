@@ -78,21 +78,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       fillColor: AppColors.white,
                       controller: emailController,
                     ),
-                    // CustomTextFormField(
-                    //   validator: (value) {
-                    //     return Validators.email(value);
-                    //   },
-                    //   controller: emailController,
-                    //   keyboardType: TextInputType.emailAddress,
-                    //   hintText: "email".tr(),
-                    //   hintStyle: AppStyles.robotoRegular16White(context),
-                    //   prefixIcon: Icon(
-                    //     Icons.email_rounded,
-                    //     color: AppColors.black,
-                    //   ),
-                    //   filled: true,
-                    //   fillColor: AppColors.secondary,
-                    // ),
                     CustomElevatedButton(
                       buttonWidth: double.infinity,
                       backgroundColor: context.easyColor(

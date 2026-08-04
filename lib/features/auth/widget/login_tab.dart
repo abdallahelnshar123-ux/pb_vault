@@ -14,25 +14,22 @@ import '../cubit/user_state.dart';
 import '../cubit/user_view_model.dart';
 import 'continue_with_google_button.dart';
 
-class LoginTan extends StatefulWidget {
-  const LoginTan({super.key});
+class LoginTab extends StatefulWidget {
+  const LoginTab({super.key});
 
   @override
-  State<LoginTan> createState() => _LoginTanState();
+  State<LoginTab> createState() => _LoginTabState();
 }
 
-class _LoginTanState extends State<LoginTan> {
+class _LoginTabState extends State<LoginTab> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  // final ValueNotifier<bool> isObscure = ValueNotifier(true);
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    // isObscure.dispose();
     super.dispose();
   }
 

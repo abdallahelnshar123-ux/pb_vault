@@ -153,8 +153,11 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const DividerWidget._(),
                     InkWell(
-                      onTap: (){
-                        Navigator.pushNamed(context, AppRoutes.changeMasterPasswordScreen);
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.changeMasterPasswordScreen,
+                        );
                       },
                       child: _buildSettingsTile(
                         trailing: Icon(
@@ -177,23 +180,6 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _builtContainer({
-  //   required BuildContext context,
-  //   required List<Widget> children,
-  // }) {
-  //   return Container(
-  //     padding: EdgeInsets.symmetric(vertical: 10),
-  //     decoration: BoxDecoration(
-  //       color: context.easyColor(
-  //         lColor: AppColors.primary,
-  //         dColor: AppColors.backgroundLight,
-  //       ),
-  //       borderRadius: BorderRadius.circular(16),
-  //     ),
-  //     child: Column(children: children),
-  //   );
-  // }
 
   Widget _buildInfoCard(
     BuildContext context, {
@@ -220,7 +206,7 @@ class ProfileScreen extends StatelessWidget {
   }) {
     return ListTile(
       leading: Icon(icon, color: AppColors.surfaceDark),
-      title: Text(title , ),
+      title: Text(title),
       titleTextStyle: AppStyles.robotoBold14SurfaceDark(context),
       trailing: trailing,
     );

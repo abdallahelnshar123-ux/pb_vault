@@ -19,8 +19,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(
         locale: currentLocale,
-        // todo : remember to make theme dynamic
-        themeMode: ThemeMode.dark,
         isBiometricEnabled: settings.isBiometricEnabled,
         isBiometricSupported: settings.isBiometricSupported,
       ),
