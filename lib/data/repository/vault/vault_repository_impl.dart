@@ -57,6 +57,24 @@ class VaultRepositoryImpl implements VaultRepository {
   }
 
   @override
+  Future<Either<Failure, String>> calculateVerifier({
+    required String password,
+    required List<int> salt,
+  }) async {
+    try {
+      final result = await _vaultRemoteDataSource.calculateVerifier(
+        password: password,
+        salt: salt,
+      );
+      return Right(result);
+    } on AppException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnexpectedFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<int>>> getSecretKeyBytes() async {
     try {
       final result = await _vaultRemoteDataSource.getSecretKeyBytes();

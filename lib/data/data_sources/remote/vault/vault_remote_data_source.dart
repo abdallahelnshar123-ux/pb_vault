@@ -5,7 +5,16 @@ abstract class VaultRemoteDataSource {
 
   Future<String> decrypt(EncryptedDataDto data);
 
+  Future<List<EncryptedDataDto?>> encryptMultiple(List<String?> textList);
+
+  Future<List<String?>> decryptMultiple(List<EncryptedDataDto?> dataList);
+
   Future<Map<String, dynamic>> createVerifier(String password);
+
+  Future<String> calculateVerifier({
+    required String password,
+    required List<int> salt,
+  });
 
   Future<List<int>> getSecretKeyBytes();
 

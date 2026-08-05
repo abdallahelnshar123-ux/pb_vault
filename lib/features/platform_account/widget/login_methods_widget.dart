@@ -69,11 +69,6 @@ class _LoginMethodsWidgetState extends State<LoginMethodsWidget> {
     return loginMethodList
         .map(
           (loginMethod) => ListTile(
-            // shape: RoundedRectangleBorder(
-            //   borderRadius: BorderRadiusGeometry.circular(8)
-            // ),
-            // selected: true,
-            // selectedTileColor: AppColors.primary,
             trailing: Row(
               spacing: 10,
               mainAxisSize: .min,

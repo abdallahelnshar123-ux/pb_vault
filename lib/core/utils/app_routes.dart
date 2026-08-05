@@ -8,4 +8,6 @@ class AppRoutes {
   static const String editProfileScreen = 'edit_profile_screen';
   static const String biometricsScreen = 'biometrics_screen';
   static const String pickAvatarScreen = 'pick_avatar_screen';
+  static const String resetPasswordScreen = 'reset_password_screen';
+  static const String changeMasterPasswordScreen = 'change_master_password_screen';
 }

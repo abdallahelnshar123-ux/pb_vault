@@ -56,7 +56,6 @@ void main() {
       expect: () => [
         const SettingsState(
           locale: tLocale,
-          themeMode: ThemeMode.dark,
           isBiometricEnabled: true,
           isBiometricSupported: true,
         ),

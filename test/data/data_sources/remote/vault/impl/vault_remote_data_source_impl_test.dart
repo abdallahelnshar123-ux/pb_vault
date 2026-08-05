@@ -53,12 +53,9 @@ void main() {
         // arrange
         when(() => mockVaultCryptoService.encrypt(any())).thenThrow(tException);
 
-        // act
-        final call = dataSource.encrypt;
-
-        // assert
-        expect(
-          () => call(tText),
+        // act & assert
+        await expectLater(
+          () => dataSource.encrypt(tText),
           throwsA(
             isA<UnexpectedException>().having(
               (e) => e.message,
@@ -82,18 +79,16 @@ void main() {
         // assert
         expect(result, equals(tText));
         verify(() => mockVaultCryptoService.decrypt(tEncryptedDataDto)).called(1);
+        verifyNoMoreInteractions(mockVaultCryptoService);
       });
 
       test('should throw UnexpectedException when decryption fails', () async {
         // arrange
         when(() => mockVaultCryptoService.decrypt(any())).thenThrow(tException);
 
-        // act
-        final call = dataSource.decrypt;
-
-        // assert
-        expect(
-          () => call(tEncryptedDataDto),
+        // act & assert
+        await expectLater(
+          () => dataSource.decrypt(tEncryptedDataDto),
           throwsA(
             isA<UnexpectedException>().having(
               (e) => e.message,
@@ -101,6 +96,64 @@ void main() {
               contains(tException.toString()),
             ),
           ),
+        );
+      });
+    });
+
+    group('encryptMultiple', () {
+      test('should call vaultCryptoService.encryptMultiple', () async {
+        // arrange
+        final tList = [tText, null];
+        final tResults = [tEncryptedDataDto, null];
+        when(() => mockVaultCryptoService.encryptMultiple(any()))
+            .thenAnswer((_) async => tResults);
+
+        // act
+        final result = await dataSource.encryptMultiple(tList);
+
+        // assert
+        expect(result, equals(tResults));
+        verify(() => mockVaultCryptoService.encryptMultiple(tList)).called(1);
+        verifyNoMoreInteractions(mockVaultCryptoService);
+      });
+
+      test('should throw UnexpectedException when encryptMultiple fails', () async {
+        // arrange
+        when(() => mockVaultCryptoService.encryptMultiple(any())).thenThrow(tException);
+
+        // act & assert
+        await expectLater(
+          () => dataSource.encryptMultiple([]),
+          throwsA(isA<UnexpectedException>()),
+        );
+      });
+    });
+
+    group('decryptMultiple', () {
+      test('should call vaultCryptoService.decryptMultiple', () async {
+        // arrange
+        final tList = [tEncryptedDataDto, null];
+        final tResults = [tText, null];
+        when(() => mockVaultCryptoService.decryptMultiple(any()))
+            .thenAnswer((_) async => tResults);
+
+        // act
+        final result = await dataSource.decryptMultiple(tList);
+
+        // assert
+        expect(result, equals(tResults));
+        verify(() => mockVaultCryptoService.decryptMultiple(tList)).called(1);
+        verifyNoMoreInteractions(mockVaultCryptoService);
+      });
+
+      test('should throw UnexpectedException when decryptMultiple fails', () async {
+        // arrange
+        when(() => mockVaultCryptoService.decryptMultiple(any())).thenThrow(tException);
+
+        // act & assert
+        await expectLater(
+          () => dataSource.decryptMultiple([]),
+          throwsA(isA<UnexpectedException>()),
         );
       });
     });
@@ -118,25 +171,55 @@ void main() {
         // assert
         expect(result, equals(tVerifierMap));
         verify(() => mockVaultCryptoService.createVerifier(tPassword)).called(1);
+        verifyNoMoreInteractions(mockVaultCryptoService);
       });
 
       test('should throw UnexpectedException when creation fails', () async {
         // arrange
         when(() => mockVaultCryptoService.createVerifier(any())).thenThrow(tException);
 
+        // act & assert
+        await expectLater(
+          () => dataSource.createVerifier(tPassword),
+          throwsA(isA<UnexpectedException>()),
+        );
+      });
+    });
+
+    group('calculateVerifier', () {
+      test('should return calculated verifier hash', () async {
+        // arrange
+        when(() => mockVaultCryptoService.calculateVerifier(
+              password: any(named: 'password'),
+              salt: any(named: 'salt'),
+            )).thenAnswer((_) async => tVerifier);
+
         // act
-        final call = dataSource.createVerifier;
+        final result = await dataSource.calculateVerifier(
+          password: tPassword,
+          salt: tSalt,
+        );
 
         // assert
-        expect(
-          () => call(tPassword),
-          throwsA(
-            isA<UnexpectedException>().having(
-              (e) => e.message,
-              'message',
-              contains(tException.toString()),
-            ),
-          ),
+        expect(result, equals(tVerifier));
+        verify(() => mockVaultCryptoService.calculateVerifier(
+              password: tPassword,
+              salt: tSalt,
+            )).called(1);
+        verifyNoMoreInteractions(mockVaultCryptoService);
+      });
+
+      test('should throw UnexpectedException when calculation fails', () async {
+        // arrange
+        when(() => mockVaultCryptoService.calculateVerifier(
+              password: any(named: 'password'),
+              salt: any(named: 'salt'),
+            )).thenThrow(tException);
+
+        // act & assert
+        await expectLater(
+          () => dataSource.calculateVerifier(password: tPassword, salt: tSalt),
+          throwsA(isA<UnexpectedException>()),
         );
       });
     });
@@ -154,25 +237,17 @@ void main() {
         // assert
         expect(result, equals(tBytes));
         verify(() => mockVaultCryptoService.getSecretKeyBytes()).called(1);
+        verifyNoMoreInteractions(mockVaultCryptoService);
       });
 
       test('should throw UnexpectedException when retrieval fails', () async {
         // arrange
         when(() => mockVaultCryptoService.getSecretKeyBytes()).thenThrow(tException);
 
-        // act
-        final call = dataSource.getSecretKeyBytes;
-
-        // assert
-        expect(
-          () => call(),
-          throwsA(
-            isA<UnexpectedException>().having(
-              (e) => e.message,
-              'message',
-              contains(tException.toString()),
-            ),
-          ),
+        // act & assert
+        await expectLater(
+          () => dataSource.getSecretKeyBytes(),
+          throwsA(isA<UnexpectedException>()),
         );
       });
     });
@@ -200,6 +275,7 @@ void main() {
               salt: tSalt,
               verifier: tVerifier,
             )).called(1);
+        verifyNoMoreInteractions(mockVaultCryptoService);
       });
 
       test('should throw UnexpectedException when unlock throws exception', () async {
@@ -210,19 +286,10 @@ void main() {
               verifier: any(named: 'verifier'),
             )).thenThrow(tException);
 
-        // act
-        final call = dataSource.unlock;
-
-        // assert
-        expect(
-          () => call(password: tPassword, salt: tSalt, verifier: tVerifier),
-          throwsA(
-            isA<UnexpectedException>().having(
-              (e) => e.message,
-              'message',
-              contains(tException.toString()),
-            ),
-          ),
+        // act & assert
+        await expectLater(
+          () => dataSource.unlock(password: tPassword, salt: tSalt, verifier: tVerifier),
+          throwsA(isA<UnexpectedException>()),
         );
       });
     });
@@ -237,6 +304,7 @@ void main() {
 
         // assert
         verify(() => mockVaultCryptoService.unlockWithKey(tKeyBytes)).called(1);
+        verifyNoMoreInteractions(mockVaultCryptoService);
       });
 
       test('should throw UnexpectedException when unlockWithKey throws exception', () async {
@@ -244,33 +312,22 @@ void main() {
         const tKeyBytes = [1, 2, 3];
         when(() => mockVaultCryptoService.unlockWithKey(any())).thenThrow(tException);
 
-        // act
-        final call = dataSource.unlockWithKey;
-
-        // assert
-        expect(
-          () => call(tKeyBytes),
-          throwsA(
-            isA<UnexpectedException>().having(
-              (e) => e.message,
-              'message',
-              contains(tException.toString()),
-            ),
-          ),
+        // act & assert
+        await expectLater(
+          () => dataSource.unlockWithKey(tKeyBytes),
+          throwsA(isA<UnexpectedException>()),
         );
       });
     });
 
     group('lock', () {
       test('should call vaultCryptoService.lock', () {
-        // arrange
-        // void return, no need to stub unless using verify
-
         // act
         dataSource.lock();
 
         // assert
         verify(() => mockVaultCryptoService.lock()).called(1);
+        verifyNoMoreInteractions(mockVaultCryptoService);
       });
     });
 
@@ -285,6 +342,7 @@ void main() {
         // assert
         expect(result, isTrue);
         verify(() => mockVaultCryptoService.isLocked).called(1);
+        verifyNoMoreInteractions(mockVaultCryptoService);
       });
     });
   });

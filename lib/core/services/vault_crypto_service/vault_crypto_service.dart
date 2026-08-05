@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 
 import 'package:cryptography/cryptography.dart';
 import 'package:cryptography/helpers.dart';
@@ -21,7 +22,7 @@ class VaultCryptoService {
     _secretKey = null;
   }
 
-  Future<String> _calculateVerifier({
+  Future<String> calculateVerifier({
     required String password,
     required List<int> salt,
   }) async {
@@ -55,7 +56,7 @@ class VaultCryptoService {
   Future<Map<String, dynamic>> createVerifier(String password) async {
     final salt = randomBytes(16);
 
-    final hash = await _calculateVerifier(password: password, salt: salt);
+    final hash = await calculateVerifier(password: password, salt: salt);
 
     await _createSecretKey(password: password, salt: salt);
 
@@ -67,7 +68,7 @@ class VaultCryptoService {
     required List<int> salt,
     required String verifier,
   }) async {
-    final calculatedVerifier = await _calculateVerifier(
+    final calculatedVerifier = await calculateVerifier(
       password: password,
       salt: salt,
     );
@@ -87,10 +88,10 @@ class VaultCryptoService {
     if (_secretKey == null) {
       throw Exception('Vault is locked. Unlock it first.');
     }
+    final algorithm = _cryptography.aesGcm();
+    final nonce = algorithm.newNonce();
 
-    final nonce = randomBytes(12);
-
-    final encrypted = await _cryptography.aesGcm().encrypt(
+    final encrypted = await algorithm.encrypt(
       utf8.encode(text),
       secretKey: _secretKey!,
       nonce: nonce,
@@ -120,5 +121,71 @@ class VaultCryptoService {
     );
 
     return utf8.decode(bytes);
+  }
+
+  Future<List<EncryptedDataDto?>> encryptMultiple(
+    List<String?> textList,
+  ) async {
+    final secretKeyBytes = await getSecretKeyBytes();
+
+    return await Isolate.run(() async {
+      final algorithm = _cryptography.aesGcm();
+      final secretKey = SecretKey(secretKeyBytes);
+
+      final List<EncryptedDataDto?> results = [];
+
+      for (final text in textList) {
+        if (text == null || text.trim().isEmpty) {
+          results.add(null);
+          continue;
+        }
+
+        final nonce = algorithm.newNonce();
+        final encrypted = await algorithm.encrypt(
+          utf8.encode(text),
+          secretKey: secretKey,
+          nonce: nonce,
+        );
+
+        results.add(
+          EncryptedDataDto(
+            cipherText: encrypted.cipherText,
+            mac: encrypted.mac.bytes,
+            nonce: encrypted.nonce,
+          ),
+        );
+      }
+      return results;
+    });
+  }
+
+  Future<List<String?>> decryptMultiple(
+    List<EncryptedDataDto?> dataList,
+  ) async {
+    final secretKeyBytes = await getSecretKeyBytes();
+
+    return await Isolate.run(() async {
+      final algorithm = _cryptography.aesGcm();
+      final secretKey = SecretKey(secretKeyBytes);
+
+      final List<String?> results = [];
+
+      for (final data in dataList) {
+        if (data == null) {
+          results.add(null);
+          continue;
+        }
+
+        final secretBox = SecretBox(
+          data.cipherText,
+          nonce: data.nonce,
+          mac: Mac(data.mac),
+        );
+
+        final bytes = await algorithm.decrypt(secretBox, secretKey: secretKey);
+        results.add(utf8.decode(bytes));
+      }
+      return results;
+    });
   }
 }

@@ -151,6 +151,25 @@ class ProfileScreen extends StatelessWidget {
                         );
                       },
                     ),
+                    const DividerWidget._(),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.changeMasterPasswordScreen,
+                        );
+                      },
+                      child: _buildSettingsTile(
+                        trailing: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: AppColors.backgroundDark,
+                          size: context.width * 0.06,
+                        ),
+                        title: 'change_master_password'.tr(),
+                        context,
+                        icon: Icons.lock,
+                      ),
+                    ),
                   ],
                 ),
                 _builtDeleteAccountButton(context: context),
@@ -161,23 +180,6 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _builtContainer({
-  //   required BuildContext context,
-  //   required List<Widget> children,
-  // }) {
-  //   return Container(
-  //     padding: EdgeInsets.symmetric(vertical: 10),
-  //     decoration: BoxDecoration(
-  //       color: context.easyColor(
-  //         lColor: AppColors.primary,
-  //         dColor: AppColors.backgroundLight,
-  //       ),
-  //       borderRadius: BorderRadius.circular(16),
-  //     ),
-  //     child: Column(children: children),
-  //   );
-  // }
 
   Widget _buildInfoCard(
     BuildContext context, {
@@ -205,7 +207,7 @@ class ProfileScreen extends StatelessWidget {
     return ListTile(
       leading: Icon(icon, color: AppColors.surfaceDark),
       title: Text(title),
-      titleTextStyle: AppStyles.robotoBold16SurfaceDark(context),
+      titleTextStyle: AppStyles.robotoBold14SurfaceDark(context),
       trailing: trailing,
     );
   }

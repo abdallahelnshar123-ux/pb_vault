@@ -15,6 +15,7 @@ import '../../../domain/use_cases/register_with_email_and_password_use_case.dart
 import '../../../domain/use_cases/reset_password_use_case.dart';
 import '../../../domain/use_cases/sign_in_with_google_use_cases.dart';
 import '../../../domain/use_cases/update_user_details_use_case.dart';
+import '../../master_password_screen/cubit/master_password_state.dart';
 import 'user_state.dart';
 
 @lazySingleton
@@ -42,7 +43,13 @@ class UserCubit extends Cubit<UserState> {
     this._checkAppStartupUseCase,
     this._homeCubit,
     this._masterPasswordCubit,
-  ) : super(UserInitial());
+  ) : super(UserInitial()) {
+    _masterPasswordCubit.stream.listen((state) {
+      if (state is ChangeMasterPasswordSuccess) {
+        changeUser(state.user);
+      }
+    });
+  }
 
   MyUser? currentUser;
 
@@ -160,6 +167,11 @@ class UserCubit extends Cubit<UserState> {
         emit(ResetUserPasswordSuccessState());
       },
     );
+  }
+
+  void changeUser(MyUser user) {
+    currentUser = user;
+    emit(UserAuthenticatedState(user));
   }
 
   String getInitialRoute() {

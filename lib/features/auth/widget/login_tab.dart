@@ -14,25 +14,22 @@ import '../cubit/user_state.dart';
 import '../cubit/user_view_model.dart';
 import 'continue_with_google_button.dart';
 
-class LoginTan extends StatefulWidget {
-  const LoginTan({super.key});
+class LoginTab extends StatefulWidget {
+  const LoginTab({super.key});
 
   @override
-  State<LoginTan> createState() => _LoginTanState();
+  State<LoginTab> createState() => _LoginTabState();
 }
 
-class _LoginTanState extends State<LoginTan> {
+class _LoginTabState extends State<LoginTab> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  // final ValueNotifier<bool> isObscure = ValueNotifier(true);
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    // isObscure.dispose();
     super.dispose();
   }
 
@@ -153,73 +150,20 @@ class _LoginTanState extends State<LoginTan> {
     );
   }
 
-  // Widget _builtEmailTextField() {
-  //   return CustomTextFormField(
-  //     style: AppStyles.robotoBold16SurfaceDark(context),
-  //     keyboardType: TextInputType.emailAddress,
-  //     validator: (value) => Validators.email(value),
-  //     controller: emailController,
-  //     prefixIcon: SvgPicture.asset(
-  //       "assets/icons/email-icon.svg",
-  //       fit: BoxFit.none,
-  //       colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-  //     ),
-  //     hintText: "email".tr(),
-  //     hintStyle: AppStyles.robotoBold16SurfaceDark(context),
-  //     filled: true,
-  //     fillColor: AppColors.white,
-  //   );
-  // }
-
-  // Widget _builtPasswordTextField() {
-  //   return ValueListenableBuilder<bool>(
-  //     valueListenable: isObscure,
-  //     builder: (context, value, child) => CustomTextFormField(
-  //       style: AppStyles.robotoBold16SurfaceDark(context),
-  //       keyboardType: TextInputType.visiblePassword,
-  //       validator: (value) => Validators.password(value),
-  //       controller: passwordController,
-  //       prefixIcon: SvgPicture.asset(
-  //         "assets/icons/password_icon.svg",
-  //         fit: BoxFit.none,
-  //         colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-  //       ),
-  //       hintText: "password".tr(),
-  //       hintStyle: AppStyles.robotoBold16SurfaceDark(context),
-  //       filled: true,
-  //       obscureText: value,
-  //       fillColor: AppColors.white,
-  //       suffixIcon: IconButton(
-  //         isSelected: !value,
-  //         selectedIcon: Icon(Icons.visibility_rounded, color: AppColors.black),
-  //         onPressed: () {
-  //           isObscure.value = !isObscure.value;
-  //         },
-  //         icon: Icon(Icons.visibility_off_rounded, color: AppColors.black),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _builtForgetPassword() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        TextButton(
-          style: TextButton.styleFrom(
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            padding: EdgeInsets.only(bottom: context.height * 0.02),
-          ),
-          onPressed: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-            // Navigator.pushNamed(context, AppRoutes.resetPasswordRouteName);
-          },
-          child: Text(
-            "forget_password".tr(),
-            style: AppStyles.robotoRegular14White(context),
-          ),
-        ),
-      ],
+    return TextButton(
+      style: TextButton.styleFrom(
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: EdgeInsets.only(bottom: context.height * 0.02),
+      ),
+      onPressed: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+        Navigator.pushNamed(context, AppRoutes.resetPasswordScreen);
+      },
+      child: Text(
+        "forget_password".tr(),
+        style: AppStyles.robotoRegular14White(context),
+      ),
     );
   }
 

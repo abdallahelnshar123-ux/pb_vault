@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/features/auth/screens/auth_screen.dart';
+import 'package:pb_vault/features/auth/screens/reset_password_screen.dart';
 import 'package:pb_vault/features/edit_profile/screens/edit_profile_screen.dart';
 import 'package:pb_vault/features/home_screen/screens/home_screen.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
 import 'package:pb_vault/features/master_password_screen/screens/biometrics_screen.dart';
 import 'package:pb_vault/features/master_password_screen/screens/master_password_screen.dart';
 import 'package:pb_vault/features/master_password_screen/screens/pick_avatar_screen.dart';
+import 'package:pb_vault/features/profile_screen/screens/change_master_password_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'core/di/di.dart';
@@ -30,8 +32,8 @@ void main() async {
   await Future.wait([
     EasyLocalization.ensureInitialized(),
     EasyTheme.ensureInitialized(),
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
   ]);
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   configureDependencies();
   Bloc.observer = MyBlocObserver();
   runApp(
@@ -81,6 +83,9 @@ class MyApp extends StatelessWidget {
         AppRoutes.editProfileScreen: (context) => const EditProfileScreen(),
         AppRoutes.biometricsScreen: (context) => const BiometricsScreen(),
         AppRoutes.pickAvatarScreen: (context) => const PickAvatarScreen(),
+        AppRoutes.resetPasswordScreen: (context) => const ResetPasswordScreen(),
+        AppRoutes.changeMasterPasswordScreen: (context) =>
+            const ChangeMasterPasswordScreen(),
       },
       themeMode: context.themeMode,
       darkTheme: context.darkTheme,

@@ -30,9 +30,42 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
   }
 
   @override
+  Future<List<EncryptedDataDto?>> encryptMultiple(List<String?> textList) async {
+    try {
+      return await _vaultCryptoService.encryptMultiple(textList);
+    } catch (e) {
+      throw UnexpectedException(message: e.toString(), statusCode: null);
+    }
+  }
+
+  @override
+  Future<List<String?>> decryptMultiple(List<EncryptedDataDto?> dataList) async {
+    try {
+      return await _vaultCryptoService.decryptMultiple(dataList);
+    } catch (e) {
+      throw UnexpectedException(message: e.toString(), statusCode: null);
+    }
+  }
+
+  @override
   Future<Map<String, dynamic>> createVerifier(String password) async {
     try {
       return await _vaultCryptoService.createVerifier(password);
+    } catch (e) {
+      throw UnexpectedException(message: e.toString(), statusCode: null);
+    }
+  }
+
+  @override
+  Future<String> calculateVerifier({
+    required String password,
+    required List<int> salt,
+  }) async {
+    try {
+      return await _vaultCryptoService.calculateVerifier(
+        password: password,
+        salt: salt,
+      );
     } catch (e) {
       throw UnexpectedException(message: e.toString(), statusCode: null);
     }

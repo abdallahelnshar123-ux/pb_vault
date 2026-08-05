@@ -107,7 +107,7 @@
   "watch_list": "قائمة المشاهدة",
   "account_was_deleted_successfully": "تم حذف الحساب بنجاح",
   "server_error": "الخادم لا يستجيب",
-  "reset_password_message": "تم ارسال اللينك بنجاح من فضلك افحص الرسائل غير المهمة",
+  "reset_password_message": "( spam ) تم ارسال اللينك بنجاح من فضلك افحص رسائلك أو الرسائل غير المهمة",
   "email_sent": "تم ارسال الايميل",
   "edit_profile": "تعديل البروفايل",
   "please_enter_password_to_delete_account": "من فضل ادخل كلمه السر لحذف الحساب ",
@@ -162,60 +162,49 @@
   "english": "الانجليزية",
   "arabic": "العربية",
   "The supplied auth credential is incorrect, malformed or has expired.": "كلمة السر غير صحيحة",
-  "no" : "لا",
-  "account_deleted_successfully" : "تم حذف الحساب بنجاح",
-  "account_details" : "تفاصيل الحساب",
-  "are_you_sure_you_want_to_delete_account" : "هل انت متأكد انك تريدحذف الحساب؟",
-  "no_notes" : "لم يتم إضافة ملاحظات",
+  "no": "لا",
+  "account_deleted_successfully": "تم حذف الحساب بنجاح",
+  "account_details": "تفاصيل الحساب",
+  "are_you_sure_you_want_to_delete_account": "هل انت متأكد انك تريدحذف الحساب؟",
+  "no_notes": "لم يتم إضافة ملاحظات",
   "user_name-email_address": "اسم المستخدم - البريد الالكتروني",
-  "website_address" : "لينك الموقع",
-  "save_changes" : "حفظ التغييرات",
-  "details" : "التفاصيل",
-  "edite_account" : "تعديل الحساب",
-  "search_accounts" : "أبحث عن حساب",
-  "account_updated_successfully" : "تم تحديث الحساب بنجاح",
-  "no_accounts_to_search_add_some_accounts" : "لا يوجد حسابات للبحث عنها. غضف بعض الحسابات",
-  "no_accounts_matches_search_term" : "لا يوجد حسابات تطابق البحث",
-  "skip_for_now" : "تخطي",
-  "enable_biometric_login" : "تفعيل تسجيل الدخول بالبصمة",
-  "use_biometric_authentication" : "استخدام المصادقة البيومترية",
-  "unlock_your_vault_with_your_biometric_credential" : "قم بالغاء قفل خزنتك من خلال استخدام المصادقة البيومترية",
-  "biometric_authentication_is_now_activated" : "المصادقة البيومتريه مفعلة الان",
-  "you_can_turn_it_off_from_sittings" : "يمكنك الغاء تفعيلها من الاعدادات",
-  "error_while_trying_activating_biometric" : "خطأ أثناء تفعيل القياسات البيومتريه",
-  "cancelled_by_user" : "تم الالغاء من خلال المستخدم",
-  "no_biometric_found" : "لم يتم العثور علي قياسات حيوية",
-  "error_while_trying_to_authenticate" : "خطأ اثناء المصادقة",
-  "biometric_unlock" : "القياسات الحيوية",
-  "pick_avatar_for_your_account" : "إختر افاتار لحسابك !",
-  "continue" : "إستمر",
-  "avatar_saved_successfully" : "تم الحفظ بنجاح",
-  "error_while_saving_try_again" : "خطأ اثناء الحفظ. حاول مجددا",
-  "login_methods" : "طرق تسجيل الدخول",
-  "email_username_phone" : "البريد الالكتروني / اسم المستخدم / الهاتف",
-  "more_information" : "المزيد من المعلومات",
-  "recovery_codes" : "رموز الاسترداد",
-  "pass_key" : "مفتاح المرور",
-  "edit_account" : "تعديل الحساب"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  "website_address": "لينك الموقع",
+  "save_changes": "حفظ التغييرات",
+  "details": "التفاصيل",
+  "edite_account": "تعديل الحساب",
+  "search_accounts": "أبحث عن حساب",
+  "account_updated_successfully": "تم تحديث الحساب بنجاح",
+  "no_accounts_to_search_add_some_accounts": "لا يوجد حسابات للبحث عنها. غضف بعض الحسابات",
+  "no_accounts_matches_search_term": "لا يوجد حسابات تطابق البحث",
+  "skip_for_now": "تخطي",
+  "enable_biometric_login": "تفعيل تسجيل الدخول بالبصمة",
+  "use_biometric_authentication": "استخدام المصادقة البيومترية",
+  "unlock_your_vault_with_your_biometric_credential": "قم بالغاء قفل خزنتك من خلال استخدام المصادقة البيومترية",
+  "biometric_authentication_is_now_activated": "المصادقة البيومتريه مفعلة الان",
+  "you_can_turn_it_off_from_sittings": "يمكنك الغاء تفعيلها من الاعدادات",
+  "error_while_trying_activating_biometric": "خطأ أثناء تفعيل القياسات البيومتريه",
+  "cancelled_by_user": "تم الالغاء من خلال المستخدم",
+  "no_biometric_found": "لم يتم العثور علي قياسات حيوية",
+  "error_while_trying_to_authenticate": "خطأ اثناء المصادقة",
+  "biometric_unlock": "القياسات الحيوية",
+  "pick_avatar_for_your_account": "إختر افاتار لحسابك !",
+  "continue": "إستمر",
+  "avatar_saved_successfully": "تم الحفظ بنجاح",
+  "error_while_saving_try_again": "خطأ اثناء الحفظ. حاول مجددا",
+  "login_methods": "طرق تسجيل الدخول",
+  "email_username_phone": "البريد الالكتروني / اسم المستخدم / الهاتف",
+  "more_information": "المزيد من المعلومات",
+  "recovery_codes": "رموز الاسترداد",
+  "pass_key": "مفتاح المرور",
+  "edit_account": "تعديل الحساب",
+  "the_email_you_entered_does_not_match": "البريد الألكتروني الذي ادخلته لا يطابق البريد الألكتروني لحسابك",
+  "username": "اسم المستخدم",
+  "change_master_password": "تغيير كلمة المرور الرئيسية",
+  "change" : "تغيير",
+  "enter_new_password" : "قم بإدخال كلمة المرور الجديدة",
+  "change_your_master_password" : "قم بتغيير كلمة المرور الرئيسيةالخاصة بك",
+  "error_while_getting_data" : "خطأ اثناء الحصول علي المعلومات. من فضلك قم بتسجيل الدخول مجددا ",
+  "same_as_old_password" : "كلمة المرور الجديدة يجب ان تكون مختلفة عن القديمة"
 
 
 

@@ -13,6 +13,7 @@ import 'package:pb_vault/domain/use_cases/vault/unlock_vault_use_case.dart';
 import '../../../domain/entities/response/user/my_user.dart';
 import '../../../domain/use_cases/biometric/is_biometric_rejected_use_case.dart';
 import '../../../domain/use_cases/set_master_password_use_case.dart';
+import '../../../domain/use_cases/vault/change_master_password_use_case.dart';
 import 'master_password_state.dart';
 
 @lazySingleton
@@ -26,6 +27,7 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
   final IsBiometricRejectedUseCase _isBiometricRejectedUseCase;
   final BiometricUnlockUseCase _biometricUnlockUseCase;
   final SetBiometricRejectedUseCase _biometricRejectedUseCase;
+  final ChangeMasterPasswordUseCase _changeMasterPasswordUseCase;
 
   MasterPasswordCubit(
     this._setMasterPasswordUseCase,
@@ -37,6 +39,7 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
     this._isBiometricRejectedUseCase,
     this._biometricUnlockUseCase,
     this._biometricRejectedUseCase,
+    this._changeMasterPasswordUseCase,
   ) : super(MasterPasswordInitial());
 
   Future<void> setMasterPassword({
@@ -137,6 +140,20 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
         },
       );
     }
+  }
+
+  Future<void> changeMasterPassword(String newPassword) async {
+    emit(ChangeMasterPasswordLoading());
+
+    final result = await _changeMasterPasswordUseCase.invoke(
+      newPassword: newPassword,
+    );
+
+    result.fold((failure) => emit(ChangeMasterPasswordError(failure.message)), (
+      user,
+    ) {
+      emit(ChangeMasterPasswordSuccess(user));
+    });
   }
 
   Future<bool> enableBiometric(bool enable) async {

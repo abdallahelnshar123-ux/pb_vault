@@ -82,9 +82,43 @@ class FirestoreService {
     required String accountId,
     required String uId,
   }) async {
-    var documentSnapshot = await getAccountsCollection(
-      uId,
-    ).doc(accountId).get();
+    var documentSnapshot = await getAccountByIdRaw(
+      uId: uId,
+      accountId: accountId,
+    );
     return documentSnapshot.data();
+  }
+
+  Future<DocumentSnapshot<PlatformAccountDto>> getAccountByIdRaw({
+    required String uId,
+    required String accountId,
+  }) async {
+    return await getAccountsCollection(uId).doc(accountId).get();
+  }
+
+  Future<List<PlatformAccountDto>> getAllAccountsOnce({required String uId}) async {
+    var querySnapshot = await getAccountsCollection(uId).get();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  Future<void> changeMasterPasswordBatch({
+    required String uId,
+    required MyUserDto userDto,
+    required List<PlatformAccountDto> accounts,
+  }) async {
+    final batch = _firebaseFirestore.batch();
+
+    // Update User Document
+    final userDoc = getUsersCollection().doc(uId);
+    batch.update(userDoc, userDto.toFireStore());
+
+    // Update all Account Documents
+    final accountsCollection = getAccountsCollection(uId);
+    for (final account in accounts) {
+      final accountDoc = accountsCollection.doc(account.id);
+      batch.set(accountDoc, account);
+    }
+
+    await batch.commit();
   }
 }
