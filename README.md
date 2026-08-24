@@ -54,15 +54,6 @@ Passwords are encrypted before being stored, ensuring that sensitive information
   </li>
 
   <li>
-    <b>Offline Support</b>
-    <ul>
-      <li>Create, update, and delete accounts while offline 📡</li>
-      <li>Firestore offline persistence support</li>
-      <li>Automatic synchronization when connection is restored 🔄</li>
-    </ul>
-  </li>
-
-  <li>
     <b>Localization</b>
     <ul>
       <li>English 🇺🇸 and Arabic 🇪🇬 support</li>
