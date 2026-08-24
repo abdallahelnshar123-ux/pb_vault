@@ -7,26 +7,26 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:590958385902:android:ff90b7463d84d41e5531ff",
+        "mobilesdk_app_id": "1:590958385902:android:70e60d9a6cafe8625531ff",
         "android_client_info": {
-          "package_name": "com.example.pb_vault"
+          "package_name": "com.abdallahelnshar.pbvault"
         }
       },
       "oauth_client": [
         {
-          "client_id": "590958385902-34k79pq4blnnrg05i29vtosso1nour7l.apps.googleusercontent.com",
+          "client_id": "590958385902-875be40nnklg79aihu9d1evk7gubi827.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.pb_vault",
-            "certificate_hash": "c02c8af3bc5cc0dede20d0a76e7821f1d624b233"
+            "package_name": "com.abdallahelnshar.pbvault",
+            "certificate_hash": "dcab5e94438148102099144edd8a8260a9c44dae"
           }
         },
         {
-          "client_id": "590958385902-3cj7kjbuseehhmoa383db56eoddqq5up.apps.googleusercontent.com",
+          "client_id": "590958385902-oqralruk7gvf5jhm4eub3ceh75f08gd3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.pb_vault",
-            "certificate_hash": "dcab5e94438148102099144edd8a8260a9c44dae"
+            "package_name": "com.abdallahelnshar.pbvault",
+            "certificate_hash": "c02c8af3bc5cc0dede20d0a76e7821f1d624b233"
           }
         },
         {

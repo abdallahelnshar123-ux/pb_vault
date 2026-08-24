@@ -68,24 +68,25 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: context.read<UserCubit>().getInitialRoute(),
       routes: {
-        AppRoutes.onboardingRouteName: (context) => ChangeNotifierProvider(
-          create: (context) =>
-              OnboardingViewModel(getIt<SetOnboardingDoneUseCase>()),
+        AppRoutes.onboardingRouteName: (context) =>
+            ChangeNotifierProvider(
+              create: (context) =>
+                  OnboardingViewModel(getIt<SetOnboardingDoneUseCase>()),
 
-          child: const OnboardingScreen(),
-        ),
+              child: const OnboardingScreen(),
+            ),
         AppRoutes.authScreen: (context) => const AuthScreen(),
         AppRoutes.homeRouteName: (context) => const HomeScreen(),
         AppRoutes.masterPasswordScreen: (context) =>
-            const MasterPasswordScreen(),
+        const MasterPasswordScreen(),
         AppRoutes.addAccountScreen: (context) =>
-            const AddPlatformAccountScreen(),
+        const AddPlatformAccountScreen(),
         AppRoutes.editProfileScreen: (context) => const EditProfileScreen(),
         AppRoutes.biometricsScreen: (context) => const BiometricsScreen(),
         AppRoutes.pickAvatarScreen: (context) => const PickAvatarScreen(),
         AppRoutes.resetPasswordScreen: (context) => const ResetPasswordScreen(),
         AppRoutes.changeMasterPasswordScreen: (context) =>
-            const ChangeMasterPasswordScreen(),
+        const ChangeMasterPasswordScreen(),
       },
       themeMode: context.themeMode,
       darkTheme: context.darkTheme,

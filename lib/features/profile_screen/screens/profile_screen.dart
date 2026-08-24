@@ -107,15 +107,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const DividerWidget._(),
                     _buildSettingsTile(
-                      trailing: Switch(
-                        value: context.isDark,
-                        onChanged: (value) {
-                          value == true
-                              ? context.setThemeModeToDark()
-                              : context.setThemeModeToLight();
-                        },
-                        activeThumbColor: AppColors.surfaceDark,
-                      ),
+                      trailing: const ThemeSwitch._(),
                       title: 'dark_mode'.tr(),
                       context,
                       icon: Icons.dark_mode,
@@ -287,6 +279,7 @@ class ProfileScreen extends StatelessWidget {
             message: 'are_you_sure_you_want_to_delete_the_account',
             title: 'confirmation',
             posAction: () {
+              if (!context.mounted) return;
               context.read<UserCubit>().deleteUser(password: "");
             },
             posActionText: 'yes',
@@ -362,5 +355,44 @@ class AvatarWidget extends StatelessWidget {
             backgroundColor: AppColors.primary,
             child: SvgPicture.asset(avatars[currentAvatar]!),
           );
+  }
+}
+
+class ThemeSwitch extends StatefulWidget {
+  const ThemeSwitch._();
+
+  @override
+  State<ThemeSwitch> createState() => _ThemeSwitchState();
+}
+
+class _ThemeSwitchState extends State<ThemeSwitch> {
+  late bool _isDark;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _isDark = context.isDark;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Switch(
+      value: _isDark,
+      onChanged: (value) {
+        Future.delayed(const Duration(milliseconds: 250), () {
+          if (!context.mounted) return;
+          if (value) {
+            context.setThemeModeToDark();
+          } else {
+            context.setThemeModeToLight();
+          }
+        });
+
+        setState(() {
+          _isDark = value;
+        });
+      },
+      activeThumbColor: AppColors.surfaceDark,
+    );
   }
 }
