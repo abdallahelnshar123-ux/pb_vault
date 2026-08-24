@@ -174,7 +174,7 @@
   "edite_account": "تعديل الحساب",
   "search_accounts": "أبحث عن حساب",
   "account_updated_successfully": "تم تحديث الحساب بنجاح",
-  "no_accounts_to_search_add_some_accounts": "لا يوجد حسابات للبحث عنها. غضف بعض الحسابات",
+  "no_accounts_to_search_add_some_accounts": "لا يوجد حسابات, أضف جديد",
   "no_accounts_matches_search_term": "لا يوجد حسابات تطابق البحث",
   "skip_for_now": "تخطي",
   "enable_biometric_login": "تفعيل تسجيل الدخول بالبصمة",
