@@ -138,10 +138,12 @@ Passwords are encrypted before being stored, ensuring that sensitive information
 * Password Strength Analysis
 * Account Categories
 * Favorites & Pinned Accounts
+* Offline Support
 * Export / Import Vault Data
 * Auto Backup & Restore
 
 <hr/>
+
 ## 🧱 Architecture
 
 This project follows the principles of:
