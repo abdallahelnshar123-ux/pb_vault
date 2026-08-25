@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/widgets/conf_password_text_field_widget.dart';
 import 'package:pb_vault/widgets/password_text_field_widget.dart';
 
@@ -64,7 +65,7 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
                 confController: confPasswordController,
               ),
               SizedBox(height: context.height * 0.008),
-              _builtSetButton(),
+              _builtCreateButton(),
             ],
           ),
         ),
@@ -76,7 +77,11 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
     return Text(
       'setup_your_master_password'.tr(),
       textAlign: TextAlign.center,
-      style: AppStyles.interRegular20White,
+      style: AppStyles.interRegular20(
+        context,
+        lColor: AppColors.black,
+        dColor: AppColors.white,
+      ),
     );
   }
 
@@ -86,7 +91,11 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
       child: Text(
         'create_master_password'.tr(),
         textAlign: TextAlign.center,
-        style: AppStyles.interExtraLight14BackgroundLight,
+        style: AppStyles.interExtraLight14(
+          context,
+          lColor: AppColors.surfaceDark,
+          dColor: AppColors.backgroundLight,
+        ),
       ),
     );
   }
@@ -99,13 +108,16 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
           size: 80,
           color: state is MasterPasswordSetupSuccess
               ? AppColors.success
-              : AppColors.primary,
+              : context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
         );
       },
     );
   }
 
-  Widget _builtSetButton() {
+  Widget _builtCreateButton() {
     final masterCubit = context.read<MasterPasswordCubit>();
     final authCubit = context.read<UserCubit>();
     return BlocBuilder<MasterPasswordCubit, MasterPasswordState>(
@@ -124,13 +136,27 @@ class _SetupModeWidgetState extends State<SetupModeWidget> {
                     }
                   }
                 },
-          borderSideColor: AppColors.backgroundDark,
+          borderSideColor: context.easyColor(
+            lColor: AppColors.backgroundLight,
+            dColor: AppColors.backgroundDark,
+          ),
           backgroundColor: state is MasterPasswordSetupSuccess
-              ? AppColors.surfaceDark
-              : AppColors.primary,
+              ? AppColors.transparent
+              : context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
           child: Text(
-            state is MasterPasswordSetupSuccess ? "done".tr() : "create".tr(),
-            style: AppStyles.robotoBold20White(context),
+            state is MasterPasswordSetupSuccess
+                ? "success".tr()
+                : "create".tr(),
+            style: state is MasterPasswordSetupSuccess
+                ? AppStyles.robotoBold20(
+                    context,
+                    lColor: AppColors.backgroundDark,
+                    dColor: AppColors.white,
+                  )
+                : AppStyles.robotoBold20White(context),
           ),
         );
       },

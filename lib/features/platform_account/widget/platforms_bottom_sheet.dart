@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
+import 'package:pb_vault/core/constants/platforms.dart';
+import 'package:pb_vault/widgets/platform_icon.dart';
 import 'package:pb_vault/widgets/search_text_field_widget.dart';
 
-import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
@@ -24,9 +26,9 @@ class PlatformsBottomSheet extends StatefulWidget {
 }
 
 class _PlatformsBottomSheetState extends State<PlatformsBottomSheet> {
-  final ValueNotifier<List<PlatformData>> _filteredPlatforms = ValueNotifier(
-    AppConstants.popularPlatforms,
-  );
+  var platforms = appPlatforms.values.toList();
+  late final ValueNotifier<List<PlatformData>> _filteredPlatforms =
+      ValueNotifier(platforms);
   Timer? _debounce;
 
   @override
@@ -53,7 +55,7 @@ class _PlatformsBottomSheetState extends State<PlatformsBottomSheet> {
   void _searchPlatform(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      _filteredPlatforms.value = AppConstants.popularPlatforms
+      _filteredPlatforms.value = platforms
           .where(
             (platform) => platform.name.toLowerCase().contains(
               value.toLowerCase().trim(),
@@ -89,27 +91,63 @@ class _PlatformsBottomSheetState extends State<PlatformsBottomSheet> {
                 padding: EdgeInsets.all(context.width * 0.03),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  border: BoxBorder.all(color: AppColors.secondary),
+                  border: BoxBorder.all(
+                    color: context.easyColor(
+                      dColor: AppColors.backgroundLight,
+                      lColor: AppColors.backgroundDark,
+                    ),
+                  ),
                   color: widget.currentPlatform == platform
-                      ? AppColors.secondary
-                      : AppColors.backgroundDark,
+                      ? context.easyColor(
+                          lColor: AppColors.backgroundDark,
+                          dColor: AppColors.white,
+                        )
+                      : context.easyColor(
+                          lColor: AppColors.primary,
+                          dColor: AppColors.backgroundDark,
+                        ),
                 ),
                 child: Column(
                   mainAxisSize: .min,
                   spacing: context.width * 0.02,
                   children: [
-                    Image.network(
-                      platform.icon,
-                      width: context.width * 0.08,
-                      errorBuilder: (_, _, _) => const Icon(Icons.public),
+                    PlatformIcon(
+                      platformId: platform.id,
+                      size: context.width * 0.08,
                     ),
+
+                    // Icon(
+                    //   platform.icon,
+                    //   size: context.width * 0.08,
+                    //   color: widget.currentPlatform == platform
+                    //       ? context.easyColor(
+                    //           lColor: AppColors.white,
+                    //           dColor: AppColors.surfaceDark,
+                    //         )
+                    //       : context.easyColor(
+                    //           lColor: AppColors.surfaceDark,
+                    //           dColor: AppColors.white,
+                    //         ),
+                    // ),
                     FittedBox(
                       fit: .scaleDown,
                       child: Text(
                         platform.name,
                         style: widget.currentPlatform == platform
-                            ? AppStyles.robotoBold14SurfaceDark(context)
-                            : AppStyles.robotoRegular14White(context),
+                            ? AppStyles.robotoRegular14(
+                                context,
+                                lColor: AppColors.white,
+                                dColor: AppColors.surfaceDark,
+                              )
+                            : AppStyles.robotoRegular14(
+                                context,
+                                lColor: AppColors.surfaceDark,
+                                dColor: AppColors.white,
+                              ),
+
+                        // widget.currentPlatform == platform
+                        //     ? AppStyles.robotoBold14SurfaceDark(context)
+                        //     : AppStyles.robotoRegular14White(context),
                       ),
                     ),
                   ],

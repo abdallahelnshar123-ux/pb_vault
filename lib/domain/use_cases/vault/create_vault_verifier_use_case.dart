@@ -1,4 +1,7 @@
+import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+
+import '../../failure/failure.dart';
 import '../../repository/vault/vault_repository.dart';
 
 @injectable
@@ -7,7 +10,7 @@ class CreateVaultVerifierUseCase {
 
   CreateVaultVerifierUseCase(this._repository);
 
-  Future<Map<String, dynamic>> invoke(String password) {
+  Future<Either<Failure, Map<String, dynamic>>> invoke(String password) {
     return _repository.createVerifier(password);
   }
 }

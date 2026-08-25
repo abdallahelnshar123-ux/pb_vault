@@ -14,7 +14,10 @@ class SnackBarUtils {
         duration: Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         margin: EdgeInsets.all(5),
-        content: Text(message, style: AppStyles.robotoRegular14SurfaceDark(context)),
+        content: Text(
+          message,
+          style: AppStyles.robotoRegular14SurfaceDark(context),
+        ),
         backgroundColor: AppColors.success,
       ),
     );

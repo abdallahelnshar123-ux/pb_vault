@@ -1,31 +1,93 @@
+import 'package:equatable/equatable.dart';
+
 import '../../../domain/entities/response/user/my_user.dart';
 
-abstract class MasterPasswordState {}
+abstract class MasterPasswordState extends Equatable {}
 
-class MasterPasswordInitial extends MasterPasswordState {}
+class MasterPasswordInitial extends MasterPasswordState {
+  @override
+  List<Object?> get props => [];
+}
 
-/// ==========================   Master Password Setup states   ===========================
-class MasterPasswordSetupLoading extends MasterPasswordState {}
+/// ==================   Master Password Setup states   ====================
+class MasterPasswordSetupLoading extends MasterPasswordState {
+  @override
+  List<Object?> get props => [];
+}
 
 class MasterPasswordSetupSuccess extends MasterPasswordState {
   final MyUser user;
+  final bool offerBiometric;
 
-  MasterPasswordSetupSuccess(this.user);
+  MasterPasswordSetupSuccess(this.user, {this.offerBiometric = false});
+
+  @override
+  List<Object?> get props => [user, offerBiometric];
 }
 
 class MasterPasswordSetupError extends MasterPasswordState {
   final String message;
 
   MasterPasswordSetupError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }
 
-/// ==========================   Master Password Verify states   ===========================
-class MasterPasswordVerifyLoading extends MasterPasswordState {}
+/// ==================   Master Password Verify states   ===================
+class UnlockLoadingState extends MasterPasswordState {
+  @override
+  List<Object?> get props => [];
+}
 
-class MasterPasswordVerifySuccess extends MasterPasswordState {}
+class UnlockSuccessState extends MasterPasswordState {
+  final bool offerBiometric;
 
-class MasterPasswordVerifyError extends MasterPasswordState {
+  UnlockSuccessState({this.offerBiometric = false});
+
+  @override
+  List<Object?> get props => [offerBiometric];
+}
+
+class UnlockErrorState extends MasterPasswordState {
   final String message;
 
-  MasterPasswordVerifyError(this.message);
+  UnlockErrorState(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+/// ==========================   biometric states   ===========================
+
+class BiometricErrorState extends MasterPasswordState {
+  final String message;
+
+  BiometricErrorState(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+/// ================   Change Master Password states   ====================
+
+class ChangeMasterPasswordLoading extends MasterPasswordState {
+  @override
+  List<Object?> get props => [];
+}
+
+class ChangeMasterPasswordSuccess extends MasterPasswordState {
+  final MyUser user;
+  ChangeMasterPasswordSuccess(this.user);
+  @override
+  List<Object?> get props => [user];
+}
+
+class ChangeMasterPasswordError extends MasterPasswordState {
+  final String message;
+
+  ChangeMasterPasswordError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }

@@ -6,6 +6,7 @@ import 'package:injectable/injectable.dart';
 import '../../../../../core/services/firebase_services/firestore_service.dart';
 import '../../../../exceptions/app_exceptions.dart';
 import '../../../../model/response/my_user_dto.dart';
+import '../../../../model/response/platform_account_dto/platform_account_dto.dart';
 import '../user_remote_data_source.dart';
 
 @Injectable(as: UserRemoteDataSource)
@@ -57,6 +58,27 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   Future<void> updateUser(MyUserDto user) async {
     try {
       await _firestoreService.updateUserDataToFirestore(user);
+    } on FirebaseException catch (e) {
+      throw ServerException(message: e.message ?? 'server_error');
+    } on SocketException {
+      throw NetworkException(message: 'no_internet');
+    } catch (e) {
+      throw UnexpectedException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<void> changeMasterPassword({
+    required String uId,
+    required MyUserDto userDto,
+    required List<PlatformAccountDto> accounts,
+  }) async {
+    try {
+      await _firestoreService.changeMasterPasswordBatch(
+        uId: uId,
+        userDto: userDto,
+        accounts: accounts,
+      );
     } on FirebaseException catch (e) {
       throw ServerException(message: e.message ?? 'server_error');
     } on SocketException {

@@ -1,15 +1,20 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pb_vault/core/utils/app_assets.dart';
 import 'package:pb_vault/features/auth/cubit/user_state.dart';
+import 'package:pb_vault/features/profile_screen/cubit/settings_cubit.dart';
+import 'package:pb_vault/features/profile_screen/cubit/settings_state.dart';
+import 'package:pb_vault/features/profile_screen/widgets/container_widget.dart';
 import 'package:pb_vault/widgets/custom_elevated_button.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_routes.dart';
 import '../../../../core/utils/app_styles.dart';
 import '../../../../core/utils/screen_size.dart';
+import '../../../core/constants/assets_constants.dart';
 import '../../../core/utils/dialog_utils.dart';
 import '../../../core/utils/snack_bar_utils.dart';
 import '../../../domain/entities/response/user/auth_providers.dart';
@@ -21,122 +26,150 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.read<UserCubit>().currentUser;
+    return SafeArea(
+      top: false,
+      bottom: true,
+      child: Scaffold(
+        appBar: _builtAppBar(context: context),
+        body: BlocListener<UserCubit, UserState>(
+          listenWhen: (previous, current) =>
+              current is UserDeleteSuccessState ||
+              current is UserDeleteErrorState ||
+              current is UserDeleteLoadingState,
+          listener: (context, state) {
+            if (state is UserDeleteLoadingState) {
+              DialogUtils.showLoading(context: context);
+            } else if (state is UserDeleteSuccessState) {
+              DialogUtils.hideLoading(context: context);
+              SnackBarUtils.showSuccessSnackBar(
+                context: context,
+                message: 'account_deleted_successfully'.tr(),
+              );
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.authScreen,
+                (route) => false,
+              );
+            } else if (state is UserDeleteErrorState) {
+              DialogUtils.hideLoading(context: context);
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
-      appBar: _builtAppBar(context: context),
-      body: BlocListener<UserCubit, UserState>(
-        listenWhen: (previous, current) =>
-            current is UserDeleteSuccessState ||
-            current is UserDeleteErrorState ||
-            current is UserDeleteLoadingState,
-        listener: (context, state) {
-          if (state is UserDeleteLoadingState) {
-            DialogUtils.showLoading(context: context);
-          } else if (state is UserDeleteSuccessState) {
-            DialogUtils.hideLoading(context: context);
-            SnackBarUtils.showSuccessSnackBar(
-              context: context,
-              message: 'account_deleted_successfully'.tr(),
-            );
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              AppRoutes.authScreen,
-              (route) => false,
-            );
-          } else if (state is UserDeleteErrorState) {
-            DialogUtils.hideLoading(context: context);
+              SnackBarUtils.showErrorSnackBar(
+                context: context,
+                message: state.message.tr(),
+              );
+            }
+          },
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(context.width * 0.05),
+            child: Column(
+              spacing: context.width * 0.07,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AvatarWidget._(),
+                BlocBuilder<UserCubit, UserState>(
+                  buildWhen: (previous, current) =>
+                      current is UserDetailsUpdateSuccessState,
+                  builder: (context, state) {
+                    final user = context.read<UserCubit>().currentUser;
 
-            SnackBarUtils.showErrorSnackBar(
-              context: context,
-              message: state.message.tr(),
-            );
-          }
-        },
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(context.width * 0.05),
-          child: Column(
-            spacing: context.width * 0.07,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _builtAvatar(),
-              _builtContainer(
-                children: [
-                  _buildInfoCard(
+                    return ContainerWidget(
+                      children: [
+                        _buildInfoCard(
+                          context,
+                          value: user?.name ?? '---',
+                          icon: AppAssets.bnbProfileIcon,
+                        ),
+                        const DividerWidget._(),
+                        _buildInfoCard(
+                          context,
+                          value: user?.email ?? '---',
+                          icon: AppAssets.emailIcon,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Text(
+                  'settings'.tr(),
+                  style: AppStyles.robotoRegular18(
                     context,
-                    value: user?.name ?? '---',
-                    icon: AppAssets.bnbProfileIcon,
+                    lColor: AppColors.surfaceDark,
+                    dColor: AppColors.secondary,
                   ),
-                  _builtDivider(),
-                  _buildInfoCard(
-                    context,
-                    value: user?.email ?? '---',
-                    icon: AppAssets.emailIcon,
-                  ),
-                ],
-              ),
-              Text(
-                'settings'.tr(),
-                style: AppStyles.robotoRegular18Secondary(context),
-              ),
-              _builtContainer(
-                children: [
-                  _buildSettingsTile(
-                    context,
-                    trailing: LanguageWidget(),
-                    title: 'language'.tr(),
-                    icon: Icons.language,
-                  ),
-                  _builtDivider(),
-                  _buildSettingsTile(
-                    trailing: Switch(
-                      value: true,
-                      onChanged: (value) {
-                        // todo :  Add theme logic here
-                      },
-                      activeThumbColor: AppColors.surfaceDark,
+                ),
+                ContainerWidget(
+                  children: [
+                    _buildSettingsTile(
+                      context,
+                      trailing: LanguageWidget(),
+                      title: 'language'.tr(),
+                      icon: Icons.language,
                     ),
-                    title: 'dark_mode'.tr(),
-                    context,
-                    icon: Icons.dark_mode,
-                  ),
-                ],
-              ),
-              _builtDeleteAccountButton(context: context),
-            ],
+                    const DividerWidget._(),
+                    _buildSettingsTile(
+                      trailing: const ThemeSwitch._(),
+                      title: 'dark_mode'.tr(),
+                      context,
+                      icon: Icons.dark_mode,
+                    ),
+                    BlocBuilder<SettingsCubit, SettingsState>(
+                      buildWhen: (previous, current) =>
+                          previous.isBiometricEnabled !=
+                              current.isBiometricEnabled ||
+                          previous.isBiometricSupported !=
+                              current.isBiometricSupported,
+                      builder: (context, state) {
+                        return Visibility(
+                          visible: state.isBiometricSupported,
+                          child: Column(
+                            children: [
+                              const DividerWidget._(),
+                              _buildSettingsTile(
+                                trailing: Switch(
+                                  value: state.isBiometricEnabled,
+                                  onChanged: (value) {
+                                    context
+                                        .read<SettingsCubit>()
+                                        .toggleBiometric(value);
+                                  },
+                                  activeThumbColor: AppColors.surfaceDark,
+                                ),
+                                title: 'biometric_unlock'.tr(),
+                                context,
+                                icon: Icons.fingerprint_rounded,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    const DividerWidget._(),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.changeMasterPasswordScreen,
+                        );
+                      },
+                      child: _buildSettingsTile(
+                        trailing: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: AppColors.backgroundDark,
+                          size: context.width * 0.06,
+                        ),
+                        title: 'change_master_password'.tr(),
+                        context,
+                        icon: Icons.lock,
+                      ),
+                    ),
+                  ],
+                ),
+                _builtDeleteAccountButton(context: context),
+              ],
+            ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _builtAvatar() {
-    return const Center(
-      child: CircleAvatar(
-        radius: 60,
-        backgroundColor: AppColors.secondary,
-        child: Icon(Icons.person, size: 70, color: AppColors.backgroundDark),
-      ),
-    );
-  }
-
-  Widget _builtDivider() {
-    return const Divider(
-      color: AppColors.surfaceDark,
-      endIndent: 20,
-      indent: 20,
-    );
-  }
-
-  Widget _builtContainer({required List<Widget> children}) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: AppColors.secondary,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(children: children),
     );
   }
 
@@ -166,31 +199,32 @@ class ProfileScreen extends StatelessWidget {
     return ListTile(
       leading: Icon(icon, color: AppColors.surfaceDark),
       title: Text(title),
-      titleTextStyle: AppStyles.robotoBold16SurfaceDark(context),
+      titleTextStyle: AppStyles.robotoBold14SurfaceDark(context),
       trailing: trailing,
     );
   }
 
   PreferredSizeWidget _builtAppBar({required BuildContext context}) {
     return AppBar(
-      centerTitle: false,
+      titleSpacing: 0,
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
         icon: Icon(Icons.arrow_back_ios_new_rounded),
-        color: AppColors.secondary,
       ),
-      backgroundColor: AppColors.transparent,
       elevation: 0,
       actionsPadding: EdgeInsets.symmetric(horizontal: 5),
-      title: Text(
-        'profile'.tr(),
-        style: AppStyles.robotoRegular18Secondary(context),
-      ),
+      title: Text('profile'.tr()),
       actions: [
         IconButton(
           icon: SvgPicture.asset(
             AppAssets.editIcon,
-            colorFilter: ColorFilter.mode(AppColors.secondary, BlendMode.srcIn),
+            colorFilter: ColorFilter.mode(
+              context.easyColor(
+                lColor: AppColors.surfaceDark,
+                dColor: AppColors.secondary,
+              ),
+              BlendMode.srcIn,
+            ),
             fit: .cover,
             height: 25,
           ),
@@ -205,13 +239,15 @@ class ProfileScreen extends StatelessWidget {
             fit: .cover,
             height: 25,
           ),
-          onPressed: () {
-            context.read<UserCubit>().logout(context);
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              AppRoutes.authScreen,
-              (route) => false,
-            );
+          onPressed: () async {
+            await context.read<UserCubit>().logout();
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.authScreen,
+                (route) => false,
+              );
+            }
           },
         ),
       ],
@@ -221,7 +257,10 @@ class ProfileScreen extends StatelessWidget {
   Widget _builtDeleteAccountButton({required BuildContext context}) {
     var currentUser = context.read<UserCubit>().currentUser;
     return CustomElevatedButton(
-      backgroundColor: AppColors.primary,
+      backgroundColor: context.easyColor(
+        lColor: AppColors.backgroundDark,
+        dColor: AppColors.primary,
+      ),
       onPressed: () async {
         if (currentUser?.provider == AuthProviders.emailPassword) {
           String? password = await DialogUtils.showPasswordDialog(
@@ -232,10 +271,7 @@ class ProfileScreen extends StatelessWidget {
 
           if (password != null && password.isNotEmpty) {
             if (!context.mounted) return;
-            context.read<UserCubit>().deleteUser(
-              context: context,
-              password: password,
-            );
+            context.read<UserCubit>().deleteUser(password: password);
           }
         } else {
           DialogUtils.showMessage(
@@ -243,10 +279,8 @@ class ProfileScreen extends StatelessWidget {
             message: 'are_you_sure_you_want_to_delete_the_account',
             title: 'confirmation',
             posAction: () {
-              context.read<UserCubit>().deleteUser(
-                context: context,
-                password: "",
-              );
+              if (!context.mounted) return;
+              context.read<UserCubit>().deleteUser(password: "");
             },
             posActionText: 'yes',
             negActionText: 'no',
@@ -257,13 +291,108 @@ class ProfileScreen extends StatelessWidget {
         spacing: 10,
         mainAxisAlignment: .center,
         children: [
-          Icon(Icons.delete, color: AppColors.surfaceDark, size: 30),
+          Icon(
+            Icons.delete,
+            color: context.easyColor(
+              lColor: AppColors.backgroundLight,
+              dColor: AppColors.surfaceDark,
+            ),
+            size: 30,
+          ),
           Text(
             'delete_account'.tr(),
-            style: AppStyles.robotoRegular18SurfaceDark(context),
+            style: AppStyles.robotoRegular18(
+              context,
+              lColor: AppColors.backgroundLight,
+              dColor: AppColors.surfaceDark,
+            ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class DividerWidget extends StatelessWidget {
+  const DividerWidget._();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Divider(
+      color: AppColors.surfaceDark,
+      endIndent: 20,
+      indent: 20,
+    );
+  }
+}
+
+class AvatarWidget extends StatelessWidget {
+  const AvatarWidget._();
+
+  @override
+  Widget build(BuildContext context) {
+    var currentAvatar = context.watch<UserCubit>().currentUser?.avatar;
+    var avatars = userAvatars;
+    return (currentAvatar == null ||
+            currentAvatar.isEmpty ||
+            avatars[currentAvatar] == null)
+        ? Center(
+            child: CircleAvatar(
+              radius: 60,
+              backgroundColor: context.easyColor(
+                lColor: AppColors.primary,
+                dColor: AppColors.backgroundLight,
+              ),
+              child: Icon(
+                Icons.person,
+                size: 70,
+                color: AppColors.backgroundDark,
+              ),
+            ),
+          )
+        : CircleAvatar(
+            radius: 60,
+            backgroundColor: AppColors.primary,
+            child: SvgPicture.asset(avatars[currentAvatar]!),
+          );
+  }
+}
+
+class ThemeSwitch extends StatefulWidget {
+  const ThemeSwitch._();
+
+  @override
+  State<ThemeSwitch> createState() => _ThemeSwitchState();
+}
+
+class _ThemeSwitchState extends State<ThemeSwitch> {
+  late bool _isDark;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _isDark = context.isDark;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Switch(
+      value: _isDark,
+      onChanged: (value) {
+        Future.delayed(const Duration(milliseconds: 250), () {
+          if (!context.mounted) return;
+          if (value) {
+            context.setThemeModeToDark();
+          } else {
+            context.setThemeModeToLight();
+          }
+        });
+
+        setState(() {
+          _isDark = value;
+        });
+      },
+      activeThumbColor: AppColors.surfaceDark,
     );
   }
 }

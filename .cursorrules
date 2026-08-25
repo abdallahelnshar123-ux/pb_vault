@@ -8,21 +8,26 @@ The project follows **Clean Architecture** principles with a **Feature-based** U
 - **lib/core/**: Cross-cutting concerns.
     - `constants/`: App-wide constants (e.g., `AppConstants`).
     - `di/`: Dependency Injection setup (`get_it`, `injectable`).
-    - `services/`: External services (e.g., `firebase_services/firestore_service.dart`, `vault_crypto_service/`).
+    - `services/`: External services (e.g., `firebase_services/firestore_service.dart`, `vault_crypto_service/`, `biometric_service/`).
     - `utils/`: UI helpers (`AppColors`, `AppStyles`, `AppAssets`, `AppRoutes`, `DialogUtils`, `ScreenSize`).
+    - `data_bases/`: Persistence utilities.
+        - `cache/`: `LocalStorage` (SharedPreferences) for simple flags and user cache.
+        - `secure_storage/`: `SecureStorageUtils` (FlutterSecureStorage) for sensitive data (SecretKey).
 - **lib/domain/**: Business logic.
     - `entities/`: Domain entities. Separated into `request/` and `response/` when applicable. **NO Dependencies on Flutter/Data layers.**
     - `repository/`: Abstract repository interfaces.
-    - `use_cases/`: Single-responsibility business logic classes.
+    - `use_cases/`: Single-responsibility business logic classes. Use `Dartz` (`Either`, `Option`) for functional error handling.
 - **lib/data/**: Implementation details.
     - `model/`: Data models suffix with `Dto`. Separated into `request/` and `response/`.
     - `mapper/`: Extension-based mappers.
         - `_mapper.dart`: Dto to Entity (e.g., `toUser()`).
         - `_dto_mapper.dart`: Entity to Dto (e.g., `toMyUserDto()`).
     - `repository/`: Concrete repository implementations using Services/DataSources.
-    - `data_sources/`: Remote and Local data sources.
+    - `data_sources/`:
+        - `remote/`: Firebase, API calls.
+        - `local/`: Secure storage, cache.
 - **lib/widgets/**: Shared/Common UI components used across multiple features.
-- **lib/features/**: UI Layer. Organized by feature (e.g., `auth`, `home_screen`, `master_password_screen`). Each feature contains:
+- **lib/features/**: UI Layer. Organized by feature. Each feature contains:
     - `screens/`: UI pages.
     - `widgets/`: Feature-specific widgets.
     - `cubit/`: State management logic. Files are `_state.dart` and `_view_model.dart`.
@@ -32,38 +37,67 @@ The project follows **Clean Architecture** principles with a **Feature-based** U
     - Class name: `...Cubit`.
     - File names: `..._view_model.dart` and `..._state.dart`.
 - **Dependency Injection**: `injectable` & `get_it`.
-    - Annotate with `@injectable`, `@lazySingleton`.
+    - Annotate with `@injectable`, `@lazySingleton`, `@module`.
     - Always run `flutter pub run build_runner build --delete-conflicting-outputs` after DI changes.
+- **Functional Programming**: `dartz`. Use `Either<Failure, T>` for repository/use-case returns.
+- **Encryption**: `cryptography` package. Managed via `VaultCryptoService`.
+- **Authentication**: `firebase_auth`, `google_sign_in`, and `local_auth` for biometrics.
 - **Localization**: `easy_localization`. Use `.tr()` on strings.
-- **Data Persistence**: `FirebaseFirestore` (via `FirestoreService`), `SharedPreferences` (via `LocalStorage`), and Secure Storage.
-- **Encryption**: Handled via `VaultRepository` (implemented in `VaultCryptoService`) using UseCases.
+
+## 🔒 Security & Biometrics
+- **Master Password**: The absolute source of truth. NEVER store it anywhere (memory, disk, or cloud).
+- **SecretKey**: Derived from Master Password using PBKDF2.
+    - Stored only in **memory** during an active session.
+    - Stored in **Secure Storage** ONLY if Biometric is enabled.
+    - NEVER upload to Firestore.
+- **Biometric Unlock**: A convenience layer to retrieve the `SecretKey` from Secure Storage.
+- **Verifier & Salt**: Stored in Firestore under the user document. Used to verify the Master Password and derive the `SecretKey`.
+- **Logout/Lock**:
+    - Logout: Clear memory, delete `SecretKey` from Secure Storage, set `useBiometric = false`, signOut Firebase.
+    - Lock: Clear memory, keep Secure Storage.
 
 ## 🎨 Coding Standards & UI Rules
 - **Design System**: Use `AppColors`, `AppStyles`, and `AppAssets`.
 - **Responsive UI**: Use `context.width`, `context.height` from `screen_size.dart`.
-- **Spacing**: Use `spacing` property in `Column`/`Row` or `SizedBox`.
-- **Forms**: Use `CustomTextFormField` and `GlobalKey<FormState>` for validation.
+- **Forms**: Use `CustomTextFormField` and `GlobalKey<FormState>`.
 - **Feedback**: Use `DialogUtils` for loading/errors and `SnackBarUtils` for notifications.
+
+## 🧪 Testing Requirements
+- **Standard**: Every new logic (Utility, Mapper, Data Source, Repository, Use Case, Cubit, Service) MUST have a corresponding unit test file in `test/` mirroring the `lib/` structure.
+- **Naming**: Use the `should [outcome] when [scenario]` convention.
+- **Mocking**: Use `mocktail`. Register fallback values in `setUpAll` for custom types.
+- **Strict Verification**:
+    - ALWAYS use `verifyNoMoreInteractions(mock)` for all dependencies used in a test.
+    - ALWAYS use `verifyZeroInteractions(mock)` for dependencies that must NOT be touched (e.g., local storage when remote fails).
+- **Coverage**: Test all success paths AND all error paths (including specific platform exceptions and unexpected errors).
+- **State Management**: Use `bloc_test` for Cubits. Match states using `isA<T>().having()`.
+- **Entities**: Ensure all domain entities and DTOs use `Equatable` for value-based comparisons in tests.
+- **Stateful Services**: Always test initial state, state transitions, and state-based constraints.
 
 ## 📝 Naming & Mapping Rules
 - **Files**: `snake_case.dart`.
 - **Mappers**: ALWAYS create two-way mappers in `lib/data/mapper/`.
 - **Entities**: Place in `lib/domain/entities/`.
 - **Dtos**: Place in `lib/data/model/`.
+- **Keys**: Use `SharedPrefsKeys` and `SecureStorageKeys` constants.
 
 ## 🚀 Workflows
 1. **Adding a Feature**:
     - Define Domain Entity -> UseCase -> Repository Interface.
     - Create Data Model (Dto) -> Mappers (Two-way) -> Repository Impl.
     - Build UI (Screens/Widgets) -> Cubit (ViewModel/State).
-2. **Encryption**: Passwords must be processed via appropriate UseCases (e.g., `EncryptPasswordUseCase`, `CreateVaultVerifierUseCase`) which interact with `VaultRepository`.
-3. **Firestore**: Nest user data under `users/{uId}/accounts/`. Use `FirestoreService` for all DB calls.
+2. **Encryption Workflow**:
+    - Registration: `CreateVaultVerifierUseCase` -> Store verifier/salt in Firestore.
+    - Unlock: `UnlockVaultUseCase` (derives `SecretKey` in memory).
+    - Enable Biometric: `EnableBiometricUseCase` (stores `SecretKey` in Secure Storage).
+3. **Data Access**: Nest user data under `users/{uId}/accounts/`. Use `FirestoreService` for all DB calls.
 
 ## ⚠️ Critical Constraints
 - **Do NOT** bypass Mappers; Repositories must return Entities, not Dtos.
 - **Do NOT** hardcode colors/styles; use the core utils.
-- **Do NOT** put business logic in UI files.
 - **Do NOT** forget to update `AppRoutes` and `main.dart` when adding new screens.
+- **Do NOT** store sensitive data in `LocalStorage`; use `SecureStorageUtils`.
+- **Do NOT** put business logic or direct service calls in UI files.
 
 ---
 *End of Instructions*

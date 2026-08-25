@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pb_vault/core/constants/platforms.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
 import 'package:pb_vault/features/home_screen/widget/password_card_item.dart';
 import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
@@ -56,16 +57,11 @@ class _SearchPlatformAccountsScreenState
   PreferredSizeWidget _builtAppBar() {
     return AppBar(
       toolbarHeight: 80,
-      centerTitle: false,
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
         icon: Icon(Icons.arrow_back_ios_new_rounded),
-        color: AppColors.secondary,
       ),
-      title: Text(
-        'search_password'.tr(),
-        style: AppStyles.robotoRegular20Secondary(context),
-      ),
+      title: Text('search_accounts'.tr()),
       elevation: 0,
     );
   }
@@ -76,11 +72,13 @@ class _SearchPlatformAccountsScreenState
       children: [
         SearchTextFieldWidget(
           onChanged: (value) {
+            var platforms = appPlatforms;
             if (_debounce?.isActive ?? false) _debounce!.cancel();
             _debounce = Timer(const Duration(milliseconds: 500), () {
               filteredAccountsList = context
                   .read<PlatformAccountCubit>()
                   .searchPlatformAccounts(
+                    platforms: platforms,
                     accountsList: widget.allAccountsList,
                     searchTerm: value,
                   );
@@ -93,17 +91,27 @@ class _SearchPlatformAccountsScreenState
               ? Center(
                   child: Text(
                     'no_accounts_to_search_add_some_accounts'.tr(),
-                    style: AppStyles.robotoBold16Secondary(context),
+                    style: AppStyles.robotoBold16(
+                      context,
+                      lColor: AppColors.surfaceDark,
+                      dColor: AppColors.backgroundLight,
+                    ),
                     textAlign: .center,
                   ),
                 )
-              : filteredAccountsList.isEmpty ?Center(
-            child: Text(
-              'no_accounts_matches_search_term'.tr(),
-              style: AppStyles.robotoBold16Secondary(context),
-              textAlign: .center,
-            ),
-          ) :PasswordCardItem(accountsList: filteredAccountsList),
+              : filteredAccountsList.isEmpty
+              ? Center(
+                  child: Text(
+                    'no_accounts_matches_search_term'.tr(),
+                    style: AppStyles.robotoBold16(
+                      context,
+                      lColor: AppColors.surfaceDark,
+                      dColor: AppColors.backgroundLight,
+                    ),
+                    textAlign: .center,
+                  ),
+                )
+              : PasswordCardItem(accountsList: filteredAccountsList),
         ),
       ],
     );

@@ -52,31 +52,29 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyA1yc89QaJZnPS75wcyCigcEfbeXKqdyhc',
-    appId: '1:590958385902:android:ff90b7463d84d41e5531ff',
+    appId: '1:590958385902:android:70e60d9a6cafe8625531ff',
     messagingSenderId: '590958385902',
     projectId: 'pb-vault-401b5',
     storageBucket: 'pb-vault-401b5.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAxY7Aw49JUHUq-EKtVVcPOGO3jFObVVco',
-    appId: '1:590958385902:ios:a6a5121dc49ee5135531ff',
+    appId: '1:590958385902:ios:4425ba04b8c924755531ff',
     messagingSenderId: '590958385902',
     projectId: 'pb-vault-401b5',
     storageBucket: 'pb-vault-401b5.firebasestorage.app',
-    iosClientId:
-        '590958385902-0alfg71ctpaeoq62vsf765cq9to6qe59.apps.googleusercontent.com',
-    iosBundleId: 'com.example.pbVault',
+    androidClientId: '590958385902-34k79pq4blnnrg05i29vtosso1nour7l.apps.googleusercontent.com',
+    iosClientId: '590958385902-tq0thdmcrra8v6m8unlp47d6fae7c1gp.apps.googleusercontent.com',
+    iosBundleId: 'com.abdallahelnshar.pbvault',
   );
-
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyAxY7Aw49JUHUq-EKtVVcPOGO3jFObVVco',
     appId: '1:590958385902:ios:a6a5121dc49ee5135531ff',
     messagingSenderId: '590958385902',
     projectId: 'pb-vault-401b5',
     storageBucket: 'pb-vault-401b5.firebasestorage.app',
-    iosClientId:
-        '590958385902-0alfg71ctpaeoq62vsf765cq9to6qe59.apps.googleusercontent.com',
+    androidClientId: '590958385902-34k79pq4blnnrg05i29vtosso1nour7l.apps.googleusercontent.com',
+    iosClientId: '590958385902-0alfg71ctpaeoq62vsf765cq9to6qe59.apps.googleusercontent.com',
     iosBundleId: 'com.example.pbVault',
   );
 

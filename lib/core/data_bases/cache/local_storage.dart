@@ -1,16 +1,19 @@
 import 'dart:convert';
 
 import 'package:injectable/injectable.dart';
-import 'package:pb_vault/core/data_bases/cache/shared_prefs_keys.dart';
-import 'package:pb_vault/core/data_bases/cache/shared_prefs_utils.dart';
+import 'package:pb_vault/core/data_bases/cache/secure_storage/secure_storage_keys.dart';
+import 'package:pb_vault/core/data_bases/cache/secure_storage/secure_storage_utils.dart';
+import 'package:pb_vault/core/data_bases/cache/shared_prefs/shared_prefs_keys.dart';
+import 'package:pb_vault/core/data_bases/cache/shared_prefs/shared_prefs_utils.dart';
 
 import '../../../data/model/response/my_user_dto.dart';
 
 @lazySingleton
 class LocalStorage {
   final SharedPrefsUtils _sharedPrefs;
+  final SecureStorageUtils _secureStorageUtils;
 
-  LocalStorage(this._sharedPrefs);
+  LocalStorage(this._sharedPrefs, this._secureStorageUtils);
 
   bool get onboarding =>
       _sharedPrefs.getData<bool>(key: SharedPrefsKeys.onBoardingKey) ?? true;
@@ -45,4 +48,28 @@ class LocalStorage {
 
   Future<void> clearUser() =>
       _sharedPrefs.removeData(key: SharedPrefsKeys.userKey);
+
+  bool get useBiometric =>
+      _sharedPrefs.getData<bool>(key: SharedPrefsKeys.useBiometricKey) ?? false;
+
+  Future<void> setUseBiometric(bool value) =>
+      _sharedPrefs.saveData(key: SharedPrefsKeys.useBiometricKey, value: value);
+
+  bool get isBiometricRejected =>
+      _sharedPrefs.getData<bool>(key: SharedPrefsKeys.biometricRejectedKey) ??
+      false;
+
+  Future<void> setBiometricRejected(bool value) => _sharedPrefs.saveData(
+    key: SharedPrefsKeys.biometricRejectedKey,
+    value: value,
+  );
+
+  Future<void> saveSecretKey(List<int> secretKey) =>
+      _secureStorageUtils.writeBytes(SecureStorageKeys.secretKey, secretKey);
+
+  Future<List<int>?> get secretKey =>
+      _secureStorageUtils.readBytes(SecureStorageKeys.secretKey);
+
+  Future<void> deleteSecretKey() =>
+      _secureStorageUtils.delete(SecureStorageKeys.secretKey);
 }

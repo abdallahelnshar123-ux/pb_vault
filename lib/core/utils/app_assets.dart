@@ -3,7 +3,8 @@ class AppAssets {
   static const String onBoardingImage1 = 'assets/images/onboarding1.png';
   static const String onBoardingImage2 = 'assets/images/onboarding2.png';
   static const String onBoardingImage3 = 'assets/images/onboarding3.png';
-  static const String appLogo = 'assets/icons/logo.svg';
+  static const String appLogoDark = 'assets/icons/logo_dark.svg';
+  static const String appLogoLight = 'assets/icons/logo_light.svg';
 
   static const String forgetPasswordImage =
       'assets/images/forget_password_image.png';
@@ -56,4 +57,15 @@ class AppAssets {
   static const String wishlistIcon = 'assets/icons/wishlist_icon.svg';
   static const String logoutIcon = 'assets/icons/logout.svg';
   static const String editIcon = 'assets/icons/edit.svg';
+  static const String identifierIcon = 'assets/icons/identifier_icon.svg';
+  static const String linkedinIcon = 'assets/icons/linkedin_icon.svg';
+  static const String amazonIcon = 'assets/icons/amazon_icon.svg';
+  static const String microsoftIcon = 'assets/icons/microsoft_icon.svg';
+  static const String adobeIcon = 'assets/icons/adobe_icon.svg';
+  static const String canvaIcon = 'assets/icons/canva_icon.svg';
+  static const String skypeIcon = 'assets/icons/skype_icon.svg';
+  static const String minecraftIcon = 'assets/icons/minecraft_icon.svg';
+  static const String huluIcon = 'assets/icons/hulu_icon.svg';
+  static const String disneyPlusIcon = 'assets/icons/disney_plus_icon.svg';
+  static const String xboxIcon = 'assets/icons/xbox_icon.svg';
 }

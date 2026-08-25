@@ -18,6 +18,8 @@ extension ExceptionMapper on AppException {
 
       case CacheException():
         return CacheFailure(message);
+      case BiometricException():
+        return BiometricFailure(message);
 
       default:
         return UnexpectedFailure(message);

@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pb_vault/features/home_screen/cubit/home_view_model.dart';
+import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
 
 import '../../../core/utils/app_routes.dart';
 import '../../../domain/entities/response/user/my_user.dart';
@@ -14,7 +14,8 @@ import '../../../domain/use_cases/logout_use_case.dart';
 import '../../../domain/use_cases/register_with_email_and_password_use_case.dart';
 import '../../../domain/use_cases/reset_password_use_case.dart';
 import '../../../domain/use_cases/sign_in_with_google_use_cases.dart';
-import '../../../domain/use_cases/update_account_details_use_case.dart';
+import '../../../domain/use_cases/update_user_details_use_case.dart';
+import '../../master_password_screen/cubit/master_password_state.dart';
 import 'user_state.dart';
 
 @lazySingleton
@@ -28,6 +29,8 @@ class UserCubit extends Cubit<UserState> {
   final UpdateUserDetailsUseCase _updateUserDetailsUseCase;
   final ResetPasswordUseCase _resetPasswordUseCase;
   final CheckAppStartupUseCase _checkAppStartupUseCase;
+  final HomeCubit _homeCubit;
+  final MasterPasswordCubit _masterPasswordCubit;
 
   UserCubit(
     this._signInWithGoogleUseCases,
@@ -38,61 +41,60 @@ class UserCubit extends Cubit<UserState> {
     this._updateUserDetailsUseCase,
     this._resetPasswordUseCase,
     this._checkAppStartupUseCase,
-  ) : super(UserInitial());
+    this._homeCubit,
+    this._masterPasswordCubit,
+  ) : super(UserInitial()) {
+    _masterPasswordCubit.stream.listen((state) {
+      if (state is ChangeMasterPasswordSuccess) {
+        changeUser(state.user);
+      }
+    });
+  }
 
   MyUser? currentUser;
-  int _selectedAvatarIndex = 0;
 
-  set changeSelectedIndex(int newIndex) {
-    _selectedAvatarIndex = newIndex;
-  }
+  bool isAccountJustCreated = false;
 
-  int get selectedAvatarIndex {
-    return _selectedAvatarIndex;
-  }
-
-  void logout(BuildContext context) async {
-    emit(LogoutLoadingState());
-    await context.read<HomeCubit>().clearHomeAccounts();
-    if (!context.mounted) return;
-    var result = await _logoutUseCase.invoke();
-    result.fold((failure) => emit(LogoutErrorState(failure.message.tr())), (_) {
-      emit(UserUnauthenticatedState());
-    });
-  }
-
-  Future<void> deleteUser({
-    required BuildContext context,
-    required String password,
-  }) async {
-    emit(UserDeleteLoadingState());
-
-    var result = await _deleteAccountUseCase.invoke(
+  Future<void> loginWithEmailAndPassword(String email, String password) async {
+    emit(LoginWithEmailPasswordLoadingState());
+    final result = await _loginWithEmailAndPasswordUseCase.invoke(
+      email: email,
       password: password,
-      provider: currentUser?.provider ?? '',
     );
-    result.fold((failure) => emit(UserDeleteErrorState(failure.message.tr())), (
-      unit,
-    ) {
-      emit(UserDeleteSuccessState());
-      logout(context);
-    });
+    result.fold(
+      (failure) => emit(LoginWithEmailPasswordErrorState(failure.message.tr())),
+      (user) {
+        currentUser = user;
+        emit(UserAuthenticatedState(user));
+      },
+    );
   }
 
-  Future<void> updateUSerDetails({required MyUser user}) async {
-    emit(UserDetailsUpdateLoadingState());
-    var result = await _updateUserDetailsUseCase.updateAccountDetails(
-      user: user,
+  Future<void> registerWithEmailAndPassword({
+    required String email,
+    required String password,
+    required String name,
+    required int avatarIndex,
+  }) async {
+    emit(RegisterWithEmailPasswordLoadingState());
+    final result = await _registerWithEmailAndPasswordUseCases.invoke(
+      name: name,
+      avatarIndex: avatarIndex,
+      password: password,
+      email: email,
     );
-    result.fold((failure) => emit(USerDetailsUpdateErrorState(failure.message)), (
-      unit,
-    ) {
-      currentUser = user;
-      emit(UserDetailsUpdateSuccessState());
-    });
+
+    result.fold(
+      (failure) =>
+          emit(RegisterWithEmailPasswordErrorState(failure.message.tr())),
+      (user) {
+        currentUser = user;
+        isAccountJustCreated = true;
+        emit(UserAuthenticatedState(user));
+      },
+    );
   }
 
-  ///   auth with google
   Future<void> continueWithGoogle() async {
     emit(ContinueWithGoogleLoadingState());
     final result = await _signInWithGoogleUseCases.invoke();
@@ -108,48 +110,48 @@ class UserCubit extends Cubit<UserState> {
     );
   }
 
-  Future<void> loginWithEmailAndPassword(String email, String password) async {
-    try {
-      emit(LoginWithEmailPasswordLoadingState());
-      final result = await _loginWithEmailAndPasswordUseCase.invoke(
-        email: email,
-        password: password,
-      );
-      result.fold((failure) => emit(LoginWithEmailPasswordErrorState(failure.message.tr())), (
-        user,
-      ) {
-        currentUser = user;
-        emit(UserAuthenticatedState(user));
-      });
-    } catch (e) {
-      emit(LoginWithEmailPasswordErrorState('Unexpected Error'));
-    }
+  Future<void> logout() async {
+    emit(LogoutLoadingState());
+
+    var result = await _logoutUseCase.invoke();
+    result.fold((failure) => emit(LogoutErrorState(failure.message.tr())), (
+      _,
+    ) async {
+      _masterPasswordCubit.lockVault();
+      await _homeCubit.clearHomeAccounts();
+      emit(UserUnauthenticatedState());
+      currentUser = null;
+      isAccountJustCreated = false;
+    });
   }
 
-  Future<void> registerWithEmailAndPassword({
-    required String email,
-    required String password,
-    required String name,
-    required int avatarIndex,
-  }) async {
-    try {
-      emit(RegisterWithEmailPasswordLoadingState());
-      final result = await _registerWithEmailAndPasswordUseCases.invoke(
-        name: name,
-        avatarIndex: avatarIndex,
-        password: password,
-        email: email,
-      );
+  Future<void> deleteUser({required String password}) async {
+    emit(UserDeleteLoadingState());
 
-      result.fold((failure) => emit(RegisterWithEmailPasswordErrorState(failure.message.tr())), (
-        user,
-      ) {
+    var result = await _deleteAccountUseCase.invoke(
+      password: password,
+      provider: currentUser?.provider ?? '',
+    );
+    result.fold((failure) => emit(UserDeleteErrorState(failure.message.tr())), (
+      unit,
+    ) {
+      emit(UserDeleteSuccessState());
+      logout();
+    });
+  }
+
+  Future<void> updateUserDetails({required MyUser user}) async {
+    emit(UserDetailsUpdateLoadingState());
+    var result = await _updateUserDetailsUseCase.updateAccountDetails(
+      user: user,
+    );
+    result.fold(
+      (failure) => emit(UserDetailsUpdateErrorState(failure.message)),
+      (unit) {
         currentUser = user;
-        emit(UserAuthenticatedState(user));
-      });
-    } catch (e) {
-      emit(RegisterWithEmailPasswordErrorState('Unexpected Error'));
-    }
+        emit(UserDetailsUpdateSuccessState());
+      },
+    );
   }
 
   Future<void> resetPassword({required String email}) async {
@@ -165,6 +167,11 @@ class UserCubit extends Cubit<UserState> {
         emit(ResetUserPasswordSuccessState());
       },
     );
+  }
+
+  void changeUser(MyUser user) {
+    currentUser = user;
+    emit(UserAuthenticatedState(user));
   }
 
   String getInitialRoute() {

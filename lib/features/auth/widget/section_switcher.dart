@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/features/auth/widget/login_tab.dart';
 import 'package:pb_vault/features/auth/widget/register_tab.dart';
 
@@ -16,20 +17,32 @@ class SectionSwitcher extends StatelessWidget {
       child: Column(
         children: [
           TabBar(
-            overlayColor: WidgetStatePropertyAll(AppColors.backgroundDark),
+            overlayColor: WidgetStatePropertyAll(
+              context.easyColor(
+                lColor: AppColors.backgroundLight,
+                dColor: AppColors.backgroundDark,
+              ),
+            ),
             indicatorWeight: 3,
             labelStyle: AppStyles.robotoRegular14White(context),
-            labelColor: AppColors.white,
+            labelColor: context.easyColor(
+              lColor: AppColors.backgroundDark,
+              dColor: AppColors.white,
+            ),
+
             unselectedLabelColor: AppColors.primary,
             dividerColor: AppColors.backgroundDark,
             indicatorSize: TabBarIndicatorSize.tab,
-            indicatorColor: AppColors.white,
+            indicatorColor: context.easyColor(
+              lColor: AppColors.backgroundDark,
+              dColor: AppColors.white,
+            ),
             tabs: [
               Tab(text: 'login'.tr()),
               Tab(text: 'register'.tr()),
             ],
           ),
-          Expanded(child: TabBarView(children: [LoginTan(), RegisterTab()])),
+          Expanded(child: TabBarView(children: [LoginTab(), RegisterTab()])),
         ],
       ),
     );

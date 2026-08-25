@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_state.dart';
 import 'package:pb_vault/features/master_password_screen/cubit/master_password_view_model.dart';
@@ -21,6 +22,14 @@ class UnlockModeWidget extends StatefulWidget {
 class _UnlockModeWidgetState extends State<UnlockModeWidget> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MasterPasswordCubit>().biometricUnlock();
+    });
+  }
 
   @override
   void dispose() {
@@ -61,7 +70,11 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
     return Text(
       'unlock_vault'.tr(),
       textAlign: TextAlign.center,
-      style: AppStyles.interRegular20White,
+      style: AppStyles.interRegular20(
+        context,
+        lColor: AppColors.black,
+        dColor: AppColors.white,
+      ),
     );
   }
 
@@ -71,7 +84,11 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
       child: Text(
         'enter_your_master_password'.tr(),
         textAlign: TextAlign.center,
-        style: AppStyles.interExtraLight14BackgroundLight,
+        style: AppStyles.interExtraLight14(
+          context,
+          lColor: AppColors.surfaceDark,
+          dColor: AppColors.backgroundLight,
+        ),
       ),
     );
   }
@@ -80,18 +97,20 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
     return BlocBuilder<MasterPasswordCubit, MasterPasswordState>(
       builder: (context, state) {
         return Icon(
-          state is MasterPasswordVerifySuccess
+          state is UnlockSuccessState
               ? Icons.lock_open_outlined
               : Icons.lock_outline,
           size: 80,
-          color: state is MasterPasswordVerifySuccess
+          color: state is UnlockSuccessState
               ? AppColors.success
-              : AppColors.primary,
+              : context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
         );
       },
     );
   }
-
 
   Widget _builtUnlockButton() {
     final masterCubit = context.read<MasterPasswordCubit>();
@@ -99,12 +118,13 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
     return BlocBuilder<MasterPasswordCubit, MasterPasswordState>(
       builder: (context, state) {
         return CustomElevatedButton(
-          onPressed: state is MasterPasswordVerifySuccess
+          onPressed: state is UnlockSuccessState
               ? null
               : () async {
+                  FocusManager.instance.primaryFocus?.unfocus();
                   if (formKey.currentState!.validate()) {
                     {
-                      masterCubit.verifyMasterPassword(
+                      masterCubit.unlockVault(
                         masterPassword: passwordController.text,
                         salt: authCubit.currentUser!.salt!,
                         passwordVerifier:
@@ -113,15 +133,25 @@ class _UnlockModeWidgetState extends State<UnlockModeWidget> {
                     }
                   }
                 },
-          borderSideColor: AppColors.backgroundDark,
-          backgroundColor: state is MasterPasswordVerifySuccess
-              ? AppColors.surfaceDark
-              : AppColors.primary,
+          borderSideColor: context.easyColor(
+            lColor: AppColors.backgroundLight,
+            dColor: AppColors.backgroundDark,
+          ),
+          backgroundColor: state is UnlockSuccessState
+              ? AppColors.transparent
+              : context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
           child: Text(
-            state is MasterPasswordVerifySuccess
-                ? "locked".tr()
-                : "unlock".tr(),
-            style: AppStyles.robotoBold20White(context),
+            state is UnlockSuccessState ? "unlocked".tr() : "unlock".tr(),
+            style: state is UnlockSuccessState
+                ? AppStyles.robotoBold20(
+                    context,
+                    lColor: AppColors.backgroundDark,
+                    dColor: AppColors.white,
+                  )
+                : AppStyles.robotoBold20White(context),
           ),
         );
       },

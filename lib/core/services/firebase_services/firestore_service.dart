@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
+import 'package:pb_vault/core/constants/firestore_constants.dart';
 
 import '../../../data/model/response/my_user_dto.dart';
 import '../../../data/model/response/platform_account_dto/platform_account_dto.dart';
-import '../../constants/app_constants.dart';
 
 @lazySingleton
 class FirestoreService {
@@ -13,7 +13,7 @@ class FirestoreService {
 
   CollectionReference<MyUserDto> getUsersCollection() {
     return _firebaseFirestore
-        .collection(AppConstants.usersCollectionName)
+        .collection(FirestoreConstants.usersCollection)
         .withConverter<MyUserDto>(
           fromFirestore: (snapshot, options) =>
               MyUserDto.fromFireStore(snapshot.data()!),
@@ -43,7 +43,7 @@ class FirestoreService {
   CollectionReference<PlatformAccountDto> getAccountsCollection(String uId) {
     return getUsersCollection()
         .doc(uId)
-        .collection(AppConstants.accountsCollectionName)
+        .collection(FirestoreConstants.accountsCollection)
         .withConverter<PlatformAccountDto>(
           fromFirestore: (snapshot, options) =>
               PlatformAccountDto.fromFireStore(snapshot.data()!),
@@ -57,31 +57,68 @@ class FirestoreService {
   }) {
     var collection = getAccountsCollection(uId);
     var document = collection.doc();
-    account.id = document.id;
-    return document.set(account);
+    return document.set(account.copyWith(id: document.id));
   }
+
   Future<void> updateAccount({
     required PlatformAccountDto account,
     required String uId,
   }) {
     return getAccountsCollection(uId).doc(account.id).set(account);
-
   }
 
   Stream<List<PlatformAccountDto>> getAccountsStream({required String uId}) {
     return getAccountsCollection(uId)
-        .orderBy('created_at', descending: true)
+        .orderBy(FirestoreConstants.createdAt, descending: true)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.map((doc) => doc.data()).toList(),
-        );
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
   Future<void> deleteAccount({required String uId, required String accountId}) {
     return getAccountsCollection(uId).doc(accountId).delete();
   }
 
-  // Future<void> updateAccount({required String uId, required AccountDto platform_account}) {
-  //   return getAccountsCollection(uId).doc(platform_account.id).update(platform_account.toFireStore());
-  // }
+  Future<PlatformAccountDto?> getAccountById({
+    required String accountId,
+    required String uId,
+  }) async {
+    var documentSnapshot = await getAccountByIdRaw(
+      uId: uId,
+      accountId: accountId,
+    );
+    return documentSnapshot.data();
+  }
+
+  Future<DocumentSnapshot<PlatformAccountDto>> getAccountByIdRaw({
+    required String uId,
+    required String accountId,
+  }) async {
+    return await getAccountsCollection(uId).doc(accountId).get();
+  }
+
+  Future<List<PlatformAccountDto>> getAllAccountsOnce({required String uId}) async {
+    var querySnapshot = await getAccountsCollection(uId).get();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  Future<void> changeMasterPasswordBatch({
+    required String uId,
+    required MyUserDto userDto,
+    required List<PlatformAccountDto> accounts,
+  }) async {
+    final batch = _firebaseFirestore.batch();
+
+    // Update User Document
+    final userDoc = getUsersCollection().doc(uId);
+    batch.update(userDoc, userDto.toFireStore());
+
+    // Update all Account Documents
+    final accountsCollection = getAccountsCollection(uId);
+    for (final account in accounts) {
+      final accountDoc = accountsCollection.doc(account.id);
+      batch.set(accountDoc, account);
+    }
+
+    await batch.commit();
+  }
 }

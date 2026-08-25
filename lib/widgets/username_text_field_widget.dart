@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:pb_vault/core/utils/app_assets.dart';
 
 import '../core/utils/app_colors.dart';
 import '../core/utils/app_styles.dart';
@@ -26,7 +28,11 @@ class _UsernameTextFieldWidgetState extends State<UsernameTextFieldWidget> {
       keyboardType: TextInputType.emailAddress,
       validator: (value) => Validators.required(value),
       controller: widget.controller,
-      prefixIcon: const Icon(size: 40, Icons.person, color: AppColors.black),
+      prefixIcon: SvgPicture.asset(
+        AppAssets.bnbProfileIcon,
+        fit: BoxFit.scaleDown,
+        colorFilter: ColorFilter.mode(AppColors.surfaceDark, BlendMode.srcIn),
+      ),
       hintText: "username".tr(),
       hintStyle: AppStyles.robotoBold14gray(context),
       filled: true,

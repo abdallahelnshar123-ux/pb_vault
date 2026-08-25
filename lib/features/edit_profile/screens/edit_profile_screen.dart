@@ -1,28 +1,250 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/utils/app_colors.dart';
-import '../../../../core/utils/app_styles.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
+import 'package:pb_vault/widgets/username_text_field_widget.dart';
 
-class EditProfileScreen extends StatelessWidget {
+import '../../../core/constants/assets_constants.dart';
+import '../../../core/utils/app_colors.dart';
+import '../../../core/utils/app_routes.dart';
+import '../../../core/utils/app_styles.dart';
+import '../../../core/utils/dialog_utils.dart';
+import '../../../core/utils/screen_size.dart';
+import '../../../core/utils/snack_bar_utils.dart';
+import '../../../domain/entities/response/user/auth_providers.dart';
+import '../../../domain/entities/response/user/my_user.dart';
+import '../../../widgets/custom_elevated_button.dart';
+import '../../auth/cubit/user_state.dart';
+import 'avatars_bottom_sheet.dart';
+
+class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
 
   @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  late var userCubit = context.read<UserCubit>();
+  late final MyUser currentUser = userCubit.currentUser!;
+  late final TextEditingController nameController = TextEditingController(
+    text: currentUser.name,
+  );
+  final _formKey = GlobalKey<FormState>();
+  late final ValueNotifier<String?> avatar = ValueNotifier(currentUser.avatar);
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
-      appBar: AppBar(
-        backgroundColor: AppColors.transparent,
-        elevation: 0,
-        title: Text(
-          'edit_profile'.tr(),
-          style: AppStyles.interRegular20White,
+    return BlocListener<UserCubit, UserState>(
+      listenWhen: (previous, current) =>
+          current is UserDetailsUpdateSuccessState ||
+          current is UserDetailsUpdateErrorState ||
+          current is UserDetailsUpdateLoadingState ||
+          current is UserDeleteLoadingState ||
+          current is UserDeleteSuccessState ||
+          current is UserDeleteErrorState,
+      listener: (context, state) {
+        if (state is UserDetailsUpdateSuccessState) {
+          DialogUtils.hideLoading(context: context);
+          Navigator.pop(context);
+          SnackBarUtils.showSuccessSnackBar(
+            context: context,
+            message: 'data_was_updated_successfully'.tr(),
+          );
+        }
+        if (state is UserDetailsUpdateErrorState) {
+          DialogUtils.hideLoading(context: context);
+          DialogUtils.showMessage(
+            context: context,
+            title: 'error',
+            message: state.message,
+            posActionText: 'ok',
+          );
+        }
+        if (state is UserDetailsUpdateLoadingState) {
+          DialogUtils.showLoading(context: context);
+        }
+        if (state is UserDeleteSuccessState) {
+          DialogUtils.hideLoading(context: context);
+          SnackBarUtils.showSuccessSnackBar(
+            context: context,
+            message: 'account_was_deleted_successfully',
+          );
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.authScreen,
+            (route) => false,
+          );
+        }
+        if (state is UserDeleteErrorState) {
+          DialogUtils.hideLoading(context: context);
+          DialogUtils.showMessage(
+            context: context,
+            title: 'error',
+            message: state.message,
+            posActionText: 'ok',
+          );
+        }
+        if (state is UserDeleteLoadingState) {
+          DialogUtils.showLoading(context: context);
+        }
+      },
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("edit_profile".tr()),
+            leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back_ios_new_rounded),
+            ),
+          ),
+          bottomNavigationBar: Padding(
+            padding: EdgeInsets.all(16),
+            child: CustomElevatedButton(
+              backgroundColor: context.easyColor(
+                lColor: AppColors.backgroundDark,
+                dColor: AppColors.primary,
+              ),
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  await userCubit.updateUserDetails(
+                    user: currentUser.copyWith(
+                      name: nameController.text,
+                      avatar: avatar.value,
+                    ),
+                  );
+                  FocusManager.instance.primaryFocus?.unfocus();
+                }
+              },
+              child: Text(
+                'update_data'.tr(),
+                style: AppStyles.robotoRegular16White(context),
+              ),
+            ),
+          ),
+          body: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: .start,
+                  spacing: 15,
+                  children: [
+                    SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        showAvatarBottomSheet();
+                      },
+                      child: Center(
+                        child: Stack(
+                          alignment: .topRight,
+                          children: [
+                            ValueListenableBuilder<String?>(
+                              valueListenable: avatar,
+                              builder:
+                                  (BuildContext context, value, Widget? child) {
+                                    var avatarPath = userAvatars[value];
+                                    return Container(
+                                      width: context.width * 0.3,
+                                      height: context.width * 0.3,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: context.easyColor(
+                                          lColor: AppColors.primary,
+                                          dColor: AppColors.backgroundLight,
+                                        ),
+                                      ),
+                                      child: avatarPath != null
+                                          ? ClipOval(
+                                              child: SvgPicture.asset(
+                                                avatarPath,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            )
+                                          : Icon(
+                                              Icons.person,
+                                              size: context.width * 0.2,
+                                              color: AppColors.backgroundDark,
+                                            ),
+                                    );
+                                  },
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.lightGreen,
+                                border: Border.all(
+                                  width: 3,
+                                  color: AppColors.backgroundDark,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.edit,
+                                color: AppColors.surfaceDark,
+                                size: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: context.height * 0.01),
+                    UsernameTextFieldWidget(
+                      controller: nameController,
+                      fillColor: AppColors.secondary,
+                    ),
+                    Visibility(
+                      visible:
+                          currentUser.provider == AuthProviders.emailPassword,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(
+                            context,
+                          ).pushNamed(AppRoutes.resetPasswordScreen);
+                        },
+                        child: Text(
+                          "reset_password".tr(),
+                          style: AppStyles.robotoRegular16White(context)
+                              .copyWith(
+                                decoration: TextDecoration.underline,
+                                decorationColor: AppColors.white,
+                              ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
-      body: Center(
-        child: Text(
-          'Edit Profile Screen Placeholder',
-          style: AppStyles.interRegular20White,
-        ),
+    );
+  }
+
+  void showAvatarBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadiusGeometry.circular(16),
+      ),
+      builder: (context) => SelectAvatarBottomSheet(
+        newAvatar: (index) {
+          avatar.value = index;
+        },
+        currentAvatar: avatar.value,
       ),
     );
   }

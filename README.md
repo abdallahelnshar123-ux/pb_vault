@@ -3,7 +3,7 @@
 <img src="assets/images/cover.png" alt="PB Vault Cover" width="1672"/>
 
 <p>
-<b>PB Vault</b> is a secure password manager built with Flutter, designed to help users safely store, organize, and manage their credentials across multiple platforms.
+<b>PB Vault</b> is a secure password manager built with Flutter, designed to help users safely store, organize, and manage their credentials across multiple platforms. 
 Passwords are encrypted before being stored, ensuring that sensitive information remains protected while providing a smooth and user-friendly experience. 🚀🔒
 </p>
 
@@ -11,7 +11,7 @@ Passwords are encrypted before being stored, ensuring that sensitive information
 
 ## 🚀 Features
 
-<ul>
+
   <li>
     <b>Authentication System</b>
     <ul>
@@ -28,6 +28,7 @@ Passwords are encrypted before being stored, ensuring that sensitive information
       <li>Edit existing passwords and account information ✏️</li>
       <li>Delete stored accounts 🗑️</li>
       <li>Store platform name, email, username, password, and notes</li>
+      <li><b>Built-in Strong Password Generator</b> 🎲</li>
     </ul>
   </li>
 
@@ -46,15 +47,9 @@ Passwords are encrypted before being stored, ensuring that sensitive information
       <li>Passwords are encrypted before storage 🔒</li>
       <li>Sensitive data is never stored as plain text</li>
       <li>Built with a dedicated encryption layer using cryptography</li>
-    </ul>
-  </li>
-
-  <li>
-    <b>Offline Support</b>
-    <ul>
-      <li>Create, update, and delete accounts while offline 📡</li>
-      <li>Firestore offline persistence support</li>
-      <li>Automatic synchronization when connection is restored 🔄</li>
+      <li><b>Master Password Protection</b> with PBKDF2 hashing 🔑</li>
+      <li><b>Change Master Password</b> with automatic vault re-encryption 🔄</li>
+      <li><b>Biometric Authentication</b> (Fingerprint & Face ID) support 🖐️🆔</li>
     </ul>
   </li>
 
@@ -74,7 +69,7 @@ Passwords are encrypted before being stored, ensuring that sensitive information
       <li>Shimmer loading effects for better UX</li>
     </ul>
   </li>
-</ul>
+
 
 <hr/>
 
@@ -112,6 +107,7 @@ Passwords are encrypted before being stored, ensuring that sensitive information
 
 * firebase_auth
 * google_sign_in
+* local_auth (Biometrics)
 
 ### ☁️ Backend & Database
 
@@ -129,6 +125,7 @@ Passwords are encrypted before being stored, ensuring that sensitive information
 ### 🔒 Security & Encryption
 
 * cryptography
+* flutter_secure_storage
 
 ### 💾 Local Storage
 
@@ -138,16 +135,15 @@ Passwords are encrypted before being stored, ensuring that sensitive information
 
 ## 🔮 Upcoming Features
 
-* Master Password Protection
-* Password Generator
 * Password Strength Analysis
 * Account Categories
 * Favorites & Pinned Accounts
+* Offline Support
 * Export / Import Vault Data
-* Biometric Authentication (Fingerprint & Face ID)
 * Auto Backup & Restore
 
 <hr/>
+
 ## 🧱 Architecture
 
 This project follows the principles of:
@@ -177,10 +173,11 @@ flutter run
 
 ### Abdallah Samir El nshar
 
-This app is part of my Flutter development journey and focuses on building scalable, clean, and
+This app is part of my Flutter development journey and focuses on building scalable, clean, and 
 production-ready applications. 🚀
 
 Thank you for checking out my work! 🙏
 
 This project is open source and available under the **MIT License**.
-
+#
+#

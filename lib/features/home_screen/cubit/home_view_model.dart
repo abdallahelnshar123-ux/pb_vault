@@ -1,75 +1,44 @@
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pb_vault/domain/entities/vault/encrypted_data.dart';
-import 'package:pb_vault/domain/use_cases/vault/decrypt_password_use_case.dart';
 
-import '../../../core/utils/snack_bar_utils.dart';
 import '../../../domain/entities/response/platform_account/platform_account.dart';
 import '../../../domain/use_cases/get_accounts_use_case.dart';
 import 'home_state.dart';
 
-@injectable
+@lazySingleton
 class HomeCubit extends Cubit<HomeState> {
   final GetAccountsUseCase _getAccountsUseCase;
-  final DecryptPasswordUseCase _decryptPasswordUseCase;
   StreamSubscription? _subscription;
 
-  HomeCubit(this._getAccountsUseCase, this._decryptPasswordUseCase)
-    : super(HomeInitial());
+  HomeCubit(this._getAccountsUseCase) : super(HomeInitial());
   List<PlatformAccount> accountsList = [];
 
   void getAccounts(String userId) {
     emit(HomeLoading());
     _subscription?.cancel();
-    _subscription = _getAccountsUseCase.invoke(userId).listen(
-      (result) {
-        result.fold((failure) => emit(HomeError(failure.message)), (
-          accounts,
-        ) {
-          accountsList = accounts;
-          emit(HomeSuccess(accounts));
-        });
-      },
-      onError: (error) {
-        // Silently handle permission denied errors during platform_account deletion/logout
-        if (!error.toString().contains('permission-denied')) {
-          emit(HomeError(error.toString()));
-        }
-      },
-    );
+    _subscription = _getAccountsUseCase
+        .invoke(userId)
+        .listen(
+          (result) {
+            result.fold((failure) => emit(HomeError(failure.message)), (
+              accounts,
+            ) {
+              accountsList = accounts;
+              emit(HomeSuccess(accounts));
+            });
+          },
+          onError: (error) {
+            if (!error.toString().contains('permission-denied')) {
+              emit(HomeError(error.toString()));
+            }
+          },
+        );
   }
 
-  Future<void> copyAccountPassword({
-    required PlatformAccount account,
-    required BuildContext context,
-  }) async {
-    try {
-      final encryptedData = EncryptedData(
-        cipherText: account.encryptedPassword,
-        mac: account.mac,
-        nonce: account.nonce,
-      );
-
-      final password = await _decryptPasswordUseCase.invoke(encryptedData);
-
-      await Clipboard.setData(ClipboardData(text: password));
-      if (!context.mounted) return;
-      SnackBarUtils.showSuccessSnackBar(
-        context: context,
-        message: 'password_copied_to_clipboard'.tr(),
-      );
-    } catch (e) {
-      if (!context.mounted) return;
-      SnackBarUtils.showErrorSnackBar(
-        context: context,
-        message: 'error_copying_password'.tr(),
-      );
-    }
+  Future<void> copyAccountPassword({required PlatformAccount account}) async {
+    if (account.password == null) return;
   }
 
   Future<void> clearHomeAccounts() async {

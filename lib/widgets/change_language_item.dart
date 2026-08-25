@@ -25,36 +25,12 @@ class ChangeLanguageItem extends StatelessWidget {
               languageCode: 'ar',
               onTap: () => context.setLocale(Locale('en')),
             ),
-
-            // GestureDetector(
-            //   onTap: () => context.setLocale(Locale('en')),
-            //   child: CircleAvatar(
-            //     radius: 20,
-            //     backgroundColor: context.locale.languageCode == 'en'
-            //         ? AppColors.yellowColor
-            //         : Colors.transparent,
-            //     child: Image.asset(AppAssets.usaLogo, width: 30),
-            //   ),
-            // ),
             builtIcon(
               context: context,
               logo: AppAssets.egyptLogo,
               languageCode: 'en',
               onTap: () => context.setLocale(Locale('ar')),
             ),
-            // GestureDetector(
-            //   onTap: () => context.setLocale(Locale('ar')),
-            //   child: CircleAvatar(
-            //     radius: 20,
-            //     backgroundColor: context.locale.languageCode == 'en'
-            //         ? AppColors.transparentColor
-            //         : AppColors.yellowColor,
-            //     child: CircleAvatar(
-            //       radius: 14,
-            //       backgroundImage: AssetImage(AppAssets.egyptLogo),
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),

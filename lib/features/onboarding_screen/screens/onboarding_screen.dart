@@ -1,7 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easy_theme/flutter_easy_theme.dart';
 import 'package:pb_vault/core/utils/screen_size.dart';
-import 'package:pb_vault/domain/entities/on_boarding/on_boarding_item.dart';
+import 'package:pb_vault/domain/entities/on_boarding/on_boarding_page.dart';
 import 'package:pb_vault/widgets/custom_app_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +10,7 @@ import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_styles.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../widgets/custom_elevated_button.dart';
+import '../../../core/utils/app_routes.dart';
 import '../provider/onboarding_view_model.dart';
 import '../widget/dots_widget.dart';
 
@@ -19,7 +21,7 @@ class OnboardingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final OnboardingViewModel provider = context.watch<OnboardingViewModel>();
     final int currentIndex = provider.currentIndex;
-    final List<OnBoardingItem> onboardingDataList =
+    final List<OnBoardingPage> onboardingDataList =
         AppConstants.onBoardingPages;
 
     return SafeArea(
@@ -56,34 +58,64 @@ class OnboardingScreen extends StatelessWidget {
                 child: Text(
                   onboardingDataList[currentIndex].title.tr(),
                   textAlign: TextAlign.center,
-                  style: AppStyles.interRegular20White,
+                  style: AppStyles.interRegular20(
+                    context,
+                    lColor: AppColors.black,
+                    dColor: AppColors.white,
+                  ),
                 ),
               ),
               Text(
                 onboardingDataList[currentIndex].subtitle.tr(),
                 textAlign: TextAlign.center,
-                style: AppStyles.interExtraLight14BackgroundLight,
-              ),
-
-              CustomElevatedButton(
-                buttonWidth: double.infinity,
-                onPressed: () {
-                  provider.onFirstButtonClick(context);
-                },
-                backgroundColor: AppColors.primary,
-                child: Text(
-                  onboardingDataList[currentIndex].firstButton.tr(),
-                  style: AppStyles.interMedium14BackgroundDark,
+                style: AppStyles.interExtraLight14(
+                  context,
+                  lColor: AppColors.surfaceDark,
+                  dColor: AppColors.backgroundLight,
                 ),
               ),
 
               CustomElevatedButton(
                 buttonWidth: double.infinity,
                 onPressed: () {
-                  provider.onSecondButtonClick(context);
+                  final wasLastPage =
+                      provider.currentIndex ==
+                      provider.onboardingPagesNumber - 1;
+
+                  provider.onFirstButtonClick();
+
+                  if (wasLastPage) {
+                    Navigator.pushReplacementNamed(
+                      context,
+                      AppRoutes.authScreen,
+                    );
+                  }
+                },
+                backgroundColor: context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
+                child: Text(
+                  onboardingDataList[currentIndex].firstButton.tr(),
+                  style: AppStyles.interMedium14(
+                    context,
+                    lColor: AppColors.white,
+                    dColor: AppColors.backgroundDark,
+                  ),
+                ),
+              ),
+
+              CustomElevatedButton(
+                buttonWidth: double.infinity,
+                onPressed: () {
+                  provider.onSecondButtonClick();
+                  Navigator.pushReplacementNamed(context, AppRoutes.authScreen);
                 },
                 backgroundColor: AppColors.backgroundLight,
-                borderSideColor: AppColors.primary,
+                borderSideColor: context.easyColor(
+                  lColor: AppColors.backgroundDark,
+                  dColor: AppColors.primary,
+                ),
                 child: Text(
                   onboardingDataList[currentIndex].secondButton.tr(),
                   style: AppStyles.interMedium14BackgroundDark,

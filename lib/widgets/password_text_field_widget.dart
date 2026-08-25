@@ -4,16 +4,19 @@ import 'package:flutter_svg/svg.dart';
 
 import '../core/utils/app_colors.dart';
 import '../core/utils/app_styles.dart';
-import '../core/utils/validators.dart';
 import 'custom_text_form_field.dart';
 
 class PasswordTextFieldWidget extends StatefulWidget {
   final Color? fillColor;
   final TextEditingController? controller;
-  final  void Function(String)? onChanged ;
+  final void Function(String)? onChanged;
 
-
-  const PasswordTextFieldWidget({super.key, this.fillColor,this.onChanged ,this.controller });
+  const PasswordTextFieldWidget({
+    super.key,
+    this.fillColor,
+    this.onChanged,
+    this.controller,
+  });
 
   @override
   State<PasswordTextFieldWidget> createState() =>
@@ -21,7 +24,6 @@ class PasswordTextFieldWidget extends StatefulWidget {
 }
 
 class _PasswordTextFieldWidgetState extends State<PasswordTextFieldWidget> {
-
   final ValueNotifier<bool> isObscure = ValueNotifier(true);
 
   @override
@@ -38,7 +40,6 @@ class _PasswordTextFieldWidgetState extends State<PasswordTextFieldWidget> {
         style: AppStyles.robotoBold16SurfaceDark(context),
         onChanged: widget.onChanged,
         keyboardType: TextInputType.visiblePassword,
-        validator: (value) => Validators.password(value),
         controller: widget.controller,
         prefixIcon: SvgPicture.asset(
           "assets/icons/password_icon.svg",

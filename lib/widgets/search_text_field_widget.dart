@@ -7,14 +7,14 @@ import 'custom_text_form_field.dart';
 
 class SearchTextFieldWidget extends StatelessWidget {
   final void Function(String)? onChanged;
-  final Widget? suffixIcon ;
+  final Widget? suffixIcon;
 
-  const SearchTextFieldWidget({super.key, this.onChanged , this.suffixIcon});
+  const SearchTextFieldWidget({super.key, this.onChanged, this.suffixIcon});
 
   @override
   Widget build(BuildContext context) {
     return CustomTextFormField(
-      suffixIcon:suffixIcon ,
+      suffixIcon: suffixIcon,
       onChanged: onChanged,
       style: AppStyles.robotoBold16SurfaceDark(context),
       keyboardType: TextInputType.emailAddress,

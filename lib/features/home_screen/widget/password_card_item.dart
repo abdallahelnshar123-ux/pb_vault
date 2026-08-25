@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pb_vault/domain/entities/response/platform_account/platform_account.dart';
+import 'package:pb_vault/features/auth/cubit/user_view_model.dart';
+import 'package:pb_vault/features/platform_account/cubit/platform_account_view_model.dart';
 import 'package:pb_vault/features/platform_account/screens/platform_account_details_screen.dart';
-import 'package:pb_vault/widgets/copy_account_password_button_widget.dart';
+import 'package:pb_vault/widgets/platform_icon.dart';
 
+import '../../../core/constants/platforms.dart';
 import '../../../core/utils/app_colors.dart';
 import '../../../core/utils/app_styles.dart';
 import '../../../core/utils/screen_size.dart';
@@ -14,6 +18,8 @@ class PasswordCardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var platformsMain = platformMain;
+    var platformsSecond = platformSecond;
     return ListView.separated(
       itemCount: accountsList.length,
       separatorBuilder: (context, index) =>
@@ -32,43 +38,37 @@ class PasswordCardItem extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        PlatformAccountDetailsScreen(account: account),
+                    builder: (context) {
+                      var userId = context.read<UserCubit>().currentUser?.id;
+                      context.read<PlatformAccountCubit>().getAccountById(
+                        userId: userId!,
+                        accountId: account.id!,
+                      );
+
+                      return PlatformAccountDetailsScreen();
+                    },
                   ),
                 );
               }
             },
             leading: CircleAvatar(
-              backgroundColor: AppColors.backgroundDark,
-              child: account.platform.icon.isNotEmpty
-                  ? ClipOval(
-                      child: Image.network(
-                        account.platform.icon,
-                        width: 32,
-                        height: 32,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => Text(
-                          account.platform.name[0].toUpperCase(),
-                          style: AppStyles.interMedium14BackgroundDark,
-                        ),
-                      ),
-                    )
-                  : Text(
-                      account.platform.name[0].toUpperCase(),
-                      style: AppStyles.interMedium14BackgroundDark,
-                    ),
+              backgroundColor: AppColors.primary,
+              child: PlatformIcon(platformId: account.platformId),
             ),
             title: Text(
-              account.platform.name,
+              platformsMain[account.platformId]?.name ??
+                  platformsSecond[account.platformId]?.name ??
+                  '',
               style: AppStyles.robotoBold16SurfaceDark(context),
             ),
             subtitle: Text(
-              account.emailOrUsername,
+              account.identifier,
               style: AppStyles.robotoELight12SurfaceDark(context),
             ),
-            trailing: CopyAccountPasswordButtonWidget(
-              account: account,
-              iconColor: AppColors.surfaceDark,
+            trailing: Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: AppColors.backgroundDark,
+              size: context.width * 0.06,
             ),
           ),
         );
