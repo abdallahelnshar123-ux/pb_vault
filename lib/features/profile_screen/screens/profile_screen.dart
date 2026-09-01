@@ -366,31 +366,18 @@ class ThemeSwitch extends StatefulWidget {
 }
 
 class _ThemeSwitchState extends State<ThemeSwitch> {
-  late bool _isDark;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _isDark = context.isDark;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Switch(
-      value: _isDark,
+      // value: _isDark,
+      value: context.isDark,
       onChanged: (value) {
-        Future.delayed(const Duration(milliseconds: 250), () {
-          if (!context.mounted) return;
-          if (value) {
-            context.setThemeModeToDark();
-          } else {
-            context.setThemeModeToLight();
-          }
-        });
-
-        setState(() {
-          _isDark = value;
-        });
+        if (!context.mounted) return;
+        if (value) {
+          context.readTheme.setThemeModeToDark();
+        } else {
+          context.readTheme.setThemeModeToLight();
+        }
       },
       activeThumbColor: AppColors.surfaceDark,
     );
